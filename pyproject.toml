@@ -11,5 +11,11 @@ dependencies = [
     "torch>=2.2",
 ]
 
+[project.optional-dependencies]
+plots = [
+    "numpy",
+    "matplotlib",
+]
+
 [tool.setuptools.packages.find]
-where = ["src"]
+include = ["src*"]
