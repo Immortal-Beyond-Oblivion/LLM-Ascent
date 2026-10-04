@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Ascent — Local LLM Interface</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --text: #1c2330; --muted: #667085; --border: #d9dde5;
+    --accent: #2f5bea; --accent-text: #ffffff; --warn-bg: #fff4d6; --warn-text: #7a5300;
+    --err-bg: #fde7e7; --err-text: #8a1f1f; --chip: #eef1f6; --code: #f0f2f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151b; --panel: #1b2029; --text: #e6e9ef; --muted: #98a2b3; --border: #2d3441;
+      --accent: #6c8cff; --accent-text: #0e1220; --warn-bg: #3a2f10; --warn-text: #f3d48a;
+      --err-bg: #3d1b1b; --err-text: #f5b4b4; --chip: #252b37; --code: #232937;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  header { padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--panel);
+           display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 18px; margin: 0; }
+  main { max-width: 1040px; margin: 0 auto; padding: 16px 20px 48px; }
+  .banner { background: var(--warn-bg); color: var(--warn-text); padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+  nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  nav button { background: var(--panel); color: var(--text); border: 1px solid var(--border); padding: 7px 14px;
+               border-radius: 8px; cursor: pointer; font: inherit; }
+  nav button[aria-selected="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  section.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+  input, select, textarea { width: 100%; font: inherit; color: var(--text); background: var(--bg);
+                            border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; }
+  textarea { min-height: 90px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; }
+  button.primary { background: var(--accent); color: var(--accent-text); border: 0; padding: 9px 18px; border-radius: 8px;
+                   font: inherit; cursor: pointer; }
+  button.primary:disabled { opacity: .5; cursor: wait; }
+  button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font: inherit; cursor: pointer; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 10px 0; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin: 10px 0; }
+  .row > .grow { flex: 1 1 260px; }
+  .out { background: var(--code); border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; word-break: break-word;
+         font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; min-height: 48px; }
+  .out .prompt { color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .chip { background: var(--chip); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); }
+  .notice { background: var(--warn-bg); color: var(--warn-text); border-radius: 8px; padding: 6px 10px; font-size: 13px; margin: 6px 0; }
+  .error { background: var(--err-bg); color: var(--err-text); border-radius: 8px; padding: 6px 10px; font-size: 13px; margin: 6px 0; }
+  .hint { color: var(--muted); font-size: 13px; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  h2 { font-size: 16px; margin: 0 0 8px; } h3 { font-size: 14px; margin: 14px 0 6px; }
+  .chat-log { display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; margin-bottom: 10px; }
+  .msg { padding: 8px 12px; border-radius: 10px; max-width: 85%; white-space: pre-wrap; word-break: break-word; }
+  .msg.user { align-self: flex-end; background: var(--accent); color: var(--accent-text); }
+  .msg.assistant { align-self: flex-start; background: var(--code); }
+  .msg.tool { align-self: flex-start; background: var(--chip); font-size: 12px; color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { border-bottom: 1px solid var(--border); padding: 6px 8px; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  .figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  .figs img { width: 100%; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+  canvas { border: 1px solid var(--border); border-radius: 6px; max-width: 100%; }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .thumbs canvas { cursor: pointer; }
+  .thumbs canvas.sel { outline: 2px solid var(--accent); }
+  .tok { display: inline-block; background: var(--chip); border-radius: 4px; padding: 0 4px; margin: 1px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  details { margin-top: 8px; } summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Project Ascent <span class="hint">· local LLM interface</span></h1>
+  <div style="min-width:280px;flex:0 1 420px">
+    <label for="model">Model</label>
+    <select id="model"></select>
+  </div>
+</header>
+<main>
+  <div class="banner">These are tiny research models (about 10<sup>5</sup> parameters, trained for minutes). Output is mostly word salad — this page is for inspecting how the system behaves, not for useful answers.</div>
+  <div id="global-error" class="error" hidden></div>
+
+  <nav role="tablist">
+    <button role="tab" data-tab="play" aria-selected="true">Playground</button>
+    <button role="tab" data-tab="chat" aria-selected="false">Chat + tools</button>
+    <button role="tab" data-tab="rag" aria-selected="false">RAG</button>
+    <button role="tab" data-tab="attn" aria-selected="false">Attention</button>
+    <button role="tab" data-tab="results" aria-selected="false">Results</button>
+  </nav>
+
+  <!-- Playground -->
+  <section class="panel" id="tab-play">
+    <h2>Text generation</h2>
+    <label for="p-prompt">Prompt</label>
+    <textarea id="p-prompt">ROMEO:
+</textarea>
+    <div class="grid">
+      <div><label for="p-mode">Decoding</label>
+        <select id="p-mode"><option value="greedy">greedy</option><option value="sample" selected>sample</option><option value="beam">beam search</option></select></div>
+      <div><label for="p-max">Max new tokens</label><input id="p-max" type="number" min="1" max="300" value="120"></div>
+      <div><label for="p-temp">Temperature</label><input id="p-temp" type="number" min="0.05" max="5" step="0.05" value="0.8"></div>
+      <div><label for="p-topk">Top-k</label><input id="p-topk" type="number" min="1" placeholder="off" value="20"></div>
+      <div><label for="p-topp">Top-p</label><input id="p-topp" type="number" min="0.01" max="1" step="0.01" placeholder="off"></div>
+      <div><label for="p-beam">Beam width</label><input id="p-beam" type="number" min="1" max="5" value="3"></div>
+      <div><label for="p-seed">Seed</label><input id="p-seed" type="number" min="0" placeholder="random"></div>
+    </div>
+    <button class="primary" id="p-run">Generate</button>
+    <div id="p-msgs"></div>
+    <div class="out" id="p-out" style="margin-top:10px"></div>
+    <div class="chips" id="p-stats"></div>
+  </section>
+
+  <!-- Chat -->
+  <section class="panel" id="tab-chat" hidden>
+    <h2>Chat with memory and calculator</h2>
+    <p class="hint">Type <code>/calc (2+3)*4</code> to use the safe calculator directly (no model call). Memory persists in this browser session; the model behind it can be switched in the header.</p>
+    <div class="chat-log" id="c-log"></div>
+    <div class="row">
+      <div class="grow"><label for="c-input">Message</label><input id="c-input" type="text" maxlength="500" placeholder="Hello there"></div>
+      <button class="primary" id="c-send">Send</button>
+      <button class="ghost" id="c-reset">New conversation</button>
+    </div>
+    <div id="c-msgs"></div>
+    <div class="chips" id="c-stats"></div>
+    <details><summary>Show the last prompt sent to the model</summary><div class="out" id="c-prompt"></div></details>
+  </section>
+
+  <!-- RAG -->
+  <section class="panel" id="tab-rag" hidden>
+    <h2>Retrieval-augmented answer vs closed-book</h2>
+    <p class="hint">Retrieves chunks from local documents by word overlap and shows the exact prompt. The default context budget is the v1 behaviour (half the context length in characters), which is why v1 RAG could not work — raise it to see the effect.</p>
+    <div class="row">
+      <div class="grow"><label for="r-q">Question</label><input id="r-q" type="text" maxlength="300" value="Which planet is red?"></div>
+      <div style="width:110px"><label for="r-k">Top-k chunks</label><input id="r-k" type="number" min="1" max="5" value="3"></div>
+      <div style="width:150px"><label for="r-chars">Context chars</label><input id="r-chars" type="number" min="16" max="4000" placeholder="auto"></div>
+      <div style="width:130px"><label for="r-max">Max new tokens</label><input id="r-max" type="number" min="1" max="150" value="60"></div>
+    </div>
+    <label>Documents</label>
+    <div class="chips" id="r-docs"></div>
+    <button class="primary" id="r-run">Ask</button>
+    <div id="r-msgs"></div>
+    <div id="r-result" hidden>
+      <h3>Sources retrieved</h3><div id="r-sources"></div>
+      <div class="cols" style="margin-top:12px">
+        <div><h3>With retrieved context</h3><div class="out" id="r-with"></div><div class="chips" id="r-with-stats"></div>
+          <details><summary>Exact prompt</summary><div class="out" id="r-with-prompt"></div></details></div>
+        <div><h3>Closed-book (no context)</h3><div class="out" id="r-closed"></div><div class="chips" id="r-closed-stats"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Attention -->
+  <section class="panel" id="tab-attn" hidden>
+    <h2>Attention maps</h2>
+    <p class="hint">Rows are queries, columns are keys; the maps are lower-triangular because the model is causal. Click a thumbnail to enlarge a head. At most the last 64 tokens are shown.</p>
+    <div class="row">
+      <div class="grow"><label for="a-prompt">Prompt</label><input id="a-prompt" type="text" value="ROMEO: What light through yonder"></div>
+      <button class="primary" id="a-run">Show attention</button>
+    </div>
+    <div id="a-msgs"></div>
+    <div id="a-body" hidden>
+      <div class="row">
+        <div style="width:110px"><label for="a-layer">Layer</label><select id="a-layer"></select></div>
+        <div style="width:110px"><label for="a-head">Head</label><select id="a-head"></select></div>
+        <div class="hint" id="a-hover">Hover a cell for its value.</div>
+      </div>
+      <canvas id="a-main" width="520" height="520"></canvas>
+      <h3>Tokens</h3><div id="a-tokens"></div>
+      <h3>All heads</h3><div class="thumbs" id="a-thumbs"></div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="panel" id="tab-results" hidden>
+    <h2>Results</h2>
+    <div id="res-msgs"></div>
+    <h3>v1: character vs BPE (single seed, 500 steps)</h3>
+    <div id="res-table"></div>
+    <h3>Figures</h3><div class="figs" id="res-figs"></div>
+    <h3>v2</h3><div id="res-v2"></div>
+  </section>
+</main>
+
+<script>
+"use strict";
+const $ = (selector, root = document) => root.querySelector(selector);
+
+function el(tag, props = {}, ...kids) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(props)) {
+    if (key === "class") node.className = value;
+    else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+    else if (value !== false && value !== null && value !== undefined) node.setAttribute(key, value);
+  }
+  for (const kid of kids.flat()) {
+    if (kid === null || kid === undefined) continue;
+    node.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  }
+  return node;
+}
+
+async function api(path, body) {
+  const options = body === undefined ? {} :
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  const response = await fetch(path, options);
+  let data;
+  try { data = await response.json(); } catch { data = { error: "unreadable server response" }; }
+  if (!response.ok) throw new Error(data.error || ("HTTP " + response.status));
+  return data;
+}
+
+const show = (container, kind, text) => { container.replaceChildren(el("div", { class: kind }, text)); };
+const clear = (container) => container.replaceChildren();
+const optNumber = (id, integer) => {
+  const raw = $(id).value.trim();
+  if (raw === "") return undefined;
+  const value = Number(raw);
+  return Number.isFinite(value) ? (integer ? Math.trunc(value) : value) : undefined;
+};
+const chips = (container, items) => container.replaceChildren(...items.filter(Boolean).map((t) => el("span", { class: "chip" }, t)));
+const visible = (text) => text.replace(/\n/g, "⏎").replace(/ /g, "·");
+
+// ---------------------------------------------------------------- models
+let models = [];
+const modelSelect = $("#model");
+const currentModel = () => modelSelect.value;
+
+async function loadModels() {
+  try {
+    const data = await api("/api/models");
+    models = data.models;
+    modelSelect.replaceChildren();
+    if (!models.length) {
+      modelSelect.append(el("option", { value: "" }, "No checkpoints found under artifacts/"));
+      showGlobal("No trained checkpoints were found. Train one first (see the README), then reload.");
+      return;
+    }
+    for (const m of models) {
+      const label = m.error ? `${m.id} (failed to load)` :
+        `${m.id} · ${m.tokenizer} · ${m.parameters.toLocaleString()} params · ctx ${m.context_length}`;
+      modelSelect.append(el("option", { value: m.id, disabled: m.error ? "" : false }, label));
+    }
+    const preferred = models.find((m) => !m.error && m.id.endsWith("bpe")) || models.find((m) => !m.error);
+    if (preferred) modelSelect.value = preferred.id;
+  } catch (error) { showGlobal("Could not list models: " + error.message); }
+}
+function showGlobal(text) { const box = $("#global-error"); box.textContent = text; box.hidden = false; }
+
+// ------------------------------------------------------------------ tabs
+const tabs = document.querySelectorAll("nav button");
+const loaded = new Set();
+function selectTab(name) {
+  tabs.forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
+  document.querySelectorAll("section.panel").forEach((s) => { s.hidden = s.id !== "tab-" + name; });
+  if (name === "results" && !loaded.has("results")) { loaded.add("results"); loadResults(); }
+  if (name === "rag" && !loaded.has("rag")) { loaded.add("rag"); loadDocuments(); }
+}
+tabs.forEach((b) => b.addEventListener("click", () => selectTab(b.dataset.tab)));
+
+function notices(container, data) {
+  const items = [];
+  if (data.unknown_characters && data.unknown_characters.length)
+    items.push(el("div", { class: "notice" }, "Characters outside this model's vocabulary are read as <unk>: " +
+      data.unknown_characters.map((c) => JSON.stringify(c)).join(" ")));
+  if (data.prompt_cropped) items.push(el("div", { class: "notice" },
+    `The prompt is longer than the model's ${data.context_length}-token context, so its beginning was cropped.`));
+  container.replaceChildren(...items);
+}
+
+// ------------------------------------------------------------ playground
+$("#p-run").addEventListener("click", async () => {
+  const button = $("#p-run"), msgs = $("#p-msgs");
+  button.disabled = true; clear(msgs);
+  const mode = $("#p-mode").value;
+  const body = { model: currentModel(), prompt: $("#p-prompt").value, mode,
+    max_new_tokens: optNumber("#p-max", true), seed: optNumber("#p-seed", true) };
+  if (mode === "sample") {
+    body.temperature = optNumber("#p-temp"); body.top_k = optNumber("#p-topk", true); body.top_p = optNumber("#p-topp");
+  }
+  if (mode === "beam") body.beam_width = optNumber("#p-beam", true);
+  try {
+    const data = await api("/api/generate", body);
+    $("#p-out").replaceChildren(el("span", { class: "prompt" }, $("#p-prompt").value), data.text);
+    notices(msgs, data);
+    chips($("#p-stats"), [`${data.prompt_tokens} prompt tokens`, `${data.new_tokens} new tokens`,
+      `${data.seconds}s`, data.tokens_per_second ? `${data.tokens_per_second} tok/s` : null,
+      `3-gram repetition ${data.repetition_3gram}`, data.prompt_unknown_tokens ? `${data.prompt_unknown_tokens} <unk> in prompt` : null]);
+  } catch (error) { show(msgs, "error", error.message); }
+  button.disabled = false;
+});
+
+// ------------------------------------------------------------------ chat
+let session = (window.crypto && crypto.randomUUID) ? crypto.randomUUID().replace(/-/g, "") : String(Math.random()).slice(2) + Date.now();
+function addMsg(role, text) {
+  const log = $("#c-log");
+  log.append(el("div", { class: "msg " + role }, text));
+  log.scrollTop = log.scrollHeight;
+}
+async function sendChat() {
+  const input = $("#c-input"), text = input.value.trim();
+  if (!text) return;
+  const button = $("#c-send"); button.disabled = true; clear($("#c-msgs"));
+  addMsg("user", text); input.value = "";
+  try {
+    const data = await api("/api/chat", { model: currentModel(), session, message: text });
+    for (const call of data.tool_calls) addMsg("tool", call.error ? `calculator: ${call.expression} → error: ${call.error}` : `calculator: ${call.expression} = ${call.result}`);
+    addMsg("assistant", data.reply || "(empty reply)");
+    chips($("#c-stats"), [`${data.memory_turns} turns in memory`, data.prompt_tokens ? `${data.prompt_tokens} prompt tokens` : null, data.tool_limit_reached ? "tool-call limit reached" : null]);
+    notices($("#c-msgs"), data);
+    $("#c-prompt").textContent = data.prompt || "(no model call — handled by the calculator)";
+  } catch (error) { show($("#c-msgs"), "error", error.message); }
+  button.disabled = false; input.focus();
+}
+$("#c-send").addEventListener("click", sendChat);
+$("#c-input").addEventListener("keydown", (e) => { if (e.key === "Enter") sendChat(); });
+$("#c-reset").addEventListener("click", async () => {
+  try { await api("/api/chat/reset", { session }); } catch (error) { show($("#c-msgs"), "error", error.message); return; }
+  $("#c-log").replaceChildren(); clear($("#c-stats")); $("#c-prompt").textContent = "";
+});
+
+// ------------------------------------------------------------------- RAG
+async function loadDocuments() {
+  try {
+    const data = await api("/api/documents");
+    const box = $("#r-docs"); box.replaceChildren();
+    for (const name of data.documents) {
+      const id = "doc-" + name;
+      box.append(el("label", { for: id, class: "chip", style: "cursor:pointer" },
+        el("input", { type: "checkbox", id, value: name, checked: name === "knowledge.txt" ? "" : false, style: "width:auto;margin-right:6px" }), name));
+    }
+  } catch (error) { show($("#r-msgs"), "error", error.message); }
+}
+$("#r-run").addEventListener("click", async () => {
+  const button = $("#r-run"), msgs = $("#r-msgs"); button.disabled = true; clear(msgs);
+  const documents = [...document.querySelectorAll("#r-docs input:checked")].map((i) => i.value);
+  try {
+    const data = await api("/api/rag", { model: currentModel(), question: $("#r-q").value, documents,
+      top_k: optNumber("#r-k", true), context_chars: optNumber("#r-chars", true), max_new_tokens: optNumber("#r-max", true) });
+    $("#r-result").hidden = false;
+    $("#r-sources").replaceChildren(...data.sources.map((s) => el("div", { class: "out", style: "margin-bottom:6px" },
+      el("strong", {}, `${s.source} #${s.chunk} · score ${s.score}\n`), s.text)));
+    $("#r-with").textContent = data.with_context.answer;
+    $("#r-with-prompt").textContent = data.with_context.prompt;
+    $("#r-closed").textContent = data.closed_book.answer;
+    chips($("#r-with-stats"), [`${data.with_context.prompt_tokens} prompt tokens`, `context budget ${data.context_chars} chars`]);
+    chips($("#r-closed-stats"), [`${data.closed_book.prompt_tokens} prompt tokens`]);
+    const items = [];
+    if (data.with_context.prompt_cropped) items.push(el("div", { class: "notice" },
+      `The RAG prompt (${data.with_context.prompt_tokens} tokens) exceeds the ${data.context_length}-token context, so its beginning — including the instruction — is cropped before the model sees it.`));
+    if (data.unknown_characters.length) items.push(el("div", { class: "notice" }, "Characters outside the vocabulary are read as <unk>: " + data.unknown_characters.map((c) => JSON.stringify(c)).join(" ")));
+    msgs.replaceChildren(...items);
+  } catch (error) { show(msgs, "error", error.message); }
+  button.disabled = false;
+});
+
+// ------------------------------------------------------------- attention
+const STOPS = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
+function colour(value) {
+  const t = Math.min(1, Math.max(0, value)) * (STOPS.length - 1), i = Math.min(STOPS.length - 2, Math.floor(t)), f = t - i;
+  return STOPS[i].map((c, k) => Math.round(c + (STOPS[i + 1][k] - c) * f));
+}
+function drawMap(canvas, matrix) {
+  const n = matrix.length, cell = canvas.width / n, context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const [R, G, B] = colour(matrix[r][c]); context.fillStyle = `rgb(${R},${G},${B})`;
+    context.fillRect(c * cell, r * cell, Math.ceil(cell), Math.ceil(cell));
+  }
+}
+let attention = null;
+function redrawAttention() {
+  const layer = Number($("#a-layer").value), head = Number($("#a-head").value);
+  drawMap($("#a-main"), attention.weights[layer][head]);
+  document.querySelectorAll("#a-thumbs canvas").forEach((c) => c.classList.toggle("sel", Number(c.dataset.l) === layer && Number(c.dataset.h) === head));
+}
+$("#a-run").addEventListener("click", async () => {
+  const button = $("#a-run"), msgs = $("#a-msgs"); button.disabled = true; clear(msgs);
+  try {
+    attention = await api("/api/attention", { model: currentModel(), prompt: $("#a-prompt").value });
+    $("#a-body").hidden = false;
+    const layerBox = $("#a-layer"), headBox = $("#a-head");
+    layerBox.replaceChildren(...Array.from({ length: attention.layers }, (_, i) => el("option", { value: i }, "L" + i)));
+    headBox.replaceChildren(...Array.from({ length: attention.heads }, (_, i) => el("option", { value: i }, "H" + i)));
+    $("#a-tokens").replaceChildren(...attention.tokens.map((t, i) => el("span", { class: "tok", title: "position " + i }, visible(t))));
+    const thumbs = $("#a-thumbs"); thumbs.replaceChildren();
+    for (let l = 0; l < attention.layers; l++) for (let h = 0; h < attention.heads; h++) {
+      const canvas = el("canvas", { width: 110, height: 110, "data-l": l, "data-h": h, title: `L${l} H${h}`,
+        onclick: () => { layerBox.value = l; headBox.value = h; redrawAttention(); } });
+      drawMap(canvas, attention.weights[l][h]); thumbs.append(canvas);
+    }
+    redrawAttention();
+    if (attention.cropped) msgs.append(el("div", { class: "notice" }, "Only the last 64 tokens of the prompt are shown."));
+  } catch (error) { show(msgs, "error", error.message); }
+  button.disabled = false;
+});
+$("#a-layer").addEventListener("change", () => attention && redrawAttention());
+$("#a-head").addEventListener("change", () => attention && redrawAttention());
+$("#a-main").addEventListener("mousemove", (event) => {
+  if (!attention) return;
+  const canvas = event.target, rect = canvas.getBoundingClientRect(), n = attention.tokens.length;
+  const col = Math.floor(((event.clientX - rect.left) / rect.width) * n), row = Math.floor(((event.clientY - rect.top) / rect.height) * n);
+  if (row < 0 || col < 0 || row >= n || col >= n) return;
+  const value = attention.weights[Number($("#a-layer").value)][Number($("#a-head").value)][row][col];
+  $("#a-hover").textContent = `query ${row} "${visible(attention.tokens[row])}" → key ${col} "${visible(attention.tokens[col])}": ${value}`;
+});
+
+// --------------------------------------------------------------- results
+function fmt(value, digits) { return typeof value === "number" ? (digits === undefined ? value.toLocaleString() : value.toFixed(digits)) : "—"; }
+async function loadResults() {
+  const msgs = $("#res-msgs");
+  try {
+    const data = await api("/api/results");
+    const rows = data.v1_comparison;
+    if (!rows.length) $("#res-table").replaceChildren(el("p", { class: "hint" }, "artifacts/tick-204/comparison.json not found."));
+    else {
+      const columns = [["Tokenizer", "tokenizer"], ["Vocab", "vocabulary_size"], ["Params", "parameters"], ["Chars/token", "characters_per_token", 3],
+        ["Val bits/char", "validation_bits_per_character", 4], ["Perplexity/char", "validation_perplexity_per_character", 2], ["Greedy repetition", "greedy_repetition", 3]];
+      $("#res-table").replaceChildren(el("table", {},
+        el("thead", {}, el("tr", {}, columns.map(([label]) => el("th", {}, label)))),
+        el("tbody", {}, rows.map((row) => el("tr", {}, columns.map(([, key, digits]) => el("td", {}, typeof row[key] === "string" ? row[key] : fmt(row[key], digits))))))));
+    }
+    $("#res-figs").replaceChildren(...data.figures.map((name) => el("img", { src: "/figures/" + name.split("/").map(encodeURIComponent).join("/"), alt: name, loading: "lazy" })));
+    const v2 = $("#res-v2");
+    if (data.v2_summary) v2.replaceChildren(el("div", { class: "out" }, JSON.stringify(data.v2_summary, null, 2)));
+    else v2.replaceChildren(el("p", { class: "hint" }, "No v2 results yet (planned: tokenizer comparison at scale, held-out instruction following, grounded RAG, model-initiated tool use). They will appear here when artifacts/v2/summary.json exists."));
+  } catch (error) { show(msgs, "error", error.message); }
+}
+
+loadModels();
+</script>
+</body>
+</html>
