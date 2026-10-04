@@ -9,10 +9,37 @@ try:
 except ModuleNotFoundError:
     torch = None
 
-from src.tokenizer import BPETokenizer, CharacterTokenizer
+from src.tokenizer import BPETokenizer, CharacterTokenizer, tokenizer_from_checkpoint
 
 
 class TokenizerTests(unittest.TestCase):
+    def test_bpe_encoding_replays_merges_in_rank_order(self) -> None:
+        # Rank 0 merges (b, c) first, so "abc" must become ["a", "bc"], not ["ab", "c"].
+        tokenizer = BPETokenizer(["<unk>", "a", "b", "c", "bc", "ab"], [("b", "c"), ("a", "b")])
+        self.assertEqual(tokenizer.encode("abc"), [1, 4])
+        self.assertEqual(tokenizer.decode(tokenizer.encode("abc")), "abc")
+
+    def test_bpe_encoding_matches_training_segmentation(self) -> None:
+        text = "banana bandana banana\n"
+        tokenizer = BPETokenizer.train(text, max_merges=6)
+        words = [list(text)]
+        for pair in tokenizer.merges:
+            words = [BPETokenizer._merge_word(word, pair, "".join(pair)) for word in words]
+        self.assertEqual(tokenizer.encode(text), [tokenizer.token_to_id[piece] for piece in words[0]])
+
+    def test_tokenizer_from_checkpoint_supports_bpe_character_and_legacy(self) -> None:
+        bpe = BPETokenizer.train("banana bandana", max_merges=4)
+        payload = {"type": "bpe", "vocabulary": list(bpe.vocabulary), "merges": [list(pair) for pair in bpe.merges]}
+        restored = tokenizer_from_checkpoint({"tokenizer": payload, "vocabulary": bpe.vocabulary})
+        self.assertIsInstance(restored, BPETokenizer)
+        self.assertEqual(restored.encode("banana"), bpe.encode("banana"))
+        self.assertEqual(restored.decode(restored.encode("banana"), skip_special_tokens=True), "banana")
+        char = CharacterTokenizer.from_text("abc")
+        self.assertIsInstance(tokenizer_from_checkpoint({"tokenizer": {"type": "character", "vocabulary": list(char.vocabulary)}}), CharacterTokenizer)
+        self.assertIsInstance(tokenizer_from_checkpoint({"vocabulary": char.vocabulary}), CharacterTokenizer)
+        with self.assertRaises(ValueError):
+            tokenizer_from_checkpoint({"tokenizer": {"type": "unknown"}})
+
     def test_bpe_round_trip_and_serialization(self) -> None:
         text = "banana bandana\n"
         tokenizer = BPETokenizer.train(text, max_merges=8)

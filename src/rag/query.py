@@ -8,7 +8,7 @@ import torch
 
 from src.generation import greedy_decode
 from src.model import GPTConfig, MiniGPT
-from src.tokenizer import CharacterTokenizer
+from src.tokenizer import tokenizer_from_checkpoint
 
 from .retriever import TextRetriever
 
@@ -23,7 +23,7 @@ def main() -> None:
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
     checkpoint = torch.load(args.checkpoint, map_location=args.device, weights_only=False)
-    tokenizer = CharacterTokenizer(checkpoint["vocabulary"])
+    tokenizer = tokenizer_from_checkpoint(checkpoint)
     model = MiniGPT(GPTConfig(**checkpoint["model_config"])).to(args.device)
     model.load_state_dict(checkpoint["model_state"])
     model.eval()
