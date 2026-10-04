@@ -9,17 +9,17 @@ from pathlib import Path
 import torch
 
 from src.model import GPTConfig, MiniGPT
-from src.tokenizer import CharacterTokenizer
+from src.tokenizer import BPETokenizer, CharacterTokenizer, tokenizer_from_checkpoint
 
 from .finetune import LoRAConfig, finetune_lora
 from .instructions import InstructionExample
 
 
-def _load_checkpoint(path: str, device: str) -> tuple[MiniGPT, CharacterTokenizer]:
+def _load_checkpoint(path: str, device: str) -> tuple[MiniGPT, CharacterTokenizer | BPETokenizer]:
     checkpoint = torch.load(path, map_location=device, weights_only=False)
     model = MiniGPT(GPTConfig(**checkpoint["model_config"])).to(device)
     model.load_state_dict(checkpoint["model_state"])
-    return model, CharacterTokenizer(checkpoint["vocabulary"])
+    return model, tokenizer_from_checkpoint(checkpoint)
 
 
 def main() -> None:

@@ -67,27 +67,13 @@ class BPETokenizer:
         return result
 
     def _tokens(self, text: str) -> list[str]:
-        pieces: list[str] = []
-        for character in text:
-            if character.isspace():
-                pieces.append(character)
-            else:
-                pieces.append(character)
-        changed = True
-        while changed:
-            changed = False
-            result: list[str] = []
-            index = 0
-            while index < len(pieces):
-                pair = tuple(pieces[index : index + 2])
-                if len(pair) == 2 and pair in self._merge_ranks:
-                    result.append(pair[0] + pair[1])
-                    index += 2
-                    changed = True
-                else:
-                    result.append(pieces[index])
-                    index += 1
-            pieces = result
+        # Replay merges in learned rank order, exactly as `train` applied them,
+        # so encoding the training corpus reproduces the trained segmentation.
+        pieces = list(text)
+        for left, right in self.merges:
+            if len(pieces) < 2:
+                break
+            pieces = self._merge_word(pieces, (left, right), left + right)
         return pieces
 
     def encode(self, text: str) -> list[int]:
@@ -95,11 +81,13 @@ class BPETokenizer:
             raise TypeError("text must be a string")
         return [self.token_to_id.get(piece, 0) for piece in self._tokens(text)]
 
-    def decode(self, ids: list[int]) -> str:
+    def decode(self, ids: list[int], *, skip_special_tokens: bool = False) -> str:
         result = []
         for index in ids:
-            if not isinstance(index, int) or index < 0 or index >= self.vocabulary_size:
+            if isinstance(index, bool) or not isinstance(index, int) or index < 0 or index >= self.vocabulary_size:
                 raise ValueError("token ID is outside the vocabulary range")
+            if skip_special_tokens and index == 0:
+                continue
             result.append(self.vocabulary[index])
         return "".join(result)
 

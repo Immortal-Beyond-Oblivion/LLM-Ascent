@@ -13,7 +13,7 @@ import torch
 
 from src.data import TextDataset, load_text
 from src.model import GPTConfig, MiniGPT
-from src.tokenizer import CharacterTokenizer
+from src.tokenizer import BPETokenizer, CharacterTokenizer
 
 
 @dataclass
@@ -33,6 +33,9 @@ class TrainConfig:
     device: str = "auto"
     normalization: str = "layernorm"
     optimized_attention: bool = True
+    tokenizer: str = "character"
+    bpe_merges: int = 100
+    resume_from: str | None = None
 
 
 def resolve_device(requested: str) -> str:
@@ -57,7 +60,25 @@ def evaluate_loss(model: MiniGPT, dataset: TextDataset, config: TrainConfig, *, 
     return sum(losses) / len(losses)
 
 
-def train(config: TrainConfig) -> tuple[MiniGPT, CharacterTokenizer, list[dict[str, float]]]:
+def _build_tokenizer(text: str, config: TrainConfig) -> CharacterTokenizer | BPETokenizer:
+    if config.tokenizer == "character":
+        return CharacterTokenizer.from_text(text)
+    if config.tokenizer == "bpe":
+        return BPETokenizer.train(text, max_merges=config.bpe_merges)
+    raise ValueError("tokenizer must be 'character' or 'bpe'")
+
+
+def _tokenizer_payload(tokenizer: CharacterTokenizer | BPETokenizer) -> dict[str, object]:
+    if isinstance(tokenizer, CharacterTokenizer):
+        return {"type": "character", "vocabulary": list(tokenizer.vocabulary)}
+    return {
+        "type": "bpe",
+        "vocabulary": list(tokenizer.vocabulary),
+        "merges": [list(pair) for pair in tokenizer.merges],
+    }
+
+
+def train(config: TrainConfig) -> tuple[MiniGPT, CharacterTokenizer | BPETokenizer, list[dict[str, float]]]:
     """Train a small causal LM and write config, metrics, and checkpoint artifacts."""
     if config.steps <= 0 or config.eval_interval <= 0:
         raise ValueError("steps and eval_interval must be positive")
@@ -65,20 +86,29 @@ def train(config: TrainConfig) -> tuple[MiniGPT, CharacterTokenizer, list[dict[s
     torch.manual_seed(config.seed)
     device = resolve_device(config.device)
     text = load_text(config.dataset_path)
-    tokenizer = CharacterTokenizer.from_text(text)
+    tokenizer = _build_tokenizer(text, config)
     dataset = TextDataset.from_text(text, tokenizer)
-    model = MiniGPT(GPTConfig(
-        vocabulary_size=tokenizer.vocabulary_size,
-        context_length=config.context_length,
-        embedding_dim=config.embedding_dim,
-        num_heads=config.num_heads,
-        num_layers=config.num_layers,
-        normalization=config.normalization,
-        optimized_attention=config.optimized_attention,
-    )).to(device)
+    model_config = GPTConfig(
+        vocabulary_size=tokenizer.vocabulary_size, context_length=config.context_length,
+        embedding_dim=config.embedding_dim, num_heads=config.num_heads, num_layers=config.num_layers,
+        normalization=config.normalization, optimized_attention=config.optimized_attention,
+    )
+    model = MiniGPT(model_config).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
     metrics: list[dict[str, float]] = []
-    for step in range(1, config.steps + 1):
+    start_step = 0
+    if config.resume_from:
+        checkpoint = torch.load(config.resume_from, map_location=device, weights_only=False)
+        if checkpoint["model_config"] != model_config.to_dict():
+            raise ValueError("resume checkpoint model configuration does not match the requested configuration")
+        if checkpoint.get("tokenizer") != _tokenizer_payload(tokenizer):
+            raise ValueError("resume checkpoint tokenizer does not match the requested configuration")
+        model.load_state_dict(checkpoint["model_state"])
+        optimizer.load_state_dict(checkpoint["optimizer_state"])
+        start_step = int(checkpoint["completed_steps"])
+        if config.steps <= start_step:
+            raise ValueError("steps must exceed the checkpoint's completed_steps")
+    for step in range(start_step + 1, config.steps + 1):
         inputs, targets = dataset.batch("train", batch_size=config.batch_size, context_length=config.context_length, device=device)
         _, loss = model(inputs, targets)
         assert loss is not None
@@ -91,7 +121,13 @@ def train(config: TrainConfig) -> tuple[MiniGPT, CharacterTokenizer, list[dict[s
             metrics.append({"step": float(step), "train_loss": train_loss, "validation_loss": validation_loss, "validation_perplexity": math.exp(validation_loss)})
     output = Path(config.output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    torch.save({"model_config": model.config.to_dict(), "model_state": model.state_dict(), "vocabulary": tokenizer.vocabulary}, output / "checkpoint.pt")
+    torch.save({
+        "model_config": model.config.to_dict(), "model_state": model.state_dict(),
+        "optimizer_state": optimizer.state_dict(), "completed_steps": config.steps,
+        "tokenizer": _tokenizer_payload(tokenizer),
+        # Retained for backward compatibility with the Phase 3 smoke CLIs.
+        "vocabulary": tokenizer.vocabulary,
+    }, output / "checkpoint.pt")
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     (output / "config.json").write_text(json.dumps(asdict(config), indent=2), encoding="utf-8")
     return model, tokenizer, metrics
@@ -102,11 +138,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", help="Optional JSON or YAML configuration file")
     for name, field in TrainConfig.__dataclass_fields__.items():
         argument = "--" + name.replace("_", "-")
-        field_type = TrainConfig.__annotations__[name]
-        if field_type is bool:
+        if isinstance(field.default, bool):
             parser.add_argument(argument, dest=name, action=argparse.BooleanOptionalAction, default=None)
         else:
-            parser.add_argument(argument, dest=name, type=field_type, default=None)
+            argument_type = str if name == "dataset_path" or field.default is None else type(field.default)
+            parser.add_argument(argument, dest=name, type=argument_type, default=None)
     return parser
 
 
