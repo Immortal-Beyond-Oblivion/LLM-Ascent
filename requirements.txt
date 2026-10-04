@@ -1,1 +1,4 @@
 torch>=2.2
+# Needed for TICK-403 figures (src.eval.figures); core training/eval does not need them
+numpy
+matplotlib
