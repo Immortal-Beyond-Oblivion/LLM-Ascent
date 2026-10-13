@@ -1,0 +1,194 @@
+[
+  {
+    "tokenizer": "character",
+    "vocabulary_size": 66,
+    "merges": 0,
+    "parameters": 108416,
+    "total_tokens": 1115394,
+    "validation_tokens": 111540,
+    "characters_per_token": 1.0,
+    "train_seconds": 4.968990041001234,
+    "final_step": 500.0,
+    "train_loss": 2.3960808157920837,
+    "validation_loss": 2.393062698841095,
+    "validation_perplexity_per_token": 10.946969925552642,
+    "validation_bits_per_character": 3.4524596881544065,
+    "validation_perplexity_per_character": 10.946969925552642,
+    "loss_history": [
+      {
+        "step": 1.0,
+        "train_loss": 4.040673232078552,
+        "validation_loss": 4.04143922328949,
+        "validation_perplexity": 56.90818748374721
+      },
+      {
+        "step": 100.0,
+        "train_loss": 2.6556256771087647,
+        "validation_loss": 2.652160036563873,
+        "validation_perplexity": 14.184644929822907
+      },
+      {
+        "step": 200.0,
+        "train_loss": 2.5377153873443605,
+        "validation_loss": 2.5455771803855898,
+        "validation_perplexity": 12.75058535039598
+      },
+      {
+        "step": 300.0,
+        "train_loss": 2.489070737361908,
+        "validation_loss": 2.485312747955322,
+        "validation_perplexity": 12.004874167636148
+      },
+      {
+        "step": 400.0,
+        "train_loss": 2.450684916973114,
+        "validation_loss": 2.443834972381592,
+        "validation_perplexity": 11.517124012208923
+      },
+      {
+        "step": 500.0,
+        "train_loss": 2.3960808157920837,
+        "validation_loss": 2.393062698841095,
+        "validation_perplexity": 10.946969925552642
+      }
+    ],
+    "samples": [
+      {
+        "mode": "greedy",
+        "text": "\nThe the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the",
+        "repetition_3gram": 0.9696969696969697,
+        "generated_tokens": 200,
+        "generated_characters": 200,
+        "seconds": 0.058325375022832304,
+        "tokens_per_second": 3429.0392461549905,
+        "characters_per_second": 3429.0392461549905
+      },
+      {
+        "mode": "top-k sampling (k=20, T=0.8)",
+        "text": "\nI maknd ing s cheaceind ak mourd thy heal y, whell hathe thigre hed t\nWhin on swhas sthe llr thatofange rimy murentr h:\nThisis be te is thalle ranothat mir our go mmuspicesss it ind,\nI cond s thabeou",
+        "repetition_3gram": 0.1262626262626263,
+        "generated_tokens": 200,
+        "generated_characters": 200,
+        "seconds": 0.06360474997200072,
+        "tokens_per_second": 3144.4192468021884,
+        "characters_per_second": 3144.4192468021884
+      }
+    ],
+    "config": {
+      "dataset_path": "data/tinyshakespeare.txt",
+      "output_dir": "artifacts/tick-204/character",
+      "steps": 500,
+      "batch_size": 16,
+      "context_length": 64,
+      "embedding_dim": 64,
+      "num_heads": 4,
+      "num_layers": 2,
+      "learning_rate": 0.001,
+      "eval_interval": 100,
+      "eval_batches": 20,
+      "seed": 42,
+      "device": "cpu",
+      "normalization": "layernorm",
+      "optimized_attention": true,
+      "tokenizer": "character",
+      "bpe_merges": 100,
+      "resume_from": null
+    }
+  },
+  {
+    "tokenizer": "bpe",
+    "vocabulary_size": 166,
+    "merges": 100,
+    "parameters": 114816,
+    "total_tokens": 688066,
+    "validation_tokens": 68807,
+    "characters_per_token": 1.6203729271731073,
+    "train_seconds": 28.157589333015494,
+    "final_step": 500.0,
+    "train_loss": 3.4268800139427187,
+    "validation_loss": 3.4757126569747925,
+    "validation_perplexity_per_token": 32.32085401304662,
+    "validation_bits_per_character": 3.0945921952180577,
+    "validation_perplexity_per_character": 8.542108336130447,
+    "loss_history": [
+      {
+        "step": 1.0,
+        "train_loss": 5.078559732437133,
+        "validation_loss": 5.082542133331299,
+        "validation_perplexity": 161.18328495197687
+      },
+      {
+        "step": 100.0,
+        "train_loss": 3.98295373916626,
+        "validation_loss": 3.9827096343040465,
+        "validation_perplexity": 53.66224246104558
+      },
+      {
+        "step": 200.0,
+        "train_loss": 3.6699622511863708,
+        "validation_loss": 3.6985148549079896,
+        "validation_perplexity": 40.387278828856495
+      },
+      {
+        "step": 300.0,
+        "train_loss": 3.5553799867630005,
+        "validation_loss": 3.588357853889465,
+        "validation_perplexity": 36.17462310809247
+      },
+      {
+        "step": 400.0,
+        "train_loss": 3.4867323875427245,
+        "validation_loss": 3.5247314453125,
+        "validation_perplexity": 33.94465639547556
+      },
+      {
+        "step": 500.0,
+        "train_loss": 3.4268800139427187,
+        "validation_loss": 3.4757126569747925,
+        "validation_perplexity": 32.32085401304662
+      }
+    ],
+    "samples": [
+      {
+        "mode": "greedy",
+        "text": " I:\nWhe with come with cell my should thould thould thould thould the\nTo should thould thould thould thould thou cema cema cema cema cema cema ce\nTo with cema cema cem cem cem cem cem cececem cem cem ",
+        "repetition_3gram": 0.7424242424242424,
+        "generated_tokens": 200,
+        "generated_characters": 266,
+        "seconds": 0.06412395799998194,
+        "tokens_per_second": 3118.9590636319786,
+        "characters_per_second": 4148.215554630532
+      },
+      {
+        "mode": "top-k sampling (k=20, T=0.8)",
+        "text": " fill com to so ain,\nSple doly bedon the gaf I amande\ncolfrownecexten her and geventol, wid be thencarting forcriswily ce se sso withould siondys fend,\nAnd spar of gartim till k sut's cker, to t\nThet ",
+        "repetition_3gram": 0.09090909090909094,
+        "generated_tokens": 200,
+        "generated_characters": 304,
+        "seconds": 0.07107483298750594,
+        "tokens_per_second": 2813.93556049801,
+        "characters_per_second": 4277.182051956976
+      }
+    ],
+    "config": {
+      "dataset_path": "data/tinyshakespeare.txt",
+      "output_dir": "artifacts/tick-204/bpe",
+      "steps": 500,
+      "batch_size": 16,
+      "context_length": 64,
+      "embedding_dim": 64,
+      "num_heads": 4,
+      "num_layers": 2,
+      "learning_rate": 0.001,
+      "eval_interval": 100,
+      "eval_batches": 20,
+      "seed": 42,
+      "device": "cpu",
+      "normalization": "layernorm",
+      "optimized_attention": true,
+      "tokenizer": "bpe",
+      "bpe_merges": 100,
+      "resume_from": null
+    }
+  }
+]

@@ -1,0 +1,143 @@
+{
+  "loss_curves": {
+    "file": "loss_curves.png",
+    "data": [
+      {
+        "tokenizer": "character",
+        "curve": [
+          [
+            1.0,
+            5.830564325493891
+          ],
+          [
+            100.0,
+            3.826258132394592
+          ],
+          [
+            200.0,
+            3.6724915743424007
+          ],
+          [
+            300.0,
+            3.5855483765332656
+          ],
+          [
+            400.0,
+            3.5257085954059395
+          ],
+          [
+            500.0,
+            3.4524596881544065
+          ]
+        ]
+      },
+      {
+        "tokenizer": "bpe",
+        "curve": [
+          [
+            1.0,
+            4.525228858062085
+          ],
+          [
+            100.0,
+            3.545995704047768
+          ],
+          [
+            200.0,
+            3.292963582857914
+          ],
+          [
+            300.0,
+            3.1948855685788913
+          ],
+          [
+            400.0,
+            3.1382359525650605
+          ],
+          [
+            500.0,
+            3.0945921952180577
+          ]
+        ]
+      }
+    ]
+  },
+  "perplexity_params": {
+    "file": "perplexity_params.png",
+    "data": [
+      {
+        "tokenizer": "character",
+        "perplexity_per_character": 10.946969925552642,
+        "parameters": 108416
+      },
+      {
+        "tokenizer": "bpe",
+        "perplexity_per_character": 8.542108336130447,
+        "parameters": 114816
+      }
+    ]
+  },
+  "latency": {
+    "file": "latency.png",
+    "data": [
+      {
+        "tokenizer": "character",
+        "latency": {
+          "greedy": {
+            "tokens_per_second": 3429.0392461549905,
+            "characters_per_second": 3429.0392461549905
+          },
+          "top-k": {
+            "tokens_per_second": 3144.4192468021884,
+            "characters_per_second": 3144.4192468021884
+          }
+        }
+      },
+      {
+        "tokenizer": "bpe",
+        "latency": {
+          "greedy": {
+            "tokens_per_second": 3118.9590636319786,
+            "characters_per_second": 4148.215554630532
+          },
+          "top-k": {
+            "tokens_per_second": 2813.93556049801,
+            "characters_per_second": 4277.182051956976
+          }
+        }
+      }
+    ]
+  },
+  "attention": {
+    "file": "attention.png",
+    "checkpoint": "artifacts/tick-204/bpe/checkpoint.pt",
+    "prompt": "ROMEO:\nWhat light through yonder window",
+    "layers": 2,
+    "heads": 4,
+    "tokens": [
+      "R",
+      "O",
+      "M",
+      "E",
+      "O:\n",
+      "W",
+      "hat ",
+      "li",
+      "gh",
+      "t ",
+      "th",
+      "r",
+      "ou",
+      "gh",
+      " ",
+      "y",
+      "on",
+      "d",
+      "er",
+      " w",
+      "in",
+      "d",
+      "ow"
+    ]
+  }
+}

@@ -65,6 +65,17 @@ def _pyplot():
     return plt
 
 
+def _save(figure, path: Path, dpi: int = 150) -> None:
+    """Save a figure as PNG and, alongside it, as a vector PDF.
+
+    The PDF is what the LaTeX report should include: it scales cleanly and keeps
+    text sharp. Writing both from one call keeps the two in sync so the report
+    can never reference a figure that was only ever produced in one format.
+    """
+    figure.savefig(path, dpi=dpi)
+    figure.savefig(path.with_suffix(".pdf"), format="pdf", dpi=dpi)
+
+
 def plot_loss_curves(results: list[dict], path: Path) -> list[dict]:
     plt = _pyplot()
     figure, axis = plt.subplots(figsize=(6, 4))
@@ -79,7 +90,7 @@ def plot_loss_curves(results: list[dict], path: Path) -> list[dict]:
     axis.grid(alpha=0.3)
     axis.legend()
     figure.tight_layout()
-    figure.savefig(path, dpi=150)
+    _save(figure, path)
     plt.close(figure)
     return data
 
@@ -101,7 +112,7 @@ def plot_perplexity_params(results: list[dict], path: Path) -> list[dict]:
             axis.text(index, value, f"{value:,.2f}" if value < 1000 else f"{value:,.0f}", ha="center", va="bottom", fontsize=8)
         axis.set_ylim(0, max(values) * 1.15)
     figure.tight_layout()
-    figure.savefig(path, dpi=150)
+    _save(figure, path)
     plt.close(figure)
     return [{"tokenizer": n, "perplexity_per_character": p, "parameters": q} for n, p, q in zip(names, perplexity, parameters)]
 
@@ -126,7 +137,7 @@ def plot_latency(results: list[dict], path: Path) -> list[dict]:
         axis.set_ylim(0, max((t.get(m, {}).get(key, 0.0) for t in tables.values() for m in modes), default=1.0) * 1.25)
         axis.legend(loc="upper right")
     figure.tight_layout()
-    figure.savefig(path, dpi=150)
+    _save(figure, path)
     plt.close(figure)
     return [{"tokenizer": name, "latency": table} for name, table in tables.items()]
 
@@ -145,7 +156,7 @@ def plot_attention(weights, tokens: list[str], path: Path) -> dict:
             axis.set_yticks([])
     figure.suptitle(f"Causal attention, {length} tokens (rows = query, columns = key)")
     figure.tight_layout()
-    figure.savefig(path, dpi=150)
+    _save(figure, path)
     plt.close(figure)
     return {"layers": layers, "heads": heads, "tokens": tokens}
 
@@ -167,7 +178,12 @@ def main() -> None:
     parser.add_argument("--comparison", default="artifacts/tick-204/comparison.json")
     parser.add_argument("--checkpoint", default="artifacts/tick-204/bpe/checkpoint.pt", help="Checkpoint used for the attention figure")
     parser.add_argument("--prompt", default=DEFAULT_PROMPT)
-    parser.add_argument("--output-dir", default="artifacts/tick-403")
+    parser.add_argument(
+        "--output-dir",
+        default="report/figures",
+        help="Where the PNG/PDF pairs go. The default is the tracked report bundle so "
+        "the LaTeX report stays self-contained (artifacts/ is git-ignored).",
+    )
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
 

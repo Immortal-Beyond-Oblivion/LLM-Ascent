@@ -1,5 +1,12 @@
 .venv/
-docs/*
 *.pyc
 __pycache__/
+.DS_Store
+
+# Course lecture PDFs: 165 MB of slides, not project source. Fetch from the
+# course share instead of versioning them.
+docs/lectures/
+
+# Checkpoints, optimizer state and raw run outputs. Every one of these is
+# reproducible from `results/` + the run scripts, so they stay local.
 artifacts/

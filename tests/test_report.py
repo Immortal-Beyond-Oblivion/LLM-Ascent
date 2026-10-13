@@ -8,7 +8,9 @@ from pathlib import Path
 
 REPORT = Path("report/final_report.tex")
 COMPARISON = Path("artifacts/tick-204/comparison.json")
-FIGURES = Path("artifacts/tick-403")
+# Figures are tracked in report/figures/ so the report stays self-contained and
+# compiles on Overleaf. artifacts/ is git-ignored and may legitimately be absent.
+FIGURES = Path("report/figures")
 
 
 class ReportStructureTests(unittest.TestCase):
@@ -48,12 +50,47 @@ class ReportStructureTests(unittest.TestCase):
                 self.assertLess(sum(widths), 15.0, spec)
 
     def test_referenced_figures_exist_when_generated(self) -> None:
+        # Every \includegraphics target must resolve from report/figures/ alone.
+        # This is the check that catches a figure existing only under the
+        # git-ignored artifacts/ tree, which is invisible to Overleaf and to a
+        # fresh clone.
         names = re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", self.text)
-        self.assertEqual(set(names), {"loss_curves.png", "perplexity_params.png", "latency.png", "attention.png"})
+        self.assertTrue(names, "report references no figures")
+        self.assertEqual(
+            set(names),
+            {"loss_curves.png", "perplexity_params.png", "latency.png", "attention.png"},
+        )
         if not FIGURES.exists():
-            self.skipTest("artifacts/tick-403 not present")
+            self.skipTest("report/figures not present")
         for name in names:
-            self.assertTrue((FIGURES / name).exists(), name)
+            self.assertTrue((FIGURES / name).exists(), f"{name} missing from report/figures/")
+
+    def test_graphicspath_stays_inside_the_report_bundle(self) -> None:
+        """`report/` must be self-contained so it compiles when unzipped on Overleaf.
+
+        The owner compiles the report on Overleaf, so a figure living only under
+        the git-ignored `artifacts/` tree would be invisible there. This is the
+        guard for that class of mistake.
+        """
+        paths = re.findall(r"\\graphicspath\{(.+?)\}", self.text)
+        self.assertTrue(paths, "report declares no \\graphicspath")
+        for spec in paths:
+            # The macro argument is itself brace-delimited: \graphicspath{{figures/}}
+            # so the captured text is "{figures/}" and the inner braces must come
+            # off before the entries are usable as paths.
+            for entry in spec.strip().strip("{}").split(","):
+                entry = entry.strip().strip("{}")
+                if not entry:
+                    continue
+                # Resolve against report/ and check it does not escape the bundle
+                # via `..`; a figure that only exists under the git-ignored
+                # artifacts/ tree would be invisible once unzipped on Overleaf.
+                resolved = (REPORT.parent / entry.rstrip("/")).resolve()
+                self.assertTrue(
+                    resolved.is_relative_to(REPORT.parent.resolve()),
+                    f"\\graphicspath entry {entry!r} escapes report/ and will not "
+                    f"exist on Overleaf",
+                )
 
     def test_headline_numbers_match_comparison_json(self) -> None:
         if not COMPARISON.exists():

@@ -1,0 +1,45 @@
+{
+  "checkpoint": "artifacts/tick-204/bpe/checkpoint.pt",
+  "turns": [
+    {
+      "user": "Hello there",
+      "assistant": "ce with cema cema cema cema cem cem cem cem ce\nI whill t, with cemain",
+      "tool_calls": [],
+      "tool_limit_reached": false
+    },
+    {
+      "user": "/calc (2+3)*4",
+      "assistant": "(2+3)*4 = 20",
+      "tool_calls": [
+        {
+          "expression": "(2+3)*4",
+          "result": "20"
+        }
+      ],
+      "tool_limit_reached": false
+    },
+    {
+      "user": "/calc 2**1000",
+      "assistant": "Calculator error: exponent magnitude is limited to 100",
+      "tool_calls": [
+        {
+          "expression": "2**1000",
+          "error": "exponent magnitude is limited to 100"
+        }
+      ],
+      "tool_limit_reached": false
+    },
+    {
+      "user": "/calc __import__('os')",
+      "assistant": "Calculator error: unsupported syntax: Call",
+      "tool_calls": [
+        {
+          "expression": "__import__('os')",
+          "error": "unsupported syntax: Call"
+        }
+      ],
+      "tool_limit_reached": false
+    }
+  ],
+  "memory_turns": 8
+}
