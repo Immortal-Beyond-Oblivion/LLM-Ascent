@@ -9,8 +9,11 @@
 \usepackage{float}
 \usepackage[hidelinks]{hyperref}
 
-% Figures are produced by `python -m src.eval.figures` (TICK-403).
-\graphicspath{{../artifacts/tick-403/}{artifacts/tick-403/}{figures/}}
+% Figures are tracked in report/figures/ (never under artifacts/, which is
+% git-ignored), so `report/` is self-contained: unzip it onto Overleaf and it
+% compiles. Regenerate with `python -m src.eval.figures`, which writes both the
+% PNG and the vector PDF for each figure.
+\graphicspath{{figures/}}
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}

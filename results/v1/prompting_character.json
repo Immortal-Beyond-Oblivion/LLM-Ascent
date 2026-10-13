@@ -1,0 +1,328 @@
+{
+  "checkpoint": "artifacts/tick-204/character/checkpoint.pt",
+  "tasks": "data/prompt_tasks.jsonl",
+  "shots": 2,
+  "max_new_tokens": 48,
+  "summary": {
+    "zero_shot": {
+      "n": 6,
+      "exact_accuracy": 0.0,
+      "contains_accuracy": 0.0,
+      "empty_extraction_fraction": 0.8333333333333334,
+      "truncated_fraction": 0.0,
+      "mean_prompt_tokens": 37.5,
+      "mean_unknown_prompt_tokens": 0.0
+    },
+    "few_shot": {
+      "n": 6,
+      "exact_accuracy": 0.0,
+      "contains_accuracy": 0.0,
+      "empty_extraction_fraction": 1.0,
+      "truncated_fraction": 1.0,
+      "mean_prompt_tokens": 104.5,
+      "mean_unknown_prompt_tokens": 0.0
+    },
+    "cot": {
+      "n": 6,
+      "exact_accuracy": 0.0,
+      "contains_accuracy": 0.0,
+      "empty_extraction_fraction": 1.0,
+      "truncated_fraction": 1.0,
+      "mean_prompt_tokens": 263.5,
+      "mean_unknown_prompt_tokens": 0.0
+    }
+  },
+  "items": [
+    {
+      "style": "zero_shot",
+      "question": "What is four plus three?",
+      "accepted": [
+        "seven"
+      ],
+      "prompt": "Q: What is four plus three?\nA:",
+      "prompt_tokens": 30,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\nThe the the the the the the the the the the ",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "What is nine minus five?",
+      "accepted": [
+        "four"
+      ],
+      "prompt": "Q: What is nine minus five?\nA:",
+      "prompt_tokens": 30,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\nThe the the the the the the the the the the ",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "What is three times three?",
+      "accepted": [
+        "nine"
+      ],
+      "prompt": "Q: What is three times three?\nA:",
+      "prompt_tokens": 32,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\nThe the the the the the the the the the the",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "Which planet is the red planet?",
+      "accepted": [
+        "mars"
+      ],
+      "prompt": "Q: Which planet is the red planet?\nA:",
+      "prompt_tokens": 37,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": "\nThe the the the the the the the the the the the",
+      "extracted": "The the the the the the the the the the the the",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "Which planet is the largest in the Solar System?",
+      "accepted": [
+        "jupiter"
+      ],
+      "prompt": "Q: Which planet is the largest in the Solar System?\nA:",
+      "prompt_tokens": 54,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\nThe the the the the the the the the the the t",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "How many sides does a triangle have?",
+      "accepted": [
+        "three",
+        "3"
+      ],
+      "prompt": "Q: How many sides does a triangle have?\nA:",
+      "prompt_tokens": 42,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\nThe the the the the the the the the the th",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "What is four plus three?",
+      "accepted": [
+        "seven"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: What is four plus three?\nA:",
+      "prompt_tokens": 97,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\nAnoure the the the the the the the the",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "What is nine minus five?",
+      "accepted": [
+        "four"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: What is nine minus five?\nA:",
+      "prompt_tokens": 97,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\nAnd the the the the the the the the th",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "What is three times three?",
+      "accepted": [
+        "nine"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: What is three times three?\nA:",
+      "prompt_tokens": 99,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\nAndour the the the the the the thathe ",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "Which planet is the red planet?",
+      "accepted": [
+        "mars"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: Which planet is the red planet?\nA:",
+      "prompt_tokens": 104,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\nAnoure the the the the the the the the",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "Which planet is the largest in the Solar System?",
+      "accepted": [
+        "jupiter"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: Which planet is the largest in the Solar System?\nA:",
+      "prompt_tokens": 121,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\nAnoure the the the the the the the the",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "How many sides does a triangle have?",
+      "accepted": [
+        "three",
+        "3"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: How many sides does a triangle have?\nA:",
+      "prompt_tokens": 109,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\nThe the the the thathe the the the the",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "What is four plus three?",
+      "accepted": [
+        "seven"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: What is four plus three?\nA: Let's think step by step.",
+      "prompt_tokens": 256,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nARENINININININININININININININI",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "What is nine minus five?",
+      "accepted": [
+        "four"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: What is nine minus five?\nA: Let's think step by step.",
+      "prompt_tokens": 256,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nARENINININININININININININININI",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "What is three times three?",
+      "accepted": [
+        "nine"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: What is three times three?\nA: Let's think step by step.",
+      "prompt_tokens": 258,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\n\n\n\n\nARENINININININININININININININININ",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "Which planet is the red planet?",
+      "accepted": [
+        "mars"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: Which planet is the red planet?\nA: Let's think step by step.",
+      "prompt_tokens": 263,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nARENINININININININININININININI",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "Which planet is the largest in the Solar System?",
+      "accepted": [
+        "jupiter"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: Which planet is the largest in the Solar System?\nA: Let's think step by step.",
+      "prompt_tokens": 280,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nARENINININININININININININININI",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "How many sides does a triangle have?",
+      "accepted": [
+        "three",
+        "3"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: How many sides does a triangle have?\nA: Let's think step by step.",
+      "prompt_tokens": 268,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nARENINININININININININININININI",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    }
+  ]
+}

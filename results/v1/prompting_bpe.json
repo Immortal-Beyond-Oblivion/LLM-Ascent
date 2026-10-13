@@ -1,0 +1,328 @@
+{
+  "checkpoint": "artifacts/tick-204/bpe/checkpoint.pt",
+  "tasks": "data/prompt_tasks.jsonl",
+  "shots": 2,
+  "max_new_tokens": 48,
+  "summary": {
+    "zero_shot": {
+      "n": 6,
+      "exact_accuracy": 0.0,
+      "contains_accuracy": 0.0,
+      "empty_extraction_fraction": 0.0,
+      "truncated_fraction": 0.0,
+      "mean_prompt_tokens": 25.333333333333332,
+      "mean_unknown_prompt_tokens": 0.0
+    },
+    "few_shot": {
+      "n": 6,
+      "exact_accuracy": 0.0,
+      "contains_accuracy": 0.0,
+      "empty_extraction_fraction": 0.0,
+      "truncated_fraction": 1.0,
+      "mean_prompt_tokens": 72.33333333333333,
+      "mean_unknown_prompt_tokens": 0.0
+    },
+    "cot": {
+      "n": 6,
+      "exact_accuracy": 0.0,
+      "contains_accuracy": 0.0,
+      "empty_extraction_fraction": 1.0,
+      "truncated_fraction": 1.0,
+      "mean_prompt_tokens": 174.33333333333334,
+      "mean_unknown_prompt_tokens": 0.0
+    }
+  },
+  "items": [
+    {
+      "style": "zero_shot",
+      "question": "What is four plus three?",
+      "accepted": [
+        "seven"
+      ],
+      "prompt": "Q: What is four plus three?\nA:",
+      "prompt_tokens": 20,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": " cecem cemale with cell my shill t, with cemale with cele with ce",
+      "extracted": "cecem cemale with cell my shill t, with cemale with cele with ce",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "What is nine minus five?",
+      "accepted": [
+        "four"
+      ],
+      "prompt": "Q: What is nine minus five?\nA:",
+      "prompt_tokens": 21,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": " cell should thould thould thould thould thould thould thould thou cema ce\nTo shou ce ",
+      "extracted": "cell should thould thould thould thould thould thould thould thou cema ce",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "What is three times three?",
+      "accepted": [
+        "nine"
+      ],
+      "prompt": "Q: What is three times three?\nA:",
+      "prompt_tokens": 19,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": " cell my should thould thould thould thould thould thould thould thou cema ce\nTo with c",
+      "extracted": "cell my should thould thould thould thould thould thould thould thou cema ce",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "Which planet is the red planet?",
+      "accepted": [
+        "mars"
+      ],
+      "prompt": "Q: Which planet is the red planet?\nA:",
+      "prompt_tokens": 26,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": " cell my shill ter, with cemale with cele with ce\nTo with cema cem",
+      "extracted": "cell my shill ter, with cemale with cele with ce",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "Which planet is the largest in the Solar System?",
+      "accepted": [
+        "jupiter"
+      ],
+      "prompt": "Q: Which planet is the largest in the Solar System?\nA:",
+      "prompt_tokens": 36,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": " cell my shill frow cemale with cele with cemain ce\nTo with cema",
+      "extracted": "cell my shill frow cemale with cele with cemain ce",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "zero_shot",
+      "question": "How many sides does a triangle have?",
+      "accepted": [
+        "three",
+        "3"
+      ],
+      "prompt": "Q: How many sides does a triangle have?\nA:",
+      "prompt_tokens": 30,
+      "context_length": 64,
+      "prompt_truncated": false,
+      "unknown_prompt_tokens": 0,
+      "generation": " cemale with I with cell my shill my shill my shill till till till tain ",
+      "extracted": "cemale with I with cell my shill my shill my shill till till till tain",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "What is four plus three?",
+      "accepted": [
+        "seven"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: What is four plus three?\nA:",
+      "prompt_tokens": 67,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with cell my should thould thould thould thould thould thould thould thould thou c",
+      "extracted": "ICARIO:",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "What is nine minus five?",
+      "accepted": [
+        "four"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: What is nine minus five?\nA:",
+      "prompt_tokens": 68,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with cell my should thould thould thould thould thould thould thould thould thou c",
+      "extracted": "ICARIO:",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "What is three times three?",
+      "accepted": [
+        "nine"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: What is three times three?\nA:",
+      "prompt_tokens": 66,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with I with cell my should thould thould thould thould thould thou cell my s",
+      "extracted": "ICARIO:",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "Which planet is the red planet?",
+      "accepted": [
+        "mars"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: Which planet is the red planet?\nA:",
+      "prompt_tokens": 73,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with cell my should thould thould thould thould thould thould thould thould thould th",
+      "extracted": "ICARIO:",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "Which planet is the largest in the Solar System?",
+      "accepted": [
+        "jupiter"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: Which planet is the largest in the Solar System?\nA:",
+      "prompt_tokens": 83,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with cell my shill t, with cell my should thould thould thould thould thou",
+      "extracted": "ICARIO:",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "few_shot",
+      "question": "How many sides does a triangle have?",
+      "accepted": [
+        "three",
+        "3"
+      ],
+      "prompt": "Q: What is one plus one?\nA: two\n\nQ: What color is grass?\nA: green\n\nQ: How many sides does a triangle have?\nA:",
+      "prompt_tokens": 77,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " IO:\nI with cell my should thould thould thould thould thould thould thould thou cema cem",
+      "extracted": "IO:",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "What is four plus three?",
+      "accepted": [
+        "seven"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: What is four plus three?\nA: Let's think step by step.",
+      "prompt_tokens": 169,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with cell my should thould thould thould thould thould thould thould thould thould th",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "What is nine minus five?",
+      "accepted": [
+        "four"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: What is nine minus five?\nA: Let's think step by step.",
+      "prompt_tokens": 170,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with cell my should thould thould thould thould thould thould thould thould thould th",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "What is three times three?",
+      "accepted": [
+        "nine"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: What is three times three?\nA: Let's think step by step.",
+      "prompt_tokens": 168,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " ICARIO:\nI with cell my should thould thould thould thould thould thould thould thould thould th",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "Which planet is the red planet?",
+      "accepted": [
+        "mars"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: Which planet is the red planet?\nA: Let's think step by step.",
+      "prompt_tokens": 175,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " I whill t, with I whould thould thould thould thould thould thould thould thould the\nTo with ",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "Which planet is the largest in the Solar System?",
+      "accepted": [
+        "jupiter"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: Which planet is the largest in the Solar System?\nA: Let's think step by step.",
+      "prompt_tokens": 185,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " I whill t, with I whill t, with I whill t, with I whill t\nTo with cemain",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    },
+    {
+      "style": "cot",
+      "question": "How many sides does a triangle have?",
+      "accepted": [
+        "three",
+        "3"
+      ],
+      "prompt": "Q: What is one plus one?\nA: Let's think step by step. One and one more make two. The answer is two.\n\nQ: What color is grass?\nA: Let's think step by step. Grass is a green plant. The answer is green.\n\nQ: How many sides does a triangle have?\nA: Let's think step by step.",
+      "prompt_tokens": 179,
+      "context_length": 64,
+      "prompt_truncated": true,
+      "unknown_prompt_tokens": 0,
+      "generation": " IO:\nI with I whould thould thould thould thould thould thould thould thould thou ce\nTo with c",
+      "extracted": "",
+      "exact": false,
+      "contains": false
+    }
+  ]
+}
