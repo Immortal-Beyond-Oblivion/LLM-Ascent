@@ -1,0 +1,16 @@
+{
+  "source_url": "https://huggingface.co/datasets/allenai/c4",
+  "source_file": "data/v2/c4_en_shard_0.jsonl",
+  "source_sha256": "128458c4a88f8aa209bb7db6bf6056e1ab245efd1f2101fc4ffd21b31d9a91d7",
+  "source_bytes": 822707668,
+  "source_doc_count": 356317,
+  "source_char_count": 769299382,
+  "tokenizer_type": "bpe",
+  "tokenizer_vocab_size": 6487,
+  "tokenizer_fit_sample_chars": 50025065,
+  "total_tokens": 338513094,
+  "chars_per_token": 2.2725838250735437,
+  "token_dtype": "uint16",
+  "memmap_path": "artifacts/scaling/corpus_tokens.mmap",
+  "manifest_version": "1.0"
+}

@@ -1,0 +1,9 @@
+{
+  "tokenizer": "wordpiece",
+  "vocabulary_size": 166,
+  "chars_per_token": 1.0007777737582753,
+  "validation_bits_per_character": 3.499812008848917,
+  "validation_perplexity_per_character": 11.312234356177338,
+  "equal_char_span": false,
+  "context_length_used": 64
+}

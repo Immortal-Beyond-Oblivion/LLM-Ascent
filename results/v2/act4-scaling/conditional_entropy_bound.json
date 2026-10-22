@@ -1,0 +1,64 @@
+{
+  "act": "4",
+  "quantity": "compression-based upper bound on the corpus's CONDITIONAL entropy, in nats/token",
+  "why": "E in L(N,D)=E+A/N^alpha+B/D^beta is the irreducible loss of an INFINITE model, i.e. the CONDITIONAL entropy of the next token given full context -- NOT the marginal (unigram) entropy, which is 4.9946 nats here. The discriminating question is whether the fitted E lands in the corpus's conditional-entropy band.",
+  "held_out_tokens": 1000128,
+  "held_out_chars": 2277582,
+  "chars_per_token": 2.2773,
+  "compressors": [
+    {
+      "name": "zlib-9 (deflate)",
+      "compressed_bytes": 892319,
+      "nats_per_char": 2.1725,
+      "nats_per_token": 4.9474
+    },
+    {
+      "name": "zlib-6",
+      "compressed_bytes": 893985,
+      "nats_per_char": 2.1766,
+      "nats_per_token": 4.9567
+    },
+    {
+      "name": "zlib-1",
+      "compressed_bytes": 1029591,
+      "nats_per_char": 2.5067,
+      "nats_per_token": 5.7085
+    }
+  ],
+  "band_nats_per_token": [
+    4.9474,
+    5.7085
+  ],
+  "fits_compared": {
+    "total_N": {
+      "E": 1.348,
+      "fraction_of_band": 0.272
+    },
+    "non_embedding_N": {
+      "E": 0.706,
+      "fraction_of_band": 0.143
+    }
+  },
+  "derivation": "compress the held-out TEXT, convert compressed bytes to nats per character, and multiply by chars/token: a token is a deterministic function of about 2.27 characters, so a character-level conditional-entropy bound scales up to bound the token level. A model that predicts the next token cannot do much better than a compressor that sees the same context.",
+  "source": "artifacts/scaling/corpus_tokens.mmap via src.scaling.ladder.MemmapCorpus; canonical BPE tokenizer",
+  "token_space_compression": {
+    "why": "the character-space bound above is WEAK: gzip captures the order-0 character distribution and little context, so it lands near the marginal entropy and cannot discriminate. Encoding the token stream in frequency-rank order puts the compressor in token space, where one byte is one token, so compressed bytes ARE nats/token.",
+    "compressors": [
+      {
+        "name": "zlib-9",
+        "compressed_bytes": 647811,
+        "nats_per_token": 3.5918
+      },
+      {
+        "name": "zlib-6",
+        "compressed_bytes": 648152,
+        "nats_per_token": 3.5937
+      }
+    ],
+    "bound_nats_per_token": 3.5918,
+    "marginal_token_entropy_nats": 4.9946,
+    "canonical_6_3M_achieved_held_out_loss_nats": 2.5152,
+    "reading": "the compression bound is a weak upper bound on the true conditional entropy and sits near the marginal entropy, so it does NOT by itself separate the two candidate E values. The discriminating quantity the project can measure is the model's own ACHIEVED held-out loss: E is the asymptote as N and D grow, so E must be below the loss a real model reaches, and E = 1.348 requires a 1.87x improvement over the 6.3M's 2.5152 while E = 0.706 requires 3.56x.",
+    "source": "artifacts/scaling/corpus_tokens.mmap via src.scaling.ladder.MemmapCorpus"
+  }
+}

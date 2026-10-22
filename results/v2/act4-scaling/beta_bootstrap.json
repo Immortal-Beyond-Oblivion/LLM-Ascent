@@ -1,0 +1,29 @@
+{
+  "act": "4",
+  "method": "percentile bootstrap over the 2292 canonical interior points, 120 resamples, total-N axis",
+  "n_points": 2292,
+  "n_resamples": 120,
+  "seed": 0,
+  "alpha": {
+    "point": 0.2088,
+    "ci95": [
+      0.1484,
+      0.2504
+    ]
+  },
+  "beta": {
+    "point": 0.4742,
+    "ci95": [
+      0.4607,
+      0.4871
+    ]
+  },
+  "E": {
+    "point": 1.3479,
+    "ci95": [
+      0.9566,
+      1.5066
+    ]
+  },
+  "note": "a bootstrap over points treats the points as exchangeable, which they are not (many share a run), so this interval is a RESAMPLING-REPRODUCIBILITY interval, not a sampling interval over runs. The profile likelihood is the honest statement about what the DATA cannot distinguish."
+}

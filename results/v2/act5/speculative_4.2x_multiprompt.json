@@ -1,0 +1,44 @@
+{
+  "n_prompts": 5,
+  "max_new_tokens": 64,
+  "prompt_tokens": 32,
+  "draft": "1.5M",
+  "target": "6.3M",
+  "per_K": {
+    "1": {
+      "median_speedup": 0.61,
+      "mean": 0.603,
+      "min": 0.582,
+      "max": 0.622,
+      "median_acceptance": 0.8571
+    },
+    "2": {
+      "median_speedup": 0.481,
+      "mean": 0.485,
+      "min": 0.445,
+      "max": 0.541,
+      "median_acceptance": 0.5763
+    },
+    "3": {
+      "median_speedup": 0.454,
+      "mean": 0.43,
+      "min": 0.349,
+      "max": 0.485,
+      "median_acceptance": 0.5556
+    },
+    "5": {
+      "median_speedup": 0.339,
+      "mean": 0.338,
+      "min": 0.288,
+      "max": 0.394,
+      "median_acceptance": 0.3909
+    },
+    "7": {
+      "median_speedup": 0.228,
+      "mean": 0.263,
+      "min": 0.193,
+      "max": 0.351,
+      "median_acceptance": 0.2326
+    }
+  }
+}

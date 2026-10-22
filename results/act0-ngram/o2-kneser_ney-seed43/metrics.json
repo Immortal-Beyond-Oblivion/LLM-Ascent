@@ -1,0 +1,39 @@
+{
+  "act": "act0-ngram",
+  "experiment": "o2-kneser_ney-seed43",
+  "seed": 43,
+  "device": "cpu",
+  "config": {
+    "order": 2,
+    "smoothing": "kneser_ney",
+    "discount": 0.75,
+    "interpolation_weights": [
+      0.1,
+      0.3,
+      0.6
+    ],
+    "train_chars": 1003854,
+    "validation_chars": 111540,
+    "vocabulary_size": 65
+  },
+  "parameters": 3011559,
+  "trainable_parameters": 3011559,
+  "total_tokens": 1115394,
+  "train_tokens": 1003854,
+  "validation_tokens": 111540,
+  "vocabulary_size": 65,
+  "loss_history": [
+    {
+      "step": 1.0,
+      "train_loss": -2.4473826454691063,
+      "validation_loss": -2.481211359368744,
+      "validation_perplexity": 11.955738345170138
+    }
+  ],
+  "wall_clock_seconds": 0.1395,
+  "steps_per_second": 0.0,
+  "final_step": 1.0,
+  "final_train_loss": -2.4473826454691063,
+  "final_validation_loss": -2.481211359368744,
+  "final_validation_perplexity": 11.955738345170138
+}

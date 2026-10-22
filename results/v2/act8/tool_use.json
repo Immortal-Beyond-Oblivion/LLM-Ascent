@@ -1,0 +1,267 @@
+{
+  "act": "8d",
+  "rung": "6.3M",
+  "tool": "CALC(expression) via src.agent.calculator",
+  "prompt_format": "shared instruction format (D2), operands are real C4 numbers",
+  "questions": 40,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "unit_of_analysis": "item; free-generation seeds are averaged per item for the headline, and a deterministic greedy pass is reported separately",
+  "sampled": {
+    "n_generations": 120,
+    "well_formed_calls": 0,
+    "well_formed_rate": 0.0,
+    "well_formed_wilson95": [
+      0.0,
+      0.031
+    ],
+    "echoes_call_template": 3,
+    "echoes_call_template_rate": 0.025,
+    "malformed_call": 3,
+    "malformed_call_rate": 0.025,
+    "correct_calls": 0,
+    "correct_of_well_formed_rate": null,
+    "correct_of_well_formed_wilson95": null,
+    "direct_correct": 1,
+    "direct_correct_rate": 0.0083,
+    "direct_correct_wilson95": [
+      0.0015,
+      0.0457
+    ],
+    "overall_correct_rate": 0.0083,
+    "labels": {
+      "tool_correct": 0,
+      "tool_wrong": 0,
+      "no_tool_direct_correct": 1,
+      "no_tool_wrong": 119
+    },
+    "malformed_arguments": [
+      {
+        "argument": "-]&##",
+        "count": 1
+      },
+      {
+        "argument": "their",
+        "count": 1
+      },
+      {
+        "argument": "per",
+        "count": 1
+      }
+    ]
+  },
+  "greedy": {
+    "n_generations": 40,
+    "well_formed_calls": 0,
+    "well_formed_rate": 0.0,
+    "well_formed_wilson95": [
+      0.0,
+      0.0876
+    ],
+    "echoes_call_template": 19,
+    "echoes_call_template_rate": 0.475,
+    "malformed_call": 19,
+    "malformed_call_rate": 0.475,
+    "correct_calls": 0,
+    "correct_of_well_formed_rate": null,
+    "correct_of_well_formed_wilson95": null,
+    "direct_correct": 0,
+    "direct_correct_rate": 0.0,
+    "direct_correct_wilson95": [
+      0.0,
+      0.0876
+    ],
+    "overall_correct_rate": 0.0,
+    "labels": {
+      "tool_correct": 0,
+      "tool_wrong": 0,
+      "no_tool_direct_correct": 0,
+      "no_tool_wrong": 40
+    },
+    "malformed_arguments": [
+      {
+        "argument": "s",
+        "count": 19
+      }
+    ]
+  },
+  "greedy_examples": [
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 35 + 12?",
+      "expected": 47,
+      "generation": "<unk> the CALC(s) and the CALC(s) and ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 3 + 13?",
+      "expected": 16,
+      "generation": "<unk> the CALC(s) and the CALC(s) and ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 572 + 14?",
+      "expected": 586,
+      "generation": "<unk>? What is the best way to do this is the best",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 1 + 15?",
+      "expected": 16,
+      "generation": "<unk> the CALC(s) and the CALC(s) and ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 11 + 16?",
+      "expected": 27,
+      "generation": "<unk>? What is the difference between the two and the other are",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 1 + 12?",
+      "expected": 13,
+      "generation": "<unk> the CALC(s) and the CALC(s) and ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 3 + 13?",
+      "expected": 16,
+      "generation": "<unk> the CALC(s) and the CALC(s) and ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 2017 + 14?",
+      "expected": 2031,
+      "generation": "<unk> the CALC(s) and the CALC(s) and ",
+      "label": "no_tool_wrong"
+    }
+  ],
+  "examples": [
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 35 + 12?",
+      "expected": 47,
+      "generation": "\u0630<unk>! Edhist PCC(ANG)instruction! 8 note, first select",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 3 + 13?",
+      "expected": 16,
+      "generation": "ments! 0S: Download the download. letter from WATS's",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 572 + 14?",
+      "expected": 586,
+      "generation": "dingif beginning Sunday to show Culture Flights at PM@",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 1 + 15?",
+      "expected": 16,
+      "generation": "\ufeff? Officers!\" (Friday) \u201cBest CBS\u201d cites this",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 11 + 16?",
+      "expected": 27,
+      "generation": "alty updates in Africa How to Say as CALC event",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 1 + 12?",
+      "expected": 13,
+      "generation": "~2005. Please click the hottests, and possibly choose the sens",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 3 + 13?",
+      "expected": 16,
+      "generation": "\u0908; score-interest casino title. Each member profits in a ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 2017 + 14?",
+      "expected": 2031,
+      "generation": ",Republicines]. Present \u2026 Instruction,related, Dreach !!:",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 10 + 15?",
+      "expected": 25,
+      "generation": "500<unk> ! Spell to give prize on! Dec type: ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 2 + 16?",
+      "expected": 18,
+      "generation": "Off? Whether your browser is on set in \"USand used ",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 45 + 12?",
+      "expected": 57,
+      "generation": "\u0647\u0631\u0627\u0631 assigned/ Educational Science https://autonomics.inchom",
+      "label": "no_tool_wrong"
+    },
+    {
+      "question": "Use the calculator for arithmetic. Write the call as CALC(expression). What is 3 + 13?",
+      "expected": 16,
+      "generation": "alty brief have you gared to say it appreciates the ",
+      "label": "no_tool_wrong"
+    }
+  ],
+  "template_completion_evidence": {
+    "question": "What is 35 + 12?",
+    "prompt_tokens": 62,
+    "template": "CALC(",
+    "template_token_ids": [
+      49,
+      4083,
+      49,
+      22
+    ],
+    "template_tokens": [
+      "C",
+      "AL",
+      "C",
+      "("
+    ],
+    "next_token_distribution": [
+      {
+        "token": "s",
+        "id": 97,
+        "prob": 0.0278
+      },
+      {
+        "token": "express",
+        "id": 6369,
+        "prob": 0.0214
+      },
+      {
+        "token": "per",
+        "id": 2564,
+        "prob": 0.0152
+      },
+      {
+        "token": "work",
+        "id": 2691,
+        "prob": 0.0127
+      },
+      {
+        "token": "ess",
+        "id": 2587,
+        "prob": 0.0126
+      }
+    ],
+    "argmax_token_id": 97,
+    "argmax_token": "s",
+    "argmax_prob": 0.0278,
+    "runner_up": "express",
+    "interpretation": "the argmax continuation of 'CALC(' is the literal character 's', and the runner-up is 'express' -- a fragment of the word 'expression', which appears in the prompt's own template. The model is completing the instruction's template, not writing an arithmetic expression.",
+    "caveat": "the argmax probability is low (a near-flat distribution), so the template echo is a MODAL effect, not a confident one"
+  },
+  "max_new_tokens": 24,
+  "wall_seconds": 37.1
+}

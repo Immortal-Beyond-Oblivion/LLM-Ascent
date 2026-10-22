@@ -1,0 +1,43 @@
+{
+  "rung": "6.3M-sft",
+  "n_train": 512,
+  "epochs": 24,
+  "seed": 42,
+  "device": "cpu",
+  "final_train_loss": 0.004947589710354805,
+  "held_out": {
+    "accuracy": 0.6016,
+    "wilson_95_low": 0.515,
+    "wilson_95_high": 0.6822,
+    "correct": 77,
+    "total": 128,
+    "per_task": {
+      "Copy the text exactly.": 0.842,
+      "Give the first word of the t": 1.0,
+      "Give the last word of the te": 0.944,
+      "How many words are in the te": 0.611,
+      "Rewrite the text in capital ": 0.632,
+      "What is 0 plus 9?": 0.0,
+      "What is 1 plus 2?": 0.0,
+      "What is 1 plus 7?": 0.0,
+      "What is 1 plus 8?": 0.0,
+      "What is 2 plus 7?": 0.0,
+      "What is 3 plus 2?": 0.0,
+      "What is 3 plus 6?": 0.0,
+      "What is 3 plus 8?": 0.0,
+      "What is 3 plus 9?": 0.0,
+      "What is 4 plus 5?": 0.0,
+      "What is 6 plus 1?": 0.0,
+      "What is 6 plus 4?": 0.0,
+      "What is 6 plus 8?": 0.0,
+      "What is 7 plus 4?": 0.0,
+      "What is 7 plus 7?": 0.0,
+      "What is 7 plus 9?": 0.0,
+      "What is 8 plus 2?": 0.0,
+      "What is 8 plus 5?": 0.0,
+      "Write the words in reverse o": 0.167
+    }
+  },
+  "checkpoint": "checkpoints/canonical/6.3M-sft/model.pt",
+  "elapsed_seconds": 679.3
+}

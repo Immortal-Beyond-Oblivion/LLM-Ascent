@@ -1,0 +1,9 @@
+{
+  "tokenizer": "unigram",
+  "vocabulary_size": 166,
+  "chars_per_token": 1.8132307149991187,
+  "validation_bits_per_character": 2.802090676883648,
+  "validation_perplexity_per_character": 6.974504267035671,
+  "equal_char_span": false,
+  "context_length_used": 64
+}

@@ -1,0 +1,72 @@
+{
+  "experiment": "act5-mqa-2.6m-quality",
+  "claim": "MQA (G=1) costs validation loss versus MHA (G=8) at 2.6M non-embedding params.",
+  "falsification": "If the paired mean difference (MQA - MHA) is not positive, or if the two-sided p-value exceeds 0.05 at n=6 pairs, MQA is reported as not costing quality at this scale.",
+  "status": "NOT FALSIFIED - MQA costs +0.0285 nats, two-sided p=0.0008",
+  "architecture": {
+    "model_class": "MiniGPT",
+    "num_heads": 8,
+    "num_kv_heads": "1 (MQA) / 8 (MHA)",
+    "window_size": 0,
+    "embedding_dim": 192,
+    "num_layers": 6,
+    "context_length": 256,
+    "positional_encoding": "learned absolute",
+    "note": "NOT comparable to Act 4 (ALiBiTransformer, 4 heads, 793,344 non-emb)"
+  },
+  "corpus": "C4 en shard 0",
+  "tokens_per_run": 53084160,
+  "steps": 12960,
+  "runs": {
+    "42": {
+      "mqa_g1_val_loss": 2.8558,
+      "mha_g8_val_loss": 2.8111,
+      "diff_mqa_minus_mha": 0.0447
+    },
+    "43": {
+      "mqa_g1_val_loss": 2.8474,
+      "mha_g8_val_loss": 2.8331,
+      "diff_mqa_minus_mha": 0.0143
+    },
+    "44": {
+      "mqa_g1_val_loss": 2.8661,
+      "mha_g8_val_loss": 2.8382,
+      "diff_mqa_minus_mha": 0.0279
+    },
+    "45": {
+      "mqa_g1_val_loss": 2.8464,
+      "mha_g8_val_loss": 2.8205,
+      "diff_mqa_minus_mha": 0.0259
+    },
+    "46": {
+      "mqa_g1_val_loss": 2.8429,
+      "mha_g8_val_loss": 2.8129,
+      "diff_mqa_minus_mha": 0.03
+    },
+    "47": {
+      "mqa_g1_val_loss": 2.8474,
+      "mha_g8_val_loss": 2.819,
+      "diff_mqa_minus_mha": 0.0284
+    }
+  },
+  "statistics_n6": {
+    "mean_diff": 0.0285,
+    "sd": 0.0097,
+    "t": 7.182,
+    "df": 5,
+    "p_two_sided": 0.0008,
+    "direction_consistent": "6/6"
+  },
+  "sensitivity_excluding_seed42": {
+    "why": "seed 42 G=1 resumed from an already-complete checkpoint in 0.73s; full-run provenance unverified",
+    "mean_diff": 0.0253,
+    "p_two_sided": 0.0009,
+    "conclusion": "conclusion unchanged"
+  },
+  "canonical_1.5M_pin": {
+    "non_embedding_params": 1536000,
+    "step": 7500,
+    "val_loss": 3.0571,
+    "elapsed_s": 6566
+  }
+}

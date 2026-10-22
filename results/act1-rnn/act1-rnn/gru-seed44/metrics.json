@@ -1,0 +1,62 @@
+{
+  "act": "act1-rnn",
+  "experiment": "rnn-model-seed44",
+  "seed": 44,
+  "device": "mps",
+  "config": {
+    "model_type": "rnn",
+    "steps": 500,
+    "batch_size": 16,
+    "context_length": 64
+  },
+  "parameters": 45954,
+  "trainable_parameters": 45954,
+  "total_tokens": 1115394,
+  "train_tokens": 1003854,
+  "validation_tokens": 111540,
+  "vocabulary_size": 66,
+  "loss_history": [
+    {
+      "step": 1.0,
+      "train_loss": 2.431872510910034,
+      "validation_loss": 2.434339714050293,
+      "validation_perplexity": 11.408283496638736
+    },
+    {
+      "step": 100.0,
+      "train_loss": 2.383399772644043,
+      "validation_loss": 2.36427001953125,
+      "validation_perplexity": 10.636271712327055
+    },
+    {
+      "step": 200.0,
+      "train_loss": 2.3351263999938965,
+      "validation_loss": 2.354208755493164,
+      "validation_perplexity": 10.529793923043393
+    },
+    {
+      "step": 300.0,
+      "train_loss": 2.2927360057830812,
+      "validation_loss": 2.3237746238708494,
+      "validation_perplexity": 10.214156230916911
+    },
+    {
+      "step": 400.0,
+      "train_loss": 2.2965211391448976,
+      "validation_loss": 2.269001817703247,
+      "validation_perplexity": 9.669743828055125
+    },
+    {
+      "step": 500.0,
+      "train_loss": 2.3067872524261475,
+      "validation_loss": 2.25504846572876,
+      "validation_perplexity": 9.53575545628501
+    }
+  ],
+  "wall_clock_seconds": 0.0,
+  "steps_per_second": 0.0,
+  "final_step": 500.0,
+  "final_train_loss": 2.3067872524261475,
+  "final_validation_loss": 2.25504846572876,
+  "final_validation_perplexity": 9.53575545628501
+}

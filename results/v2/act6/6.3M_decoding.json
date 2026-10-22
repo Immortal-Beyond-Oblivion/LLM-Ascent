@@ -1,0 +1,251 @@
+{
+  "experiment": "act6-decoding",
+  "model_rung": "6.3M",
+  "device": "mps",
+  "n_prompts": 40,
+  "prompt_tokens": 32,
+  "max_new_tokens": 32,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "reference_model_for_bpc": "6.3M (same as model under test)",
+  "caveats": [
+    "The bits-per-character axis is scored by the model under test, so it is self-preferring. A separate judge would be better.",
+    "Context window is 128; prompts are 32 tokens and continuations 32.",
+    "self-consistency (6c) was measured in a separate run of the same script and merged; its numbers are unchanged by the beam-cache fix, which touches 6a only."
+  ],
+  "decoding_sweep": [
+    {
+      "config": "greedy",
+      "bits_per_char_reference": 1.4366,
+      "bpc_sd": 0.5245,
+      "repetition_rate_4gram": 0.4147,
+      "distinct2": 0.4952,
+      "n_generations": 120,
+      "seconds": 24.4
+    },
+    {
+      "config": "beam2",
+      "bits_per_char_reference": 1.3985,
+      "bpc_sd": 0.4733,
+      "repetition_rate_4gram": 0.3293,
+      "distinct2": 0.575,
+      "n_generations": 120,
+      "seconds": 61.4
+    },
+    {
+      "config": "beam4",
+      "bits_per_char_reference": 1.376,
+      "bpc_sd": 0.4523,
+      "repetition_rate_4gram": 0.3095,
+      "distinct2": 0.5944,
+      "n_generations": 120,
+      "seconds": 104.0
+    },
+    {
+      "config": "beam8",
+      "bits_per_char_reference": 1.379,
+      "bpc_sd": 0.4354,
+      "repetition_rate_4gram": 0.4052,
+      "distinct2": 0.5177,
+      "n_generations": 120,
+      "seconds": 232.9
+    },
+    {
+      "config": "topk5",
+      "bits_per_char_reference": 1.6012,
+      "bpc_sd": 0.5335,
+      "repetition_rate_4gram": 0.0773,
+      "distinct2": 0.8075,
+      "n_generations": 120,
+      "seconds": 30.9
+    },
+    {
+      "config": "topk20",
+      "bits_per_char_reference": 1.7153,
+      "bpc_sd": 0.5918,
+      "repetition_rate_4gram": 0.0233,
+      "distinct2": 0.896,
+      "n_generations": 120,
+      "seconds": 31.1
+    },
+    {
+      "config": "topk50",
+      "bits_per_char_reference": 1.8103,
+      "bpc_sd": 0.6113,
+      "repetition_rate_4gram": 0.0155,
+      "distinct2": 0.929,
+      "n_generations": 120,
+      "seconds": 31.1
+    },
+    {
+      "config": "topp0.3",
+      "bits_per_char_reference": 1.5878,
+      "bpc_sd": 0.5349,
+      "repetition_rate_4gram": 0.1181,
+      "distinct2": 0.7785,
+      "n_generations": 120,
+      "seconds": 31.3
+    },
+    {
+      "config": "topp0.5",
+      "bits_per_char_reference": 1.6624,
+      "bpc_sd": 0.5605,
+      "repetition_rate_4gram": 0.0687,
+      "distinct2": 0.8473,
+      "n_generations": 120,
+      "seconds": 31.3
+    },
+    {
+      "config": "topp0.8",
+      "bits_per_char_reference": 1.8381,
+      "bpc_sd": 0.5898,
+      "repetition_rate_4gram": 0.0138,
+      "distinct2": 0.9368,
+      "n_generations": 120,
+      "seconds": 32.6
+    },
+    {
+      "config": "topp0.95",
+      "bits_per_char_reference": 1.9701,
+      "bpc_sd": 0.6014,
+      "repetition_rate_4gram": 0.0095,
+      "distinct2": 0.9618,
+      "n_generations": 120,
+      "seconds": 35.3
+    },
+    {
+      "config": "temp0.5",
+      "bits_per_char_reference": 1.6083,
+      "bpc_sd": 0.5382,
+      "repetition_rate_4gram": 0.1293,
+      "distinct2": 0.7613,
+      "n_generations": 120,
+      "seconds": 33.8
+    },
+    {
+      "config": "temp0.7",
+      "bits_per_char_reference": 1.7251,
+      "bpc_sd": 0.5225,
+      "repetition_rate_4gram": 0.0503,
+      "distinct2": 0.8661,
+      "n_generations": 120,
+      "seconds": 33.7
+    },
+    {
+      "config": "temp1.0",
+      "bits_per_char_reference": 2.0074,
+      "bpc_sd": 0.5968,
+      "repetition_rate_4gram": 0.0014,
+      "distinct2": 0.9688,
+      "n_generations": 120,
+      "seconds": 33.7
+    },
+    {
+      "config": "temp1.3",
+      "bits_per_char_reference": 2.3661,
+      "bpc_sd": 0.581,
+      "repetition_rate_4gram": 0.0,
+      "distinct2": 0.9895,
+      "n_generations": 120,
+      "seconds": 34.6
+    }
+  ],
+  "best_of_n": [
+    {
+      "n": 1,
+      "bpc_of_reranked_pick": 2.0074,
+      "bpc_mean_of_all_samples": 2.0074,
+      "improvement_bits": 0.0,
+      "n_generations": 120
+    },
+    {
+      "n": 2,
+      "bpc_of_reranked_pick": 1.8684,
+      "bpc_mean_of_all_samples": 1.9581,
+      "improvement_bits": 0.0897,
+      "n_generations": 120
+    },
+    {
+      "n": 4,
+      "bpc_of_reranked_pick": 1.7888,
+      "bpc_mean_of_all_samples": 1.9538,
+      "improvement_bits": 0.165,
+      "n_generations": 120
+    },
+    {
+      "n": 8,
+      "bpc_of_reranked_pick": 1.7459,
+      "bpc_mean_of_all_samples": 1.976,
+      "improvement_bits": 0.2302,
+      "n_generations": 120
+    },
+    {
+      "n": 16,
+      "bpc_of_reranked_pick": 1.6959,
+      "bpc_mean_of_all_samples": 1.9677,
+      "improvement_bits": 0.2717,
+      "n_generations": 120
+    }
+  ],
+  "self_consistency_mnli": {
+    "n_items": 300,
+    "labels": [
+      "entailment",
+      "neutral",
+      "contradiction"
+    ],
+    "verbalizers": [
+      "Yes,",
+      "Maybe,",
+      "No,"
+    ],
+    "chance_level": 0.3333333333333333,
+    "note": "zero-shot; the model was trained on C4, never on MNLI",
+    "results": [
+      {
+        "n_votes": 1,
+        "accuracy": 0.3789,
+        "wilson_95_low": 0.3478,
+        "wilson_95_high": 0.411,
+        "correct": 341,
+        "total": 900
+      },
+      {
+        "n_votes": 3,
+        "accuracy": 0.3556,
+        "wilson_95_low": 0.325,
+        "wilson_95_high": 0.3874,
+        "correct": 320,
+        "total": 900
+      },
+      {
+        "n_votes": 5,
+        "accuracy": 0.3556,
+        "wilson_95_low": 0.325,
+        "wilson_95_high": 0.3874,
+        "correct": 320,
+        "total": 900
+      },
+      {
+        "n_votes": 10,
+        "accuracy": 0.3611,
+        "wilson_95_low": 0.3304,
+        "wilson_95_high": 0.393,
+        "correct": 325,
+        "total": 900
+      },
+      {
+        "n_votes": 20,
+        "accuracy": 0.3567,
+        "wilson_95_low": 0.326,
+        "wilson_95_high": 0.3885,
+        "correct": 321,
+        "total": 900
+      }
+    ]
+  },
+  "cost_axis_correction": "Beam now runs with use_cache=True and every timing is taken after an explicit MPS warm-up. See docs/implementation.md for the superseded numbers and why they were wrong."
+}

@@ -1,0 +1,69 @@
+{
+  "act": "act2-ablations",
+  "experiment": "ablation",
+  "seed": 42,
+  "device": "mps",
+  "config": {
+    "vocabulary_size": 66,
+    "context_length": 64,
+    "embedding_dim": 64,
+    "num_heads": 4,
+    "num_layers": 2,
+    "dropout": 0.0,
+    "normalization": "layernorm",
+    "norm_position": "pre",
+    "positional_encoding": "rope",
+    "ffn_activation": "gelu",
+    "num_heads_ablation": null
+  },
+  "parameters": 104320,
+  "trainable_parameters": 104320,
+  "total_tokens": 1115394,
+  "train_tokens": 1003854,
+  "validation_tokens": 111540,
+  "vocabulary_size": 66,
+  "loss_history": [
+    {
+      "step": 1.0,
+      "train_loss": 30.381610488891603,
+      "validation_loss": 30.48878746032715,
+      "validation_perplexity": 17422567426391.318
+    },
+    {
+      "step": 100.0,
+      "train_loss": 2.874551248550415,
+      "validation_loss": 2.9169596672058105,
+      "validation_perplexity": 18.485001382996273
+    },
+    {
+      "step": 200.0,
+      "train_loss": 2.630037307739258,
+      "validation_loss": 2.6622011184692385,
+      "validation_perplexity": 14.327791582284597
+    },
+    {
+      "step": 300.0,
+      "train_loss": 2.5796701431274416,
+      "validation_loss": 2.606841802597046,
+      "validation_perplexity": 13.55617011330834
+    },
+    {
+      "step": 400.0,
+      "train_loss": 2.515807056427002,
+      "validation_loss": 2.5417755603790284,
+      "validation_perplexity": 12.702204491121758
+    },
+    {
+      "step": 500.0,
+      "train_loss": 2.5496427059173583,
+      "validation_loss": 2.5296257019042967,
+      "validation_perplexity": 12.548808262484405
+    }
+  ],
+  "wall_clock_seconds": 0.0,
+  "steps_per_second": 0.0,
+  "final_step": 500.0,
+  "final_train_loss": 2.5496427059173583,
+  "final_validation_loss": 2.5296257019042967,
+  "final_validation_perplexity": 12.548808262484405
+}

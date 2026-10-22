@@ -1,0 +1,72 @@
+{
+  "experiment": "act5-5c-speculative-real-gap-1.7x",
+  "setup": {
+    "draft": "1.5M canonical (non-emb 1,567,200, ctx 128)",
+    "target": "2.6M canonical (non-emb 2,694,144, ctx 128)",
+    "parameter_ratio": 1.72,
+    "kv_cache": "enabled on BOTH draft and target",
+    "baseline": "plain target generation WITH KV cache (honest baseline)",
+    "prompt": "real C4 text, 16 BPE tokens",
+    "max_new_tokens": 32,
+    "n_repeats": 3,
+    "metric": "best-of wall clock",
+    "device": "cpu"
+  },
+  "results": [
+    {
+      "K": 1,
+      "spec_seconds": 0.08,
+      "plain_seconds": 0.04,
+      "speedup": 0.46,
+      "acceptance_rate": 0.728,
+      "tokens_per_second": 402.2
+    },
+    {
+      "K": 2,
+      "spec_seconds": 0.08,
+      "plain_seconds": 0.04,
+      "speedup": 0.44,
+      "acceptance_rate": 0.676,
+      "tokens_per_second": 386.0
+    },
+    {
+      "K": 3,
+      "spec_seconds": 0.09,
+      "plain_seconds": 0.04,
+      "speedup": 0.41,
+      "acceptance_rate": 0.611,
+      "tokens_per_second": 362.1
+    },
+    {
+      "K": 5,
+      "spec_seconds": 0.1,
+      "plain_seconds": 0.04,
+      "speedup": 0.38,
+      "acceptance_rate": 0.432,
+      "tokens_per_second": 330.9
+    },
+    {
+      "K": 7,
+      "spec_seconds": 0.1,
+      "plain_seconds": 0.04,
+      "speedup": 0.36,
+      "acceptance_rate": 0.472,
+      "tokens_per_second": 315.8
+    }
+  ],
+  "theory_check": {
+    "model": "tokens_per_round = (1 - alpha^(K+1))/(1-alpha); cost = 2K forwards",
+    "predicted_tokens_per_forward": {
+      "K1_a0.728": 0.864,
+      "K3_a0.611": 0.369,
+      "K7_a0.472": 0.135
+    },
+    "note": "predicted ratio falls monotonically with K, matching the measured speedup fall 0.46 -> 0.36. K=1 is forward-count-neutral (1.000 at alpha=1); every K>1 is a net loss on forward count even at perfect acceptance, because 2K forwards buy at most K+1 tokens."
+  },
+  "conclusion": "NEGATIVE. Acceptance is high (72.8% at K=1) but speedup is still 0.36-0.46x. Speculative decoding needs the target forward to be much more expensive than the draft forward; at 1.5M-2.6M non-embedding parameters both forwards are latency-bound by per-op dispatch overhead, not arithmetic, so the 2K forwards per round cost roughly 2x plain decoding regardless of acceptance. The method is not wrong; the models are too small for it to pay.",
+  "caveats": [
+    "prompt is only 16 tokens and generation only 32, so the KV cache is tiny and recomputation would have been cheap anyway",
+    "single prompt; speedup is a latency measurement and is noisy at these durations (0.04-0.10 s)",
+    "best-of-3 wall clock on CPU, not a controlled benchmark harness"
+  ]
+}

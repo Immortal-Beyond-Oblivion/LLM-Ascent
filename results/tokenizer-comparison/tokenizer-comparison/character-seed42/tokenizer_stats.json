@@ -1,0 +1,7 @@
+{
+  "tokenizer": "character",
+  "characters_per_token": 1.0,
+  "validation_bits_per_character": 3.5024139128486964,
+  "validation_perplexity_per_character": 11.332654406501886,
+  "merges": 0
+}

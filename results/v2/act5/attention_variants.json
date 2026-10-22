@@ -1,0 +1,51 @@
+{
+  "experiment": "act5-5b-attention-variants",
+  "claim": "Sharing KV heads across query heads (MQA/GQA) shrinks the cache 8x at G=1, and sliding-window attention shrinks it further.",
+  "num_kv_heads_sweep": [
+    {
+      "G": 1,
+      "non_embedding_params": 706944,
+      "cache_mb_at_T1024": 0.5
+    },
+    {
+      "G": 2,
+      "non_embedding_params": 723456,
+      "cache_mb_at_T1024": 1.0
+    },
+    {
+      "G": 4,
+      "non_embedding_params": 756480,
+      "cache_mb_at_T1024": 2.0
+    },
+    {
+      "G": 8,
+      "non_embedding_params": 822528,
+      "cache_mb_at_T1024": 4.0
+    }
+  ],
+  "flops_split_at_G1": {
+    "attention_matmul_flops_per_token": 8388608,
+    "note": "attention matmul identical across G; KV projection -57,344 FLOPs/token at G=1; total -12.1%",
+    "contradicts": "Lecture 10's literal claim that MQA/GQA 'neither reduces compute'"
+  },
+  "quality_v1_path": {
+    "note": "TinyShakespeare, 500 steps, CHARACTER tokenizer, v1 src.training.train path -- NOT the Act 4 ladder; internally controlled but not comparable to any other act",
+    "val_loss_by_G": {
+      "1": 2.349,
+      "2": 2.354,
+      "4": 2.363,
+      "8": 2.346
+    },
+    "conclusion": "all within seed noise on this cheap path"
+  },
+  "quality_ladder_2.6M": {
+    "see": "mqa_quality_2.6m.json",
+    "conclusion": "at 2.6M on C4 with real training, MQA costs +0.0285 nats, two-sided p=0.0008 (n=6)"
+  },
+  "swa": {
+    "measured_at_context": 128,
+    "W64_loss_delta": -0.0013,
+    "conclusion": "W=64 halves the cache at a 0.0013-nat cost (nil). W >= context is a no-op.",
+    "not_measured": "long-context quality-cost curve; the ctx-512 sweep was dropped for cost (42.1 min/run projected 8.4h vs 1.8-2.4h estimated)"
+  }
+}

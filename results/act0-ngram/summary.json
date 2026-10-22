@@ -1,0 +1,146 @@
+{
+  "o1-laplace": {
+    "bpc_mean": 4.829176877809492,
+    "bpc_std": 0.0,
+    "perplexity_mean": 28.426742438886354,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      4.829176877809492,
+      4.829176877809492,
+      4.829176877809492
+    ]
+  },
+  "o1-good_turing": {
+    "bpc_mean": 4.829176877809492,
+    "bpc_std": 0.0,
+    "perplexity_mean": 28.426742438886354,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      4.829176877809492,
+      4.829176877809492,
+      4.829176877809492
+    ]
+  },
+  "o1-kneser_ney": {
+    "bpc_mean": 4.829176877809492,
+    "bpc_std": 0.0,
+    "perplexity_mean": 28.426742438886354,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      4.829176877809492,
+      4.829176877809492,
+      4.829176877809492
+    ]
+  },
+  "o1-interpolated": {
+    "bpc_mean": 4.829176877809492,
+    "bpc_std": 0.0,
+    "perplexity_mean": 28.426742438886354,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      4.829176877809492,
+      4.829176877809492,
+      4.829176877809492
+    ]
+  },
+  "o2-laplace": {
+    "bpc_mean": 3.580656839451489,
+    "bpc_std": 0.0,
+    "perplexity_mean": 11.96423990514085,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      3.580656839451489,
+      3.580656839451489,
+      3.580656839451489
+    ]
+  },
+  "o2-good_turing": {
+    "bpc_mean": 3.5933433779123245,
+    "bpc_std": 0.0,
+    "perplexity_mean": 12.069913048929243,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      3.5933433779123245,
+      3.5933433779123245,
+      3.5933433779123245
+    ]
+  },
+  "o2-kneser_ney": {
+    "bpc_mean": 3.579631323558651,
+    "bpc_std": 0.0,
+    "perplexity_mean": 11.955738345170138,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      3.579631323558651,
+      3.579631323558651,
+      3.579631323558651
+    ]
+  },
+  "o2-interpolated": {
+    "bpc_mean": 3.580656839451489,
+    "bpc_std": 0.0,
+    "perplexity_mean": 11.96423990514085,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      3.580656839451489,
+      3.580656839451489,
+      3.580656839451489
+    ]
+  },
+  "o3-laplace": {
+    "bpc_mean": 2.984130087355154,
+    "bpc_std": 0.0,
+    "perplexity_mean": 7.912480764767797,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      2.984130087355154,
+      2.984130087355154,
+      2.984130087355154
+    ]
+  },
+  "o3-good_turing": {
+    "bpc_mean": 3.0152213006530744,
+    "bpc_std": 0.0,
+    "perplexity_mean": 8.084851643898391,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      3.0152213006530744,
+      3.0152213006530744,
+      3.0152213006530744
+    ]
+  },
+  "o3-kneser_ney": {
+    "bpc_mean": 2.8965452459156538,
+    "bpc_std": 0.0,
+    "perplexity_mean": 7.446410994207519,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      2.8965452459156538,
+      2.8965452459156538,
+      2.8965452459156538
+    ]
+  },
+  "o3-interpolated": {
+    "bpc_mean": 3.1338613440545626,
+    "bpc_std": 0.0,
+    "perplexity_mean": 8.777811833571294,
+    "perplexity_std": 0.0,
+    "n_seeds": 3,
+    "per_seed_bpc": [
+      3.1338613440545626,
+      3.1338613440545626,
+      3.1338613440545626
+    ]
+  }
+}

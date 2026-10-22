@@ -1,0 +1,9 @@
+{
+  "tokenizer": "character",
+  "vocabulary_size": 66,
+  "chars_per_token": 1.0,
+  "validation_bits_per_character": 3.467965007620389,
+  "validation_perplexity_per_character": 11.065256642479572,
+  "equal_char_span": true,
+  "context_length_used": 64
+}

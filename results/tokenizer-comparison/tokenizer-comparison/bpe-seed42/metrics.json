@@ -1,0 +1,81 @@
+{
+  "act": "tokenizer-comparison",
+  "experiment": "bpe-seed42",
+  "seed": 42,
+  "device": "mps",
+  "config": {
+    "act": "tokenizer-comparison",
+    "experiment": "main",
+    "seed": 42,
+    "dataset_path": "data/tinyshakespeare.txt",
+    "train_fraction": 0.9,
+    "tokenizer": "character",
+    "bpe_merges": 100,
+    "context_length": 64,
+    "embedding_dim": 64,
+    "num_heads": 4,
+    "num_layers": 2,
+    "dropout": 0.0,
+    "normalization": "layernorm",
+    "optimized_attention": true,
+    "steps": 500,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "warmup_steps": 0,
+    "eval_interval": 100,
+    "eval_batches": 10,
+    "device": "auto",
+    "output_root": "results/tokenizer-comparison",
+    "tokenizer_kind": "bpe"
+  },
+  "parameters": 114816,
+  "trainable_parameters": 114816,
+  "total_tokens": 688421,
+  "train_tokens": 619578,
+  "validation_tokens": 68843,
+  "vocabulary_size": 166,
+  "loss_history": [
+    {
+      "step": 1.0,
+      "train_loss": 5.082280279620382,
+      "validation_loss": 5.085685278684444,
+      "validation_perplexity": 161.69070447398633
+    },
+    {
+      "step": 100.0,
+      "train_loss": 3.953337229959212,
+      "validation_loss": 3.9305784689613654,
+      "validation_perplexity": 50.93643429475036
+    },
+    {
+      "step": 200.0,
+      "train_loss": 3.6677403876047068,
+      "validation_loss": 3.6636283775383833,
+      "validation_perplexity": 39.002602611777746
+    },
+    {
+      "step": 300.0,
+      "train_loss": 3.554119158084546,
+      "validation_loss": 3.5559542461419,
+      "validation_perplexity": 35.02122289468366
+    },
+    {
+      "step": 400.0,
+      "train_loss": 3.505574929202605,
+      "validation_loss": 3.5129321984585564,
+      "validation_perplexity": 33.546488674380626
+    },
+    {
+      "step": 500.0,
+      "train_loss": 3.484829688341868,
+      "validation_loss": 3.496847205830527,
+      "validation_perplexity": 33.01121016764091
+    }
+  ],
+  "wall_clock_seconds": 191.2885,
+  "steps_per_second": 2.6139,
+  "final_step": 500.0,
+  "final_train_loss": 3.484829688341868,
+  "final_validation_loss": 3.496847205830527,
+  "final_validation_perplexity": 33.01121016764091
+}

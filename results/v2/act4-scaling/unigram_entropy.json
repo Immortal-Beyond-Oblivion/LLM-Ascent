@@ -1,0 +1,29 @@
+{
+  "act": "4",
+  "quantity": "unigram entropy of the corpus under the 6,487-token vocabulary, in nats",
+  "why": "E in L(N,D)=E+A/N^alpha+B/D^beta is meant to be the irreducible loss, so it cannot exceed the entropy of the best constant predictor (the unigram distribution). This measures that bound rather than arguing about it.",
+  "held_out_region": {
+    "tokens": 1000128,
+    "entropy_nats": 4.9946
+  },
+  "training_region_sample": {
+    "tokens": 5000000,
+    "entropy_nats": 5.0068
+  },
+  "full_corpus": {
+    "tokens": 338513094,
+    "entropy_nats": 5.0136
+  },
+  "fits_compared": {
+    "total_N": {
+      "E": 1.348,
+      "ratio_to_held_out_entropy": 0.2699
+    },
+    "non_embedding_N": {
+      "E": 0.706,
+      "ratio_to_held_out_entropy": 0.1414
+    }
+  },
+  "conclusion": "BOTH fitted E values lie BELOW the held-out unigram entropy, so neither is a measured irreducible loss and the physical-plausibility argument does NOT discriminate between the two N conventions. E here is an EXTRAPOLATED asymptote from a four-rung ladder, not the corpus's entropy, and the paper must say so. The choice of the total-N axis rests on the other two grounds: it is the convention the published exponents use, and it is the stable one.",
+  "source": "artifacts/scaling/corpus_tokens.mmap via src.scaling.ladder.MemmapCorpus"
+}

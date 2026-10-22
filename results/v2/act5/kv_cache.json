@@ -1,0 +1,53 @@
+{
+  "experiment": "act5-5a-kv-cache",
+  "claim": "A KV cache makes autoregressive decoding sub-quadratic by reusing the prefix.",
+  "hardware": "Apple M4 16GB",
+  "model": "MiniGPT, 4 layers, d=128, 4 heads, ctx up to 1024",
+  "latency_ms": [
+    {
+      "context": 128,
+      "uncached": 51.7,
+      "cached": 14.0,
+      "speedup": 3.71
+    },
+    {
+      "context": 256,
+      "uncached": 85.1,
+      "cached": 19.1,
+      "speedup": 4.46
+    },
+    {
+      "context": 512,
+      "uncached": 198.2,
+      "cached": 22.7,
+      "speedup": 8.72
+    },
+    {
+      "context": 1024,
+      "uncached": 630.7,
+      "cached": 34.3,
+      "speedup": 18.36
+    }
+  ],
+  "cache_memory_mb": [
+    {
+      "model": "1.5M (L=4, d=128, 4H)",
+      "128": 0.5,
+      "256": 1.0,
+      "512": 2.0,
+      "1024": 4.0
+    },
+    {
+      "model": "9.0M (L=9, d=288, 4H)",
+      "128": 2.53,
+      "256": 5.06,
+      "512": 10.13,
+      "1024": 20.25
+    }
+  ],
+  "correctness": {
+    "max_logit_diff_vs_uncached": 1.64e-07,
+    "interpretation": "1.4 ULP, BLAS accumulation order; byte-identical output verified"
+  },
+  "conclusion": "Speedup GROWS with context (3.71x at 128 -> 18.36x at 1024) because the uncached path is quadratic in context while the cached path is linear. Cache memory is exactly linear in context (2x per doubling), and grows with d and L as expected. Caching only pays for itself once N > d (~288 for the 9.0M model); below that the extra memory is not repaid."
+}

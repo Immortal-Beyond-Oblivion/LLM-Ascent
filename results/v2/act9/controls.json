@@ -1,0 +1,367 @@
+{
+  "act": "9",
+  "purpose": "the controls that decide whether the Act 9 claims survive",
+  "9c_lens_controls": {
+    "asserted_oracle": {
+      "median_rank_per_layer": [
+        860.0,
+        790.0,
+        608.0,
+        444.0,
+        411.0,
+        82.0,
+        211.0,
+        678.5
+      ],
+      "n_items": 40,
+      "best_layer": 5,
+      "best_median_rank": 82.0
+    },
+    "edited_counterfactual": {
+      "median_rank_per_layer": [
+        890.5,
+        816.0,
+        640.5,
+        480.0,
+        441.5,
+        82.0,
+        181.5,
+        667.0
+      ],
+      "n_items": 40,
+      "best_layer": 5,
+      "best_median_rank": 82.0
+    },
+    "absent_number_oracle": {
+      "median_rank_per_layer": [
+        2289.0,
+        2086.0,
+        1953.0,
+        1610.0,
+        1765.5,
+        484.0,
+        1150.0,
+        565.0
+      ],
+      "n_items": 40,
+      "best_layer": 5,
+      "best_median_rank": 484.0
+    },
+    "asserted_nonnumeric": {
+      "median_rank_per_layer": [
+        820.0,
+        715.5,
+        582.0,
+        427.5,
+        403.5,
+        85.5,
+        206.5,
+        784.5
+      ],
+      "n_items": 40,
+      "best_layer": 5,
+      "best_median_rank": 85.5
+    },
+    "random_token_oracle": {
+      "median_rank_per_layer": [
+        783.0,
+        594.0,
+        611.0,
+        801.0,
+        729.5,
+        735.0,
+        656.0,
+        2280.0
+      ],
+      "n_items": 40,
+      "best_layer": 1,
+      "best_median_rank": 594.0
+    },
+    "_random_token_id": 5338
+  },
+  "9b_attribution_controls": {
+    "rollout_argmax_position_is_last": 0,
+    "raw_argmax_position_is_last": 0,
+    "n": 71,
+    "rollout_mean_attribution_mass_on_the_number": 0.007592,
+    "raw_mean_attribution_mass_on_the_number": 0.006734,
+    "note": "a hit rate of 0/34 against a chance rate of 0.0078 is what chance predicts, so this is a statement about the METHOD; the mass and argmax measurements say whether the attribution has any structure at all"
+  },
+  "9a_sink_checks": {
+    "head": {
+      "layer": 0,
+      "head": 5
+    },
+    "attention_distribution": {
+      "position_0_mass": 0.01636,
+      "last_position_mass": 0.00013,
+      "uniform_mass": 0.00781,
+      "top5_positions": [
+        0,
+        1,
+        2,
+        7,
+        10
+      ],
+      "top5_mass": [
+        0.01636,
+        0.00826,
+        0.00824,
+        0.0082,
+        0.00817
+      ],
+      "single_position_concentration": 0.01636,
+      "verdict": "not a single-position sink"
+    },
+    "output_collapse": {
+      "intact_ce_nats": 2.855083,
+      "ablated_ce_nats": 3.686894,
+      "uniform_ce_nats": 8.777555,
+      "verdict": "the ablation DEGRADES the model, it does not collapse it toward uniform"
+    },
+    "pairwise_redundancy": [
+      {
+        "heads": [
+          [
+            0,
+            5
+          ],
+          [
+            1,
+            6
+          ]
+        ],
+        "combined_delta_ce": 0.959087,
+        "sum_of_singles_delta_ce": 0.907911,
+        "redundancy": -0.0564
+      },
+      {
+        "heads": [
+          [
+            0,
+            5
+          ],
+          [
+            5,
+            3
+          ]
+        ],
+        "combined_delta_ce": 0.854064,
+        "sum_of_singles_delta_ce": 0.892306,
+        "redundancy": 0.0429
+      },
+      {
+        "heads": [
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "combined_delta_ce": 0.02336,
+        "sum_of_singles_delta_ce": 0.855171,
+        "redundancy": 0.9727
+      },
+      {
+        "heads": [
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "combined_delta_ce": 0.022574,
+        "sum_of_singles_delta_ce": 0.854385,
+        "redundancy": 0.9736
+      },
+      {
+        "heads": [
+          [
+            1,
+            6
+          ],
+          [
+            5,
+            3
+          ]
+        ],
+        "combined_delta_ce": 0.123946,
+        "sum_of_singles_delta_ce": 0.136595,
+        "redundancy": 0.0926
+      },
+      {
+        "heads": [
+          [
+            1,
+            6
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "combined_delta_ce": 0.103922,
+        "sum_of_singles_delta_ce": 0.09946,
+        "redundancy": -0.0449
+      },
+      {
+        "heads": [
+          [
+            1,
+            6
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "combined_delta_ce": 0.113814,
+        "sum_of_singles_delta_ce": 0.098674,
+        "redundancy": -0.1534
+      },
+      {
+        "heads": [
+          [
+            5,
+            3
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "combined_delta_ce": 0.082319,
+        "sum_of_singles_delta_ce": 0.083854,
+        "redundancy": 0.0183
+      },
+      {
+        "heads": [
+          [
+            5,
+            3
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "combined_delta_ce": 0.087093,
+        "sum_of_singles_delta_ce": 0.083068,
+        "redundancy": -0.0485
+      },
+      {
+        "heads": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "combined_delta_ce": 0.022574,
+        "sum_of_singles_delta_ce": 0.045933,
+        "redundancy": 0.5086
+      }
+    ],
+    "singles_delta_ce": {
+      "0,5": 0.831811,
+      "1,6": 0.0761,
+      "5,3": 0.060495,
+      "0,2": 0.02336,
+      "0,0": 0.022574
+    }
+  },
+  "9a_two_slices": [
+    {
+      "offset": 300000,
+      "intact_ce_nats": 2.855083,
+      "intact_perplexity": 17.3759,
+      "null_mean": 0.009894,
+      "null_sd": 0.019196,
+      "top_heads": [
+        {
+          "layer": 0,
+          "head": 5,
+          "delta_ce": 0.831811,
+          "z_vs_random_null": 42.8162
+        },
+        {
+          "layer": 1,
+          "head": 6,
+          "delta_ce": 0.0761,
+          "z_vs_random_null": 3.4489
+        },
+        {
+          "layer": 5,
+          "head": 3,
+          "delta_ce": 0.060495,
+          "z_vs_random_null": 2.6359
+        },
+        {
+          "layer": 0,
+          "head": 2,
+          "delta_ce": 0.02336,
+          "z_vs_random_null": 0.7015
+        },
+        {
+          "layer": 0,
+          "head": 0,
+          "delta_ce": 0.022574,
+          "z_vs_random_null": 0.6605
+        }
+      ],
+      "z_of_layer0_head5": 42.8162,
+      "n_heads_z_ge_2": 3
+    },
+    {
+      "offset": 320000,
+      "intact_ce_nats": 2.902812,
+      "intact_perplexity": 18.2253,
+      "null_mean": 0.012313,
+      "null_sd": 0.022878,
+      "top_heads": [
+        {
+          "layer": 0,
+          "head": 5,
+          "delta_ce": 0.861276,
+          "z_vs_random_null": 37.1077
+        },
+        {
+          "layer": 1,
+          "head": 6,
+          "delta_ce": 0.090943,
+          "z_vs_random_null": 3.4369
+        },
+        {
+          "layer": 5,
+          "head": 3,
+          "delta_ce": 0.06591,
+          "z_vs_random_null": 2.3427
+        },
+        {
+          "layer": 0,
+          "head": 0,
+          "delta_ce": 0.038633,
+          "z_vs_random_null": 1.1504
+        },
+        {
+          "layer": 0,
+          "head": 2,
+          "delta_ce": 0.030121,
+          "z_vs_random_null": 0.7784
+        }
+      ],
+      "z_of_layer0_head5": 37.1077,
+      "n_heads_z_ge_2": 3
+    }
+  ],
+  "wall_seconds": 149.7
+}

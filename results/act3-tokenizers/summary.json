@@ -1,0 +1,66 @@
+{
+  "character-standard": {
+    "bpc_mean": 3.467964938827329,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.467964938827329
+    ]
+  },
+  "character-equal_char_span": {
+    "bpc_mean": 3.467965007620389,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.467965007620389
+    ]
+  },
+  "bpe-standard": {
+    "bpc_mean": 3.0801341256578136,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.0801341256578136
+    ]
+  },
+  "bpe-equal_char_span": {
+    "bpc_mean": 3.1892599067522664,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.1892599067522664
+    ]
+  },
+  "wordpiece-standard": {
+    "bpc_mean": 3.499812008848917,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.499812008848917
+    ]
+  },
+  "wordpiece-equal_char_span": {
+    "bpc_mean": 3.5115772719654963,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.5115772719654963
+    ]
+  },
+  "unigram-standard": {
+    "bpc_mean": 2.802090676883648,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      2.802090676883648
+    ]
+  },
+  "unigram-equal_char_span": {
+    "bpc_mean": 2.834090365802176,
+    "bpc_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      2.834090365802176
+    ]
+  }
+}

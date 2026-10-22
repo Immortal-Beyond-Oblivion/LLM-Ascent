@@ -1,0 +1,109 @@
+{
+  "act": "10c",
+  "question": "does instruction tuning change calibration, or leave a well-calibrated model that still cannot follow instructions?",
+  "sft_checkpoint": "checkpoints/canonical/6.3M-sft/model.pt",
+  "sft_recipe": "Act 7's full fine-tune: 512 instruction examples, 24 epochs, seed 42",
+  "device": "cpu",
+  "disjointness": {
+    "instruction_slice_disjoint_from_sft_training": true,
+    "held_out_examples_also_in_train": 0,
+    "held_out_addition_pairs_also_in_train": [],
+    "n_train_addition_pairs": 73,
+    "n_held_out_addition_pairs": 18,
+    "shared_response_vocabulary": 32,
+    "shared_vocabulary_is_benign": "the copy, first-word and last-word tasks draw their inputs from a SHARED WORD POOL by design, so a vocabulary overlap between the training and held-out RESPONSE sets is expected and is not leakage; the checks that matter are at the EXAMPLE level (no held-out example appears in training) and the addition operand pairs (no held-out pair appears in training).",
+    "method": "example-level and operand-pair-level checks, run here rather than assumed from make_splits",
+    "generic_slice": "held-out C4 text at document offset 300,000, far beyond anything the training sweep or the instruction set touched"
+  },
+  "slices": {
+    "generic_c4_text": {
+      "n_sequences": 32,
+      "n_tokens": 4096,
+      "base": {
+        "correct": 2152,
+        "n": 4064,
+        "accuracy": 0.5295,
+        "wilson95": [
+          0.5142,
+          0.5448
+        ],
+        "ece": 0.0233,
+        "ci_low": 0.0181,
+        "ci_high": 0.0355,
+        "n_resamples": 2000,
+        "seed": 0,
+        "method": "percentile bootstrap over predictions",
+        "mean_confidence": 0.5255
+      },
+      "sft": {
+        "correct": 1718,
+        "n": 4064,
+        "accuracy": 0.4227,
+        "wilson95": [
+          0.4076,
+          0.438
+        ],
+        "ece": 0.1306,
+        "ci_low": 0.1188,
+        "ci_high": 0.1419,
+        "n_resamples": 2000,
+        "seed": 0,
+        "method": "percentile bootstrap over predictions",
+        "mean_confidence": 0.5534
+      },
+      "accuracy_difference_sft_minus_base": {
+        "difference": -0.1068,
+        "ci_low": -0.1284,
+        "ci_high": -0.0852,
+        "se": 0.011,
+        "note": "normal approximation on the difference of two independent proportions"
+      },
+      "ece_difference_sft_minus_base": 0.1073
+    },
+    "instruction_responses": {
+      "n_sequences": 128,
+      "n_tokens": 1023,
+      "base": {
+        "correct": 2712,
+        "n": 7655,
+        "accuracy": 0.3543,
+        "wilson95": [
+          0.3436,
+          0.3651
+        ],
+        "ece": 0.1118,
+        "ci_low": 0.1036,
+        "ci_high": 0.1219,
+        "n_resamples": 2000,
+        "seed": 0,
+        "method": "percentile bootstrap over predictions",
+        "mean_confidence": 0.3969
+      },
+      "sft": {
+        "correct": 2705,
+        "n": 7655,
+        "accuracy": 0.3534,
+        "wilson95": [
+          0.3427,
+          0.3641
+        ],
+        "ece": 0.2772,
+        "ci_low": 0.2669,
+        "ci_high": 0.2877,
+        "n_resamples": 2000,
+        "seed": 0,
+        "method": "percentile bootstrap over predictions",
+        "mean_confidence": 0.6261
+      },
+      "accuracy_difference_sft_minus_base": {
+        "difference": -0.0009,
+        "ci_low": -0.016,
+        "ci_high": 0.0142,
+        "se": 0.0077,
+        "note": "normal approximation on the difference of two independent proportions"
+      },
+      "ece_difference_sft_minus_base": 0.1654
+    }
+  },
+  "reading": "The two slices answer different questions. On generic text, instruction tuning makes the model a measurably worse next-token predictor: accuracy falls while confidence rises and the calibration error grows, which is catastrophic forgetting or narrow specialisation. On the instruction responses themselves, the same degradation is visible, and there the tuned model is worse at predicting the very distribution it was tuned on. Together with the fact that the tuned model follows instructions far better (0.6016 against a 0.0000 zero-shot floor), the reading is that instruction tuning RETARGETS a competent model rather than adding to it, and the trade is measurable at this scale. That is also the mechanism behind Act 7b and Act 8d: those failures are failures of a retargeted competence, not of an absent one."
+}

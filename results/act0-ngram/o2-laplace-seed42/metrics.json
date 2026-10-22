@@ -1,0 +1,39 @@
+{
+  "act": "act0-ngram",
+  "experiment": "o2-laplace-seed42",
+  "seed": 42,
+  "device": "cpu",
+  "config": {
+    "order": 2,
+    "smoothing": "laplace",
+    "discount": 0.75,
+    "interpolation_weights": [
+      0.1,
+      0.3,
+      0.6
+    ],
+    "train_chars": 855,
+    "validation_chars": 95,
+    "vocabulary_size": 7
+  },
+  "parameters": 2562,
+  "trainable_parameters": 2562,
+  "total_tokens": 950,
+  "train_tokens": 855,
+  "validation_tokens": 95,
+  "vocabulary_size": 7,
+  "loss_history": [
+    {
+      "step": 1.0,
+      "train_loss": -0.7801621864207408,
+      "validation_loss": -0.7869552548608881,
+      "validation_perplexity": 2.1966978486033453
+    }
+  ],
+  "wall_clock_seconds": 0.0001,
+  "steps_per_second": 0.0,
+  "final_step": 1.0,
+  "final_train_loss": -0.7801621864207408,
+  "final_validation_loss": -0.7869552548608881,
+  "final_validation_perplexity": 2.1966978486033453
+}

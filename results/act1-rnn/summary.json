@@ -1,0 +1,33 @@
+{
+  "rnn": {
+    "validation_loss_mean": 2.438199281692505,
+    "validation_loss_std": 0.2150694971881428,
+    "validation_perplexity_mean": 11.633155163727386,
+    "parameters": 31362,
+    "n_seeds": 3
+  },
+  "lstm": {
+    "validation_loss_mean": 2.590480359395345,
+    "validation_loss_std": 0.28544921032663373,
+    "validation_perplexity_mean": 13.713034712294167,
+    "parameters": 58434,
+    "n_seeds": 3
+  },
+  "gru": {
+    "validation_loss_mean": 2.4821239948272704,
+    "validation_loss_std": 0.253901167379896,
+    "validation_perplexity_mean": 12.231060629729761,
+    "parameters": 45954,
+    "n_seeds": 3
+  },
+  "rnn_grad_norms": {
+    "initial": 0.4362896468194115,
+    "final": 0.48290259207135344,
+    "mean": 0.4399718638941861
+  },
+  "lstm_grad_norms": {
+    "initial": 0.1412488492536739,
+    "final": 0.28281258722999386,
+    "mean": 0.18027660696097653
+  }
+}

@@ -1,0 +1,7 @@
+rung,non_embedding_params,steps,training_tokens,n_seeds_all,n_seeds_in_fitted_set,final_validation_loss_values,model_class,num_heads,embedding_dim,num_layers,context_length,positional_encoding
+0.8M,694144,3840,15728640,3,3,3.4353; 3.4385; 3.4408,,,,,,
+1.5M,1546720,7500,30720000,3,3,3.0571; 3.5558; 3.5780,MiniGPT,8,160,5,128,learned_absolute
+2.6M,2694144,12960,53084160,6,2,2.8111; 2.8129; 2.8190; 2.8205; 2.8331; 2.8382,MiniGPT,8,192,6,128,learned_absolute
+4.1M,4235616,20160,82575360,2,2,2.9957; 3.0055,,,,,,
+6.3M,6351360,30720,125829120,1,1,2.5152,MiniGPT,8,256,8,128,learned_absolute
+9.0M,8992224,21953,89922240,1,1,2.8492,,,,,,

@@ -1,0 +1,18 @@
+{
+  "character": {
+    "bits_per_character_mean": 3.5024139128486964,
+    "bits_per_character_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.5024139128486964
+    ]
+  },
+  "bpe": {
+    "bits_per_character_mean": 3.1418655309072925,
+    "bits_per_character_std": 0.0,
+    "n_seeds": 1,
+    "per_seed_bpc": [
+      3.1418655309072925
+    ]
+  }
+}

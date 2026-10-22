@@ -1,0 +1,7 @@
+{
+  "tokenizer": "bpe",
+  "characters_per_token": 1.6056970207573755,
+  "validation_bits_per_character": 3.1418655309072925,
+  "validation_perplexity_per_character": 8.826647177815689,
+  "merges": 100
+}

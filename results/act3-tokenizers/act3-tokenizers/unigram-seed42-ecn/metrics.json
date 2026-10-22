@@ -1,0 +1,62 @@
+{
+  "act": "act3-tokenizers",
+  "experiment": "unigram-seed42-ecn",
+  "seed": 42,
+  "device": "mps",
+  "config": {
+    "tokenizer": "unigram",
+    "equal_char_span": false,
+    "context_length": 64,
+    "steps": 500
+  },
+  "parameters": 114816,
+  "trainable_parameters": 114816,
+  "total_tokens": 680840,
+  "train_tokens": 612756,
+  "validation_tokens": 68084,
+  "vocabulary_size": 166,
+  "loss_history": [
+    {
+      "step": 1.0,
+      "train_loss": 5.07216157913208,
+      "validation_loss": 5.080312347412109,
+      "validation_perplexity": 160.82428113235875
+    },
+    {
+      "step": 100.0,
+      "train_loss": 4.05211706161499,
+      "validation_loss": 4.0171948909759525,
+      "validation_perplexity": 55.54507709330671
+    },
+    {
+      "step": 200.0,
+      "train_loss": 3.7494156837463377,
+      "validation_loss": 3.7470868587493897,
+      "validation_perplexity": 42.3973923322778
+    },
+    {
+      "step": 300.0,
+      "train_loss": 3.669071102142334,
+      "validation_loss": 3.6582456111907957,
+      "validation_perplexity": 38.793224736606604
+    },
+    {
+      "step": 400.0,
+      "train_loss": 3.5647018432617186,
+      "validation_loss": 3.5445895195007324,
+      "validation_perplexity": 34.62546934482156
+    },
+    {
+      "step": 500.0,
+      "train_loss": 3.546262836456299,
+      "validation_loss": 3.52176775932312,
+      "validation_perplexity": 33.84420402107568
+    }
+  ],
+  "wall_clock_seconds": 0.0,
+  "steps_per_second": 0.0,
+  "final_step": 500.0,
+  "final_train_loss": 3.546262836456299,
+  "final_validation_loss": 3.52176775932312,
+  "final_validation_perplexity": 33.84420402107568
+}

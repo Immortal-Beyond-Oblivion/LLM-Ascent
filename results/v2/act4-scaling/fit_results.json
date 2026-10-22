@@ -1,0 +1,49 @@
+{
+  "primary": {
+    "model": "L(N,D)=E+A/N^alpha+B/D^beta",
+    "n_points": 12,
+    "E": 0.0,
+    "A": 24.13185301659619,
+    "alpha": 0.19298686651844826,
+    "B": 37.92144464361302,
+    "beta": 0.16896963302201196,
+    "E_err": 12.290349969695308,
+    "A_err": 1376.5077676402946,
+    "alpha_err": 5.439584312551707,
+    "B_err": 2274.7526477829265,
+    "beta_err": 4.714884599208345,
+    "r2": 0.9933415425538074,
+    "jacobian_condition": 37338133.95950779,
+    "reduced_chi2": 24.868657198366794,
+    "resid_corr_logN": -0.23162968657298527,
+    "resid_corr_logD": -0.3368338316511898
+  },
+  "secondary": {
+    "model": "L(N,D)=E+A/N^alpha+B/D^beta",
+    "n_points": 2776,
+    "E": 1.6051836451196932,
+    "A": 394.4140968926488,
+    "alpha": 0.44512781906248833,
+    "B": 179.95873981173193,
+    "beta": 0.29015408269978216,
+    "E_err": 0.007291879384686568,
+    "A_err": 15.819096235219812,
+    "alpha_err": 0.003219207862481123,
+    "B_err": 3.8917242092023305,
+    "beta_err": 0.0016053570166022222,
+    "r2": 0.9950353909716351,
+    "jacobian_condition": 1899983.4503955657,
+    "reduced_chi2": 8.289669980912038,
+    "resid_corr_logN": 0.00206056649147438,
+    "resid_corr_logD": 0.019659862794271347
+  },
+  "comparison": {
+    "abs_delta_alpha": 0.25214095254404006,
+    "abs_delta_beta": 0.1211844496777702
+  },
+  "chinchilla_reference": {
+    "alpha": 0.34,
+    "beta": 0.28
+  },
+  "notes": "Primary=12 endpoint points (properly annealed). Secondary=all surviving interior points D>=5M. Levenberg-Marquardt with numerical Jacobian (no scipy in venv)."
+}

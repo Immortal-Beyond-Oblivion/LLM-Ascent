@@ -1,0 +1,9 @@
+{
+  "tokenizer": "bpe",
+  "vocabulary_size": 166,
+  "chars_per_token": 1.6056970207573755,
+  "validation_bits_per_character": 3.0801341256578136,
+  "validation_perplexity_per_character": 8.456930518808997,
+  "equal_char_span": false,
+  "context_length_used": 64
+}

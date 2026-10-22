@@ -1,0 +1,61 @@
+{
+  "experiment": "act5-5c-speculative-zero-gap",
+  "question": "Does the cached speculative implementation deliver a wall-clock speedup when draft and target are the same model?",
+  "setup": {
+    "draft": "1.5M canonical (pinned, step 7500, val_loss 3.0571)",
+    "target": "1.5M canonical (identical weights, zero gap)",
+    "kv_cache": "enabled on BOTH draft and target",
+    "baseline": "plain target generation WITH KV cache (the honest baseline)",
+    "prompt": "real C4 text, 16 BPE tokens",
+    "max_new_tokens": 32,
+    "n_repeats": 3,
+    "metric": "best-of wall clock",
+    "device": "cpu"
+  },
+  "results": [
+    {
+      "K": 1,
+      "spec_seconds": 0.09,
+      "plain_seconds": 0.04,
+      "speedup": 0.5,
+      "acceptance_rate": 1.0
+    },
+    {
+      "K": 2,
+      "spec_seconds": 0.09,
+      "plain_seconds": 0.04,
+      "speedup": 0.49,
+      "acceptance_rate": 1.0
+    },
+    {
+      "K": 3,
+      "spec_seconds": 0.1,
+      "plain_seconds": 0.04,
+      "speedup": 0.43,
+      "acceptance_rate": 1.0
+    },
+    {
+      "K": 5,
+      "spec_seconds": 0.11,
+      "plain_seconds": 0.04,
+      "speedup": 0.42,
+      "acceptance_rate": 1.0
+    },
+    {
+      "K": 7,
+      "spec_seconds": 0.11,
+      "plain_seconds": 0.04,
+      "speedup": 0.41,
+      "acceptance_rate": 1.0
+    }
+  ],
+  "conclusion": "NEGATIVE, and expected. At zero gap every proposal is accepted (100%), so no target forward pass is saved, but each round still costs 2*K draft/target forwards instead of K plain forwards. Speedup 0.41-0.50x: roughly 2x SLOWER than plain cached generation. Zero gap is the worst possible configuration and exists only to prove correctness.",
+  "bug_found_and_fixed": {
+    "symptom": "acceptance was 15-40% at zero gap where it must be 100%",
+    "cause": "the draft loop and the target verification loop re-fed the ENTIRE sequence on top of an already-prefilled KV cache, double-counting the context; target p therefore differed from draft q even for identical weights",
+    "fix": "strict cache invariant - at the top of each round the cache holds exactly the accepted sequence and the held base logits predict the position after it; every inner forward feeds only new tokens",
+    "regression_test": "tests/test_speculative_cache.py::test_zero_gap_acceptance_is_total",
+    "effect_on_throughput_K3": "28.9 -> 309.8 tokens/s (10.7x)"
+  },
+  "not_yet_measured": "speedup and acceptance at a real model gap (1.5M -> 2.6M -> 6.3M); the zero-gap number is a correctness proof, not a performance result"
+}

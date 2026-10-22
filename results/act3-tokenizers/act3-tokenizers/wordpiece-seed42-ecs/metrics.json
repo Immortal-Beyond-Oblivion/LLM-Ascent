@@ -1,0 +1,62 @@
+{
+  "act": "act3-tokenizers",
+  "experiment": "wordpiece-seed42-ecs",
+  "seed": 42,
+  "device": "mps",
+  "config": {
+    "tokenizer": "wordpiece",
+    "equal_char_span": true,
+    "context_length": 63,
+    "steps": 500
+  },
+  "parameters": 114752,
+  "trainable_parameters": 114752,
+  "total_tokens": 1105716,
+  "train_tokens": 995144,
+  "validation_tokens": 110572,
+  "vocabulary_size": 166,
+  "loss_history": [
+    {
+      "step": 1.0,
+      "train_loss": 4.921387004852295,
+      "validation_loss": 4.930449771881103,
+      "validation_perplexity": 138.44176555235472
+    },
+    {
+      "step": 100.0,
+      "train_loss": 2.6530141830444336,
+      "validation_loss": 2.6748406887054443,
+      "validation_perplexity": 14.510038042503508
+    },
+    {
+      "step": 200.0,
+      "train_loss": 2.506240177154541,
+      "validation_loss": 2.5345293521881103,
+      "validation_perplexity": 12.610494349574003
+    },
+    {
+      "step": 300.0,
+      "train_loss": 2.490167570114136,
+      "validation_loss": 2.4978284358978273,
+      "validation_perplexity": 12.15606759779887
+    },
+    {
+      "step": 400.0,
+      "train_loss": 2.4435298919677733,
+      "validation_loss": 2.454020643234253,
+      "validation_perplexity": 11.63503311884191
+    },
+    {
+      "step": 500.0,
+      "train_loss": 2.386414623260498,
+      "validation_loss": 2.435933017730713,
+      "validation_perplexity": 11.42647484504398
+    }
+  ],
+  "wall_clock_seconds": 0.0,
+  "steps_per_second": 0.0,
+  "final_step": 500.0,
+  "final_train_loss": 2.386414623260498,
+  "final_validation_loss": 2.435933017730713,
+  "final_validation_perplexity": 11.42647484504398
+}

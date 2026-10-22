@@ -1,0 +1,754 @@
+{
+  "act": "8b+8c",
+  "rung": "6.3M",
+  "headline": {
+    "claim": "supplying the passage does not change what the model says",
+    "order": "choice rates first, lift rows as the explanation",
+    "choice_rates": {
+      "oracle_chooses_the_asserted_number": {
+        "count": 9,
+        "n": 40,
+        "rate": 0.225,
+        "wilson95": [
+          0.1232,
+          0.375
+        ]
+      },
+      "closed_book_chooses_the_asserted_number": {
+        "count": 11,
+        "n": 40,
+        "rate": 0.275,
+        "wilson95": [
+          0.1611,
+          0.4283
+        ]
+      },
+      "retrieved_chooses_the_asserted_number": {
+        "count": 8,
+        "n": 40,
+        "rate": 0.2,
+        "wilson95": [
+          0.105,
+          0.3476
+        ]
+      },
+      "counterfactual_chooses_the_EDITED_number": {
+        "count": 0,
+        "n": 40,
+        "rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.0876
+        ]
+      },
+      "mean_uniform_chance": 0.1838,
+      "chance_adjusted_oracle": {
+        "n": 40,
+        "mean_uniform_chance": 0.1838,
+        "observed_rate": 0.0412,
+        "chance_adjusted_mean": 0.0412,
+        "bootstrap95": {
+          "mean": 0.041249999999999995,
+          "ci_low": -0.07833333333333328,
+          "ci_high": 0.16958333333333325,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 41,
+          "method": "percentile bootstrap, resampling items"
+        }
+      },
+      "chance_adjusted_closed_book": {
+        "n": 40,
+        "mean_uniform_chance": 0.1838,
+        "observed_rate": 0.0913,
+        "chance_adjusted_mean": 0.0913,
+        "bootstrap95": {
+          "mean": 0.09125000000000004,
+          "ci_low": -0.03749999999999999,
+          "ci_high": 0.23458333333333328,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 42,
+          "method": "percentile bootstrap, resampling items"
+        }
+      },
+      "mcnemar_oracle_vs_closed_book": {
+        "definition": "paired McNemar: items where the model chose the item's answer under the oracle context but not under closed-book, versus the reverse",
+        "n": 40,
+        "oracle_chose_source": 9,
+        "closed_book_chose_source": 11,
+        "discordant_b": 1,
+        "discordant_c": 3,
+        "mcnemar_p_value": 0.625
+      },
+      "counterfactual_tracks_the_edit": {
+        "definition": "share of items where the preferred answer under the counterfactual is the EDITED number",
+        "n": 40,
+        "count": 0,
+        "rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.0876
+        ],
+        "bootstrap95": {
+          "mean": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 2,
+          "method": "percentile bootstrap, resampling items"
+        }
+      }
+    },
+    "explanation": {
+      "summary": "the passage produces a generic NUMBER bias, not an assertion-reading ability. Having a passage raises the likelihood of a number appearing in it, and raises it almost as much for a number the passage does NOT assert.",
+      "lift_on_the_asserted_number": {
+        "definition": "log P(source | oracle prompt) - log P(source | closed-book prompt), paired per item. Positive means supplying the passage RAISED the model's preference for the number the passage states.",
+        "n": 40,
+        "mean": 0.7864,
+        "bootstrap95": {
+          "mean": 0.7863608241081238,
+          "ci_low": 0.3637136250734329,
+          "ci_high": 1.269227173924446,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 11,
+          "method": "percentile bootstrap, resampling items"
+        },
+        "t": 3.3726,
+        "df": 39.0,
+        "p_value": 0.001692
+      },
+      "lift_on_the_UNASSERTED_number": {
+        "definition": "CONTROL for the contrast above: the same comparison for the number the passage does NOT state. If the passage is being read, this should be near zero.",
+        "n": 40,
+        "mean": 0.5825,
+        "bootstrap95": {
+          "mean": 0.5824630975723266,
+          "ci_low": 0.2185021758079529,
+          "ci_high": 0.9959023833274842,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 12,
+          "method": "percentile bootstrap, resampling items"
+        },
+        "t": 2.9269,
+        "df": 39.0,
+        "p_value": 0.005686
+      },
+      "residual_assertion_sensitivity": {
+        "definition": "(log P(source|oracle) - log P(cf|oracle)) - (log P(source|closed_book) - log P(cf|closed_book)), paired per item. This is THE statistic: the margin the model shows for the number in its context, MINUS the margin it would show for the same pair of numbers with no context. Positive means the preference is caused by READING the passage rather than by a prior over numbers.",
+        "n": 40,
+        "mean": 0.2039,
+        "bootstrap95": {
+          "mean": 0.20389772653579713,
+          "ci_low": 0.04364428818225861,
+          "ci_high": 0.3912770926952362,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 21,
+          "method": "percentile bootstrap, resampling items"
+        },
+        "t": 2.2547,
+        "df": 39.0,
+        "p_value": 0.029842
+      },
+      "instruments_disagree": "the residual is a single marginal result (p=0.030) and it produces NO behavioural change: the behavioural point estimate is in the OPPOSITE direction (oracle 9/40 vs closed-book 11/40, McNemar p=0.625). The behavioural test is the one that matters."
+    },
+    "ceiling_note": "the absolute free-generation hallucination rate is 1.000 in every condition (97/120 oracle generations contain no number at all). It is a CEILING and is uninformative for ranking conditions. It is never used as a comparison."
+  },
+  "chance_baseline": {
+    "candidate_set_sizes": {
+      "3": 1,
+      "4": 3,
+      "5": 8,
+      "6": 28
+    },
+    "mean_uniform_chance_per_item": 0.1838,
+    "why_per_item": "the candidate set is deduplicated, so an item may have 4, 5 or 6 distinct candidates; a flat 1/3 (or 1/6) would be wrong",
+    "per_condition": {
+      "retrieved": {
+        "n": 40,
+        "mean_uniform_chance": 0.1838,
+        "observed_rate": 0.0162,
+        "chance_adjusted_mean": 0.0162,
+        "bootstrap95": {
+          "mean": 0.016249999999999994,
+          "ci_low": -0.10124999999999999,
+          "ci_high": 0.14333333333333337,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 30,
+          "method": "percentile bootstrap, resampling items"
+        }
+      },
+      "oracle": {
+        "n": 40,
+        "mean_uniform_chance": 0.1838,
+        "observed_rate": 0.0412,
+        "chance_adjusted_mean": 0.0412,
+        "bootstrap95": {
+          "mean": 0.041249999999999995,
+          "ci_low": -0.07874999999999996,
+          "ci_high": 0.1699999999999999,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 31,
+          "method": "percentile bootstrap, resampling items"
+        }
+      },
+      "counterfactual": {
+        "n": 40,
+        "mean_uniform_chance": 0.1838,
+        "observed_rate": 0.0413,
+        "chance_adjusted_mean": 0.0413,
+        "bootstrap95": {
+          "mean": 0.04125,
+          "ci_low": -0.08375,
+          "ci_high": 0.17166666666666658,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 32,
+          "method": "percentile bootstrap, resampling items"
+        }
+      },
+      "closed_book": {
+        "n": 40,
+        "mean_uniform_chance": 0.1838,
+        "observed_rate": 0.0913,
+        "chance_adjusted_mean": 0.0913,
+        "bootstrap95": {
+          "mean": 0.09125000000000004,
+          "ci_low": -0.03499999999999999,
+          "ci_high": 0.23208333333333336,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 33,
+          "method": "percentile bootstrap, resampling items"
+        }
+      },
+      "nonnumeric": {
+        "n": 40,
+        "mean_uniform_chance": 0.1838,
+        "observed_rate": 0.0413,
+        "chance_adjusted_mean": 0.0413,
+        "bootstrap95": {
+          "mean": 0.041250000000000044,
+          "ci_low": -0.07791666666666666,
+          "ci_high": 0.16624999999999995,
+          "n": 40,
+          "n_resamples": 10000,
+          "confidence": 0.95,
+          "seed": 34,
+          "method": "percentile bootstrap, resampling items"
+        }
+      }
+    },
+    "wording": "the model identifies the asserted number AT CHANCE. It is not significantly below chance, and it is not above it either; and the behavioural point estimate under oracle is LOWER than the model's own closed-book baseline."
+  },
+  "claim_format": {
+    "claim": "the supplied passage states <NUMBER>",
+    "classes": [
+      "passage",
+      "other",
+      "neither"
+    ],
+    "primary_instrument": "answer copying: teacher-forced likelihood of each candidate answer, argmax over the candidate set",
+    "why_not_free_generation": "free generation is at a ceiling: 97/120 oracle generations contain no number at all, so the rate reads 1.000 in every condition and cannot rank them. It confounds grounding with label competence. It is reported as a secondary instrument.",
+    "measures": "groundedness against the supplied source, NOT factual truth against the world (no fact base available)"
+  },
+  "items": 40,
+  "dropped_for_truncation": 10,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "unit_of_analysis": "item",
+  "unit_note": "the primary instrument is deterministic, so there is one measurement per item per condition: n = items, NOT items x seeds. Free-generation repeats are averaged per item before scoring. Contrast CIs resample ITEMS.",
+  "conditions": {
+    "copy_instrument": {
+      "retrieved": {
+        "n_items": 40,
+        "counts": {
+          "source": 8,
+          "counterfactual": 2,
+          "neither": 30
+        },
+        "rates": {
+          "source": 0.2,
+          "counterfactual": 0.05,
+          "neither": 0.75
+        },
+        "chose_source_rate": 0.2,
+        "chose_source_wilson95": [
+          0.105,
+          0.3476
+        ],
+        "followed_context_rate": 0.2857,
+        "followed_context_wilson95": [
+          0.1172,
+          0.5465
+        ],
+        "note": "followed_context = the model preferred the number that was in the context it was shown. Classes are condition-agnostic (source / counterfactual / neither) so that no class is unreachable by construction."
+      },
+      "oracle": {
+        "n_items": 40,
+        "counts": {
+          "source": 9,
+          "counterfactual": 5,
+          "neither": 26
+        },
+        "rates": {
+          "source": 0.225,
+          "counterfactual": 0.125,
+          "neither": 0.65
+        },
+        "chose_source_rate": 0.225,
+        "chose_source_wilson95": [
+          0.1232,
+          0.375
+        ],
+        "followed_context_rate": 0.225,
+        "followed_context_wilson95": [
+          0.1232,
+          0.375
+        ],
+        "note": "followed_context = the model preferred the number that was in the context it was shown. Classes are condition-agnostic (source / counterfactual / neither) so that no class is unreachable by construction."
+      },
+      "counterfactual": {
+        "n_items": 40,
+        "counts": {
+          "source": 9,
+          "counterfactual": 0,
+          "neither": 31
+        },
+        "rates": {
+          "source": 0.225,
+          "counterfactual": 0.0,
+          "neither": 0.775
+        },
+        "chose_source_rate": 0.225,
+        "chose_source_wilson95": [
+          0.1232,
+          0.375
+        ],
+        "followed_context_rate": 0.075,
+        "followed_context_wilson95": [
+          0.0258,
+          0.1986
+        ],
+        "note": "followed_context = the model preferred the number that was in the context it was shown. Classes are condition-agnostic (source / counterfactual / neither) so that no class is unreachable by construction."
+      },
+      "closed_book": {
+        "n_items": 40,
+        "counts": {
+          "source": 11,
+          "counterfactual": 5,
+          "neither": 24
+        },
+        "rates": {
+          "source": 0.275,
+          "counterfactual": 0.125,
+          "neither": 0.6
+        },
+        "chose_source_rate": 0.275,
+        "chose_source_wilson95": [
+          0.1611,
+          0.4283
+        ],
+        "followed_context_rate": null,
+        "followed_context_wilson95": null,
+        "note": "closed_book shows no number at all, so 'followed_context' is undefined: there is nothing in the context to follow. 'chose_source' here means the model produced the item's answer with no passage -- a baseline, not grounding."
+      },
+      "nonnumeric": {
+        "n_items": 40,
+        "counts": {
+          "source": 9,
+          "counterfactual": 3,
+          "neither": 28
+        },
+        "rates": {
+          "source": 0.225,
+          "counterfactual": 0.075,
+          "neither": 0.7
+        },
+        "chose_source_rate": 0.225,
+        "chose_source_wilson95": [
+          0.1232,
+          0.375
+        ],
+        "followed_context_rate": null,
+        "followed_context_wilson95": null,
+        "note": "followed_context = the model preferred the number that was in the context it was shown. Classes are condition-agnostic (source / counterfactual / neither) so that no class is unreachable by construction."
+      }
+    },
+    "free_instrument": {
+      "retrieved": {
+        "n_items": 40,
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "volunteers_a_number_rate": 0.6,
+        "emits_a_number_from_the_context_rate": 0.025,
+        "counts": {
+          "source": 0,
+          "counterfactual": 0,
+          "neither": 40
+        },
+        "rates": {
+          "source": 0.0,
+          "counterfactual": 0.0,
+          "neither": 1.0
+        },
+        "note": "free generation repeats of an item are averaged per item before scoring, so the unit is the item, not the draw"
+      },
+      "oracle": {
+        "n_items": 40,
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "volunteers_a_number_rate": 0.525,
+        "emits_a_number_from_the_context_rate": 0.025,
+        "counts": {
+          "source": 0,
+          "counterfactual": 0,
+          "neither": 40
+        },
+        "rates": {
+          "source": 0.0,
+          "counterfactual": 0.0,
+          "neither": 1.0
+        },
+        "note": "free generation repeats of an item are averaged per item before scoring, so the unit is the item, not the draw"
+      },
+      "counterfactual": {
+        "n_items": 40,
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "volunteers_a_number_rate": 0.55,
+        "emits_a_number_from_the_context_rate": 0.1,
+        "counts": {
+          "source": 0,
+          "counterfactual": 0,
+          "neither": 40
+        },
+        "rates": {
+          "source": 0.0,
+          "counterfactual": 0.0,
+          "neither": 1.0
+        },
+        "note": "free generation repeats of an item are averaged per item before scoring, so the unit is the item, not the draw"
+      },
+      "closed_book": {
+        "n_items": 40,
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "volunteers_a_number_rate": 0.475,
+        "emits_a_number_from_the_context_rate": 0.0,
+        "counts": {
+          "source": 0,
+          "counterfactual": 0,
+          "neither": 40
+        },
+        "rates": {
+          "source": 0.0,
+          "counterfactual": 0.0,
+          "neither": 1.0
+        },
+        "note": "free generation repeats of an item are averaged per item before scoring, so the unit is the item, not the draw"
+      },
+      "nonnumeric": {
+        "n_items": 40,
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "volunteers_a_number_rate": 0.5,
+        "emits_a_number_from_the_context_rate": 0.0,
+        "counts": {
+          "source": 0,
+          "counterfactual": 0,
+          "neither": 40
+        },
+        "rates": {
+          "source": 0.0,
+          "counterfactual": 0.0,
+          "neither": 1.0
+        },
+        "note": "free generation repeats of an item are averaged per item before scoring, so the unit is the item, not the draw"
+      }
+    }
+  },
+  "contrasts": {
+    "oracle_vs_closed_book_chose_the_answer": {
+      "definition": "paired McNemar: items where the model chose the item's answer under the oracle context but not under closed-book, versus the reverse",
+      "n": 40,
+      "oracle_chose_source": 9,
+      "closed_book_chose_source": 11,
+      "discordant_b": 1,
+      "discordant_c": 3,
+      "mcnemar_p_value": 0.625
+    },
+    "oracle_vs_closed_book_answer_changes": {
+      "definition": "share of items where the preferred answer differs between the oracle context and no context",
+      "n": 40,
+      "count": 8,
+      "rate": 0.2,
+      "wilson95": [
+        0.105,
+        0.3476
+      ],
+      "bootstrap95": {
+        "mean": 0.2,
+        "ci_low": 0.075,
+        "ci_high": 0.325,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 1,
+        "method": "percentile bootstrap, resampling items"
+      }
+    },
+    "counterfactual_tracks_the_edit": {
+      "definition": "share of items where the preferred answer under the counterfactual is the EDITED number",
+      "n": 40,
+      "count": 0,
+      "rate": 0.0,
+      "wilson95": [
+        0.0,
+        0.0876
+      ],
+      "bootstrap95": {
+        "mean": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 2,
+        "method": "percentile bootstrap, resampling items"
+      }
+    },
+    "counterfactual_answer_differs_from_oracle": {
+      "definition": "share of items where editing the number in the text changed the preferred answer",
+      "n": 40,
+      "count": 6,
+      "rate": 0.15,
+      "wilson95": [
+        0.0706,
+        0.2907
+      ],
+      "bootstrap95": {
+        "mean": 0.15,
+        "ci_low": 0.05,
+        "ci_high": 0.275,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 3,
+        "method": "percentile bootstrap, resampling items"
+      }
+    },
+    "counterfactual_answer_unchanged_from_oracle": {
+      "definition": "share of items where the preferred answer was IDENTICAL with and without the edit -- i.e. the model ignored the edited text",
+      "n": 40,
+      "count": 34,
+      "rate": 0.85,
+      "wilson95": [
+        0.7093,
+        0.9294
+      ],
+      "bootstrap95": {
+        "mean": 0.85,
+        "ci_low": 0.725,
+        "ci_high": 0.95,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 4,
+        "method": "percentile bootstrap, resampling items"
+      }
+    }
+  },
+  "logprob_contrasts": {
+    "context_specific_discrimination": {
+      "definition": "(log P(source|oracle) - log P(cf|oracle)) - (log P(source|closed_book) - log P(cf|closed_book)), paired per item. This is THE statistic: the margin the model shows for the number in its context, MINUS the margin it would show for the same pair of numbers with no context. Positive means the preference is caused by READING the passage rather than by a prior over numbers.",
+      "n": 40,
+      "mean": 0.2039,
+      "bootstrap95": {
+        "mean": 0.20389772653579713,
+        "ci_low": 0.04364428818225861,
+        "ci_high": 0.3912770926952362,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 21,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 2.2547,
+      "df": 39.0,
+      "p_value": 0.029842
+    },
+    "lift_stated_minus_lift_unstated": {
+      "definition": "CONTROL: how much the passage raised the stated number's likelihood MINUS how much it raised the unstated number's. A context effect that is specific to the stated number should be positive; a generic 'numbers became more likely in a numeric context' effect would be near zero.",
+      "n": 40,
+      "mean": 0.2039,
+      "bootstrap95": {
+        "mean": 0.20389772653579713,
+        "ci_low": 0.0463284432888031,
+        "ci_high": 0.3924087733030319,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 22,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 2.2547,
+      "df": 39.0,
+      "p_value": 0.029842
+    },
+    "passage_lift_on_the_number_it_states": {
+      "definition": "log P(source | oracle prompt) - log P(source | closed-book prompt), paired per item. Positive means supplying the passage RAISED the model's preference for the number the passage states.",
+      "n": 40,
+      "mean": 0.7864,
+      "bootstrap95": {
+        "mean": 0.7863608241081238,
+        "ci_low": 0.3637136250734329,
+        "ci_high": 1.269227173924446,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 11,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 3.3726,
+      "df": 39.0,
+      "p_value": 0.001692
+    },
+    "passage_lift_on_the_counterfactual_number": {
+      "definition": "CONTROL for the contrast above: the same comparison for the number the passage does NOT state. If the passage is being read, this should be near zero.",
+      "n": 40,
+      "mean": 0.5825,
+      "bootstrap95": {
+        "mean": 0.5824630975723266,
+        "ci_low": 0.2185021758079529,
+        "ci_high": 0.9959023833274842,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 12,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 2.9269,
+      "df": 39.0,
+      "p_value": 0.005686
+    },
+    "edit_effect_on_the_counterfactual_number": {
+      "definition": "log P(cf | counterfactual prompt) - log P(cf | oracle prompt). Positive means EDITING the number in the text raised the model's preference for the edited number.",
+      "n": 5,
+      "mean": 0.0337,
+      "bootstrap95": {
+        "mean": 0.03367910385131836,
+        "ci_low": -0.01041727066040039,
+        "ci_high": 0.09109926223754883,
+        "n": 5,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 13,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 1.1672,
+      "df": 4.0,
+      "p_value": 0.307962
+    },
+    "oracle_margin_source_minus_counterfactual": {
+      "definition": "log P(source | oracle) - log P(cf | oracle). Positive means the model prefers the number actually in its context.",
+      "n": 40,
+      "mean": 0.3523,
+      "bootstrap95": {
+        "mean": 0.35231714844703677,
+        "ci_low": 0.0984997183084488,
+        "ci_high": 0.6037696838378906,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 14,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 2.6741,
+      "df": 39.0,
+      "p_value": 0.010889
+    },
+    "counterfactual_margin_edited_minus_original": {
+      "definition": "log P(cf | counterfactual prompt) - log P(source | counterfactual prompt). The symmetric check on the oracle margin: if the model reads WHICH digit the text states, this should be positive too. It is the more conservative reading of whether the passage is being read.",
+      "n": 5,
+      "mean": 0.0389,
+      "bootstrap95": {
+        "mean": 0.0388941764831543,
+        "ci_low": -0.24192981719970702,
+        "ci_high": 0.3542311668395996,
+        "n": 5,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 23,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 0.2166,
+      "df": 4.0,
+      "p_value": 0.839108
+    },
+    "closed_book_margin_source_minus_counterfactual": {
+      "definition": "CONTROL: the same margin with no context. Should be near zero if the oracle margin is about reading rather than a number prior.",
+      "n": 40,
+      "mean": 0.1484,
+      "bootstrap95": {
+        "mean": 0.14841942191123964,
+        "ci_low": -0.0715648353099823,
+        "ci_high": 0.37531264424324035,
+        "n": 40,
+        "n_resamples": 10000,
+        "confidence": 0.95,
+        "seed": 15,
+        "method": "percentile bootstrap, resampling items"
+      },
+      "t": 1.3077,
+      "df": 39.0,
+      "p_value": 0.198617
+    }
+  },
+  "retrieval": {
+    "corpus_docs": 400,
+    "query": "the item's lexical anchor: content words from a DIFFERENT sentence of the same document, so the retriever is given a topical handle but never the number or the answer-bearing sentence",
+    "answer_agnostic": true,
+    "document_hit_rate": 0.975,
+    "answer_present_rate": 0.475,
+    "distinct_documents_returned": 39,
+    "diagnosis": "the FIRST version of this condition queried the retriever with the instruction text, whose terms {what, number, does, the, passage, state} cannot come from a passage about a number. Term-overlap ranking degenerated to a constant and returned the SAME chunk for all 40 items, so 0/40 was a query-design failure rather than a retriever failure. The query is now anchored to the document.",
+    "note": "the anchor is derived from the target document, so the document hit rate is optimistic relative to a user's paraphrase; but the retriever never sees the number or the answer-bearing sentence, so this is not a disguised oracle."
+  },
+  "max_new_tokens": 16,
+  "wall_seconds": 223.5
+}
