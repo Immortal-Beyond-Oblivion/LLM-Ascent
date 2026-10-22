@@ -1,0 +1,7 @@
+seed,mqa_g1_val_loss,mha_g8_val_loss,diff_mqa_minus_mha,provenance_note
+42,2.8558,2.8111,0.0447,"G=1 arm resumed in 0.73 s; provenance inferred, not re-verified"
+43,2.8474,2.8331,0.0143,
+44,2.8661,2.8382,0.0279,
+45,2.8464,2.8205,0.0259,
+46,2.8429,2.8129,0.03,
+47,2.8474,2.819,0.0284,

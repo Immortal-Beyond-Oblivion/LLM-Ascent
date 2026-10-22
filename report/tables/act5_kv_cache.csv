@@ -1,0 +1,5 @@
+context_tokens,uncached_ms,cached_ms,speedup,n_repeats_note
+128,51.7,14.0,3.71,microbenchmark on a purpose-built model
+256,85.1,19.1,4.46,microbenchmark on a purpose-built model
+512,198.2,22.7,8.72,microbenchmark on a purpose-built model
+1024,630.7,34.3,18.36,microbenchmark on a purpose-built model

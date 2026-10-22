@@ -1,0 +1,6 @@
+K,median_speedup_1.7x_gap,median_acceptance_1.7x_gap,median_speedup_4.2x_gap,median_acceptance_4.2x_gap,n_prompts,max_new_tokens
+1,0.502,0.8571,0.61,0.8571,5,64
+2,0.441,0.6607,0.481,0.5763,5,64
+3,0.399,0.5694,0.454,0.5556,5,64
+5,0.346,0.4731,0.339,0.3909,5,64
+7,0.3,0.395,0.228,0.2326,5,64

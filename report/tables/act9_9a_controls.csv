@@ -1,0 +1,10 @@
+check,value,reference,reading,source
+mean attention mass on position 0 (L0 H5),0.01636,uniform 0.00781,"mildly position-0 biased, not a single-position sink",results/v2/act9/controls.json
+mass on the top five positions,0.01636; 0.00826; 0.00824; 0.00820; 0.00817,uniform 0.00781,nearly flat: the head is not a sink,results/v2/act9/controls.json
+single-position concentration,0.01636,n/a,not a single-position sink,results/v2/act9/controls.json
+"held-out CE, intact vs L0 H5 ablated",2.855083 -> 3.686894,uniform-vocabulary CE 8.777555,"the ablation DEGRADES the model, it does not collapse it toward uniform",results/v2/act9/controls.json
+pairwise ablation L0 H5 with L1 H6,combined +0.959087,sum of singles +0.907911,redundancy -0.0564 (1 = the two heads are interchangeable),results/v2/act9/controls.json
+pairwise ablation L0 H5 with L0 H2,combined +0.023360,sum of singles +0.855171,redundancy +0.9727 (1 = the two heads are interchangeable),results/v2/act9/controls.json
+pairwise ablation L0 H5 with L0 H0,combined +0.022574,sum of singles +0.854385,redundancy +0.9736 (1 = the two heads are interchangeable),results/v2/act9/controls.json
+two-slice check: C4 offset 300000,L0 H5 z = +42.8162,intact CE 2.855083 (perplexity 17.3759),"3 heads at z >= 2; null mean 0.009894, s.d. 0.019196",results/v2/act9/controls.json
+two-slice check: C4 offset 320000,L0 H5 z = +37.1077,intact CE 2.902812 (perplexity 18.2253),"3 heads at z >= 2; null mean 0.012313, s.d. 0.022878",results/v2/act9/controls.json

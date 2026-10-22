@@ -1,0 +1,5 @@
+rate,greedy_count,greedy_n,greedy_rate,greedy_wilson95,sampled_count,sampled_n,sampled_rate,sampled_wilson95
+well-formed CALC(...) call,0,40,0.0,"[0.0000, 0.0876]",0,120,0.0,"[0.0000, 0.0310]"
+echoes the call template,19,40,0.475,,3,120,0.025,
+malformed call,19,40,0.475,,3,120,0.025,
+"direct answer without a tool, and correct",0,40,0.0,,1,120,0.0083,

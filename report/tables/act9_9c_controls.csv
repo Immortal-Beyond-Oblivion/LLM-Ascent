@@ -1,0 +1,6 @@
+condition,n_items,median_rank_per_layer_L0_to_L7,best_layer,best_median_rank,source
+"(i) asserted number, oracle",40,860.0; 790.0; 608.0; 444.0; 411.0; 82.0; 211.0; 678.5,5,82.0,results/v2/act9/controls.json
+"(ii) counterfactual-EDITED number, counterfactual",40,890.5; 816.0; 640.5; 480.0; 441.5; 82.0; 181.5; 667.0,5,82.0,results/v2/act9/controls.json
+"(iii) a number appearing in NO passage, oracle",40,2289.0; 2086.0; 1953.0; 1610.0; 1765.5; 484.0; 1150.0; 565.0,5,484.0,results/v2/act9/controls.json
+"(iv) asserted number, non-numeric control",40,820.0; 715.5; 582.0; 427.5; 403.5; 85.5; 206.5; 784.5,5,85.5,results/v2/act9/controls.json
+(v) random token id,40,783.0; 594.0; 611.0; 801.0; 729.5; 735.0; 656.0; 2280.0,1,594.0,results/v2/act9/controls.json

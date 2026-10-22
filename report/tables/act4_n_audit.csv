@@ -1,0 +1,7 @@
+rung,N_in_the_ladder_csv,N_in_the_run_recorded_metric,csv_and_metric_agree,N_implied_by_the_architecture,LADDER_design_target,D_over_N,all_three_sources_agree,source
+0.8M,"694,144","694,144",yes,"809,728 (MiniGPT) / 793,344 (other family) -- NEITHER","786,432",22.7,no,results/v2/act4-scaling/ladder_points.csv; results/v2/act4-scaling/clean_refit.json; docs/implementation.md
+1.5M,"1,546,720; 1,567,200","1,546,720; 1,567,200",NO -- the rung carries more than one N,"1,567,200 (canonical) / 1,546,720 (other family)","1,536,000",19.6 / 19.9,no -- the rung carries two families,results/v2/act4-scaling/ladder_points.csv; results/v2/act4-scaling/clean_refit.json; docs/implementation.md
+2.6M,"2,694,144","2,694,144",yes,"2,694,144","2,654,208",19.7,yes,results/v2/act4-scaling/ladder_points.csv; results/v2/act4-scaling/clean_refit.json; docs/implementation.md
+4.1M,"4,235,616","4,235,616",yes,"4,235,616","4,128,768",19.5,yes,results/v2/act4-scaling/ladder_points.csv; results/v2/act4-scaling/clean_refit.json; docs/implementation.md
+6.3M,"6,351,360","6,351,360",yes,"6,351,360","6,291,456",19.8,yes,results/v2/act4-scaling/ladder_points.csv; results/v2/act4-scaling/clean_refit.json; docs/implementation.md
+9.0M,"8,992,224","8,992,224",yes,"8,992,224","8,957,952",10.0,yes,results/v2/act4-scaling/ladder_points.csv; results/v2/act4-scaling/clean_refit.json; docs/implementation.md

@@ -1,0 +1,6 @@
+model,validation_loss_mean,validation_loss_std,validation_perplexity_mean,parameters,n_seeds
+rnn,2.438199,0.215069,11.633155,31362,3
+lstm,2.590480,0.285449,13.713035,58434,3
+gru,2.482124,0.253901,12.231061,45954,3
+rnn_grad_norm_initial,0.436290,0.439972,0.482903,,1
+lstm_grad_norm_initial,0.141249,0.180277,0.282813,,1

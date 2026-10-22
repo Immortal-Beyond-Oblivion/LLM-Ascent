@@ -1,0 +1,5 @@
+n_train,method,accuracy_mean,per_seed_runs,distinct_seed_values,effective_n,trainable_parameters
+16,full,0.0703,0.0703; 0.0703; 0.0703,1,"n=1 in substance: one batch per epoch, so the seeded shuffle has nothing to shuffle",8012032
+64,full,0.1667,0.1797; 0.1562; 0.1641,3,n=3,8012032
+256,full,0.3255,0.3828; 0.2656; 0.3281,3,n=3,8012032
+512,full,0.5651,0.5938; 0.5234; 0.5781,3,n=3,8012032

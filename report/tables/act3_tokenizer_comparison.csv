@@ -1,0 +1,9 @@
+tokenizer,control,validation_bits_per_character,validation_perplexity_per_character,vocabulary_size,chars_per_token,context_length_used,n_seeds
+character,ecn,3.467965,11.065256,66,1.000000,64,1
+character,ecs,3.467965,11.065257,66,1.000000,64,1
+bpe,ecn,3.080134,8.456931,166,1.605697,64,1
+bpe,ecs,3.189260,9.121429,166,1.605697,39,1
+wordpiece,ecn,3.499812,11.312234,166,1.000778,64,1
+wordpiece,ecs,3.511577,11.404863,166,1.000778,63,1
+unigram,ecn,2.802091,6.974504,166,1.813231,64,1
+unigram,ecs,2.834090,7.130931,166,1.813231,35,1

@@ -1,0 +1,6 @@
+method,size,trainable_parameters,budget,final_train_loss,accuracy_mean,wilson_95_low,wilson_95_high,n_items
+full,1,8012032,20000,0.0043,0.5755,0.5256,0.624,128
+adapters,4,18464,20000,1.1365,0.2136,0.1755,0.2573,128
+lora,1,14336,20000,1.3097,0.1823,0.1469,0.224,128
+prompt_tuning,64,16384,20000,2.0697,0.0859,0.0618,0.1182,128
+prefix_tuning,5,20480,20000,3.2576,0.0,0.0,0.0099,128

@@ -1,0 +1,6 @@
+quantity,value,n,uniform_or_reference,source
+attention rollout: mean attribution mass on the answer token,0.007592,71,0.00781,results/v2/act9/controls.json
+raw last-layer attention: mean attribution mass on the answer token,0.006734,71,0.00781,results/v2/act9/controls.json
+attention rollout: argmax lands on the final position,0/71,71,0/71 is what a non-collapsing attribution predicts,results/v2/act9/controls.json
+raw attention: argmax lands on the final position,0/71,71,0/71 is what a non-collapsing attribution predicts,results/v2/act9/controls.json
+uniform mass over a 128-token context,0.00781,71,1/128,results/v2/act9/controls.json

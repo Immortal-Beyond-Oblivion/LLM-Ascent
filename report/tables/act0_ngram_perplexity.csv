@@ -1,0 +1,13 @@
+order,smoothing,validation_bits_per_character_mean,validation_bits_per_character_std,validation_perplexity_mean,validation_perplexity_std,n_seeds,identical_across_seeds
+1,laplace,4.829177,0.000000,28.426742,0.000000,3,True
+1,good_turing,4.829177,0.000000,28.426742,0.000000,3,True
+1,kneser_ney,4.829177,0.000000,28.426742,0.000000,3,True
+1,interpolated,4.829177,0.000000,28.426742,0.000000,3,True
+2,laplace,3.580657,0.000000,11.964240,0.000000,3,True
+2,good_turing,3.593343,0.000000,12.069913,0.000000,3,True
+2,kneser_ney,3.579631,0.000000,11.955738,0.000000,3,True
+2,interpolated,3.580657,0.000000,11.964240,0.000000,3,True
+3,laplace,2.984130,0.000000,7.912481,0.000000,3,True
+3,good_turing,3.015221,0.000000,8.084852,0.000000,3,True
+3,kneser_ney,2.896545,0.000000,7.446411,0.000000,3,True
+3,interpolated,3.133861,0.000000,8.777812,0.000000,3,True

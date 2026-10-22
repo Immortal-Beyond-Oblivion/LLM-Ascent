@@ -1,0 +1,7 @@
+measurement,value,n,interval
+with demonstration: first generated token is the demonstration's answer,18,18,exact count
+zero-shot: first generated token is the demonstration's answer,0,18,exact count
+with demonstration: exact match on the query's answer,0,18,"Wilson 95% [0.0000, 0.1759]"
+zero-shot: exact match on the query's answer,0,18,"Wilson 95% [0.0000, 0.1759]"
+items whose answer changed because of the demonstration,0,18,exact count
+zero-shot generations that were only punctuation,18,18,exact count

@@ -1,0 +1,4 @@
+rung,non_embedding_params,steps,training_tokens,validation_loss,source
+1.5M,1536000,7500,30720000,3.0571,results/v2/act5/mqa_quality_2.6m.json
+2.6M,2654208,12960,53084160,2.8111,docs/implementation.md (canonical rung table)
+6.3M,6291456,30720,125829120,2.5152,docs/implementation.md (canonical rung table)

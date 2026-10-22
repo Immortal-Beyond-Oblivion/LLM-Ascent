@@ -1,0 +1,9 @@
+statistic,n,mean_nats,bootstrap95_low,bootstrap95_high,p_value,significant_at_0.05
+context_specific_discrimination,40,0.2039,0.0436,0.3913,0.0298,yes
+lift_stated_minus_lift_unstated,40,0.2039,0.0463,0.3924,0.0298,yes
+passage_lift_on_the_number_it_states,40,0.7864,0.3637,1.2692,0.0017,yes
+passage_lift_on_the_counterfactual_number,40,0.5825,0.2185,0.9959,0.0057,yes
+edit_effect_on_the_counterfactual_number,5,0.0337,-0.0104,0.0911,0.3080,no
+oracle_margin_source_minus_counterfactual,40,0.3523,0.0985,0.6038,0.0109,yes
+counterfactual_margin_edited_minus_original,5,0.0389,-0.2419,0.3542,0.8391,no
+closed_book_margin_source_minus_counterfactual,40,0.1484,-0.0716,0.3753,0.1986,no

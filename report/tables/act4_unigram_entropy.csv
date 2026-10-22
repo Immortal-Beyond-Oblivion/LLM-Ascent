@@ -1,0 +1,8 @@
+quantity,tokens,entropy_nats,source
+held_out_region,1000128,4.9946,results/v2/act4-scaling/unigram_entropy.json
+training_region_sample,5000000,5.0068,results/v2/act4-scaling/unigram_entropy.json
+full_corpus,338513094,5.0136,results/v2/act4-scaling/unigram_entropy.json
+fitted E (total_N),n/a,1.348,results/v2/act4-scaling/unigram_entropy.json
+fitted E (non_embedding_N),n/a,0.706,results/v2/act4-scaling/unigram_entropy.json
+ratio of fitted E to the held-out entropy (total_N),n/a,0.2699,results/v2/act4-scaling/unigram_entropy.json
+ratio of fitted E to the held-out entropy (non_embedding_N),n/a,0.1414,results/v2/act4-scaling/unigram_entropy.json

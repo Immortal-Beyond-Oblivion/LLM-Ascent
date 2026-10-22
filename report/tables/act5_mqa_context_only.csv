@@ -1,0 +1,5 @@
+G,v1_path_val_loss,v1_path_cache_mb_at_T1024,status
+1,2.349,0.5,"CONTEXT ONLY: v1 TinyShakespeare path, 500 steps, character tokenizer, single seed"
+2,2.354,1.0,"CONTEXT ONLY: v1 TinyShakespeare path, 500 steps, character tokenizer, single seed"
+4,2.363,2.0,"CONTEXT ONLY: v1 TinyShakespeare path, 500 steps, character tokenizer, single seed"
+8,2.346,4.0,"CONTEXT ONLY: v1 TinyShakespeare path, 500 steps, character tokenizer, single seed"

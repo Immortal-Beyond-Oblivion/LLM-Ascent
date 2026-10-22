@@ -1,0 +1,7 @@
+condition,n_items,count,rate,wilson95,mean_per_item_chance,chance_adjusted_mean,chance_adjusted_bootstrap95,note
+oracle,40,9,0.225,"[0.1232, 0.3750]",0.1838,0.0412,"[-0.0787, 0.1700]",
+closed_book,40,11,0.275,"[0.1611, 0.4283]",0.1838,0.0913,"[-0.0350, 0.2321]",
+retrieved,40,8,0.2,"[0.1050, 0.3476]",0.1838,0.0162,"[-0.1012, 0.1433]",
+counterfactual,40,9,0.225,"[0.1232, 0.3750]",0.1838,0.0413,"[-0.0838, 0.1717]","counts the ORIGINAL number, which is the asserted number; the edited number is the separate row below"
+nonnumeric,40,9,0.225,"[0.1232, 0.3750]",0.1838,0.0413,"[-0.0779, 0.1662]",
+counterfactual_edited_number,40,0,0.0,"[0.0000, 0.0876]",n/a,n/a,"[0.0000, 0.0000]","the share of items whose preferred answer is the EDITED number; the bootstrap here is over the rate, not over a chance-adjusted difference"

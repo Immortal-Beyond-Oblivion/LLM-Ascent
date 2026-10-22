@@ -1,0 +1,6 @@
+retrieval metric,before the fix,after the fix,note
+distinct documents returned,1,39,1 is degenerate: the same chunk came back for every item
+document hit rate,n/a,0.975,"the anchor is derived from the target document, so this is optimistic relative to a user's paraphrase"
+retrieved chunk contains the asserted number,0/40,0.475,
+chose the asserted number under 'retrieved',n/a,8/40,"chance-adjusted 0.0162, bootstrap [-0.1012, 0.1433]"
+followed the retrieved number when the chunk contained one,n/a,0.2857,"Wilson 95% [0.1172, 0.5465]"

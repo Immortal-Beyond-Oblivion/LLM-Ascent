@@ -1,0 +1,7 @@
+arm,cost,what it buys,source
+0.3M @ D=20N,~3 min,"+1 distinct N at the very bottom: extends log N from ln(9.0/0.8) = 2.42 to ln(9.0/0.3) = 3.40, a 41% increase in N range for minutes of GPU",docs/implementation.md
+0.4M @ D=20N,~4 min,"a further small N, the same leverage argument",docs/implementation.md
+0.8M @ D=20N,~1 min,"replaces the unidentifiable third architecture at the BOTTOM of the N range, where a power law has the most leverage, and fixes the worst hold-out fold",docs/implementation.md
+4.1M @ D=20N,92 min,"+1 distinct N, the whole 4.1M rung replaced with a canonical one, and a matched-(N, D) comparison against the discarded 4.1M family (same N, same D, same data, different position table)",docs/implementation.md
+9.0M @ D=10N,~120 min,"half the cost of 20N, a NOVEL D/N ratio so the design is no longer a single line, and a DIRECT matched-(N, D) comparison against the discarded 9.0M family, which sat at exactly 9.0M / D=10N: the contamination becomes an experiment",docs/implementation.md
+9.0M @ D=20N,~240 min,"a second D ratio at the top rung, constraining the within-run shape as well as the level; kept because it was already half trained",docs/implementation.md
