@@ -21,8 +21,12 @@ class LoRALinear(nn.Module):
             parameter.requires_grad = False
         self.rank, self.scaling = rank, alpha / rank
         self.dropout = nn.Dropout(dropout)
-        self.lora_a = nn.Parameter(torch.empty(rank, base.in_features))
-        self.lora_b = nn.Parameter(torch.zeros(base.out_features, rank))
+        # Allocate on the same device as the frozen weight: injecting after the
+        # model has been moved to MPS otherwise leaves these on CPU and the
+        # first forward fails with "expected on mps".
+        device = base.weight.device
+        self.lora_a = nn.Parameter(torch.empty(rank, base.in_features, device=device))
+        self.lora_b = nn.Parameter(torch.zeros(base.out_features, rank, device=device))
         nn.init.kaiming_uniform_(self.lora_a, a=math.sqrt(5))
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:

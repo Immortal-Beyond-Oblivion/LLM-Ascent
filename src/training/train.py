@@ -6,6 +6,7 @@ import argparse
 import json
 import math
 import random
+import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -26,7 +27,11 @@ class TrainConfig:
     embedding_dim: int = 128
     num_heads: int = 4
     num_layers: int = 4
+    num_kv_heads: int = 4
+    window_size: int = 0
     learning_rate: float = 3e-4
+    warmup_steps: int = 0
+    dropout: float = 0.0
     eval_interval: int = 100
     eval_batches: int = 10
     seed: int = 42
@@ -39,11 +44,26 @@ class TrainConfig:
 
 
 def resolve_device(requested: str) -> str:
+    """Resolve device with explicit priority: mps → cuda → cpu for 'auto'."""
     if requested == "auto":
-        return "cuda" if torch.cuda.is_available() else "cpu"
+        if torch.backends.mps.is_available():
+            return "mps"
+        if torch.cuda.is_available():
+            return "cuda"
+        return "cpu"
+    if requested.startswith("mps") and not torch.backends.mps.is_available():
+        raise RuntimeError("MPS was requested but is unavailable")
     if requested.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is unavailable")
     return requested
+
+
+def _lr_at_step(step: int, config: TrainConfig) -> float:
+    """Linear warmup then cosine decay to 10% of peak LR."""
+    if config.warmup_steps > 0 and step <= config.warmup_steps:
+        return config.learning_rate * step / config.warmup_steps
+    progress = (step - config.warmup_steps) / max(1, config.steps - config.warmup_steps)
+    return config.learning_rate * (0.1 + 0.9 * 0.5 * (1 + math.cos(math.pi * progress)))
 
 
 @torch.no_grad()
@@ -53,7 +73,7 @@ def evaluate_loss(model: MiniGPT, dataset: TextDataset, config: TrainConfig, *, 
     losses: list[float] = []
     for _ in range(config.eval_batches):
         inputs, targets = dataset.batch(split, batch_size=config.batch_size, context_length=config.context_length, device=next(model.parameters()).device)
-        _, loss = model(inputs, targets)
+        _, loss, _ = model(inputs, targets)
         assert loss is not None
         losses.append(float(loss))
     model.train(was_training)
@@ -85,12 +105,15 @@ def train(config: TrainConfig) -> tuple[MiniGPT, CharacterTokenizer | BPETokeniz
     random.seed(config.seed)
     torch.manual_seed(config.seed)
     device = resolve_device(config.device)
+    print(f"[train] device={device} steps={config.steps} batch={config.batch_size} context={config.context_length}")
     text = load_text(config.dataset_path)
     tokenizer = _build_tokenizer(text, config)
     dataset = TextDataset.from_text(text, tokenizer)
     model_config = GPTConfig(
         vocabulary_size=tokenizer.vocabulary_size, context_length=config.context_length,
         embedding_dim=config.embedding_dim, num_heads=config.num_heads, num_layers=config.num_layers,
+        num_kv_heads=config.num_kv_heads, window_size=config.window_size,
+        dropout=config.dropout,
         normalization=config.normalization, optimized_attention=config.optimized_attention,
     )
     model = MiniGPT(model_config).to(device)
@@ -109,12 +132,25 @@ def train(config: TrainConfig) -> tuple[MiniGPT, CharacterTokenizer | BPETokeniz
         if config.steps <= start_step:
             raise ValueError("steps must exceed the checkpoint's completed_steps")
     for step in range(start_step + 1, config.steps + 1):
-        inputs, targets = dataset.batch("train", batch_size=config.batch_size, context_length=config.context_length, device=device)
-        _, loss = model(inputs, targets)
-        assert loss is not None
-        optimizer.zero_grad(set_to_none=True)
-        loss.backward()
-        optimizer.step()
+        lr = _lr_at_step(step, config)
+        for group in optimizer.param_groups:
+            group["lr"] = lr
+        try:
+            inputs, targets = dataset.batch("train", batch_size=config.batch_size, context_length=config.context_length, device=device)
+            _, loss, _ = model(inputs, targets)
+            assert loss is not None
+            optimizer.zero_grad(set_to_none=True)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
+        except RuntimeError as error:
+            if "mps" in str(error).lower() and ("allocated" in str(error).lower() or "memory" in str(error).lower()):
+                raise RuntimeError(
+                    f"MPS OOM at step {step}. Reduce batch_size (--batch-size) or "
+                    f"context-length (--context-length), or run with --device cpu. "
+                    f"Original error: {error}"
+                ) from error
+            raise
         if step == 1 or step % config.eval_interval == 0 or step == config.steps:
             train_loss = evaluate_loss(model, dataset, config, split="train")
             validation_loss = evaluate_loss(model, dataset, config, split="validation")
@@ -168,5 +204,12 @@ def _config_from_args() -> TrainConfig:
 
 if __name__ == "__main__":
     configuration = _config_from_args()
-    _, _, history = train(configuration)
-    print(json.dumps(history[-1], indent=2))
+    start = time.perf_counter()
+    model, _, history = train(configuration)
+    elapsed = time.perf_counter() - start
+    result = history[-1]
+    result["wall_clock_seconds"] = round(elapsed, 2)
+    result["steps_per_second"] = round(result["step"] / elapsed, 2)
+    result["device"] = configuration.device
+    result["parameters"] = model.parameter_count()
+    print(json.dumps(result, indent=2))

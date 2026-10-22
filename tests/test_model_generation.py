@@ -17,12 +17,12 @@ class ModelAndGenerationTests(unittest.TestCase):
 
     def test_model_shape_loss_and_causal_dependence(self) -> None:
         tokens = torch.tensor([[1, 2, 3, 4]], dtype=torch.long)
-        logits, loss = self.model(tokens, tokens)
+        logits, loss, _ = self.model(tokens, tokens)
         self.assertEqual(tuple(logits.shape), (1, 4, 11))
         self.assertTrue(torch.isfinite(loss))
         changed = tokens.clone()
         changed[0, -1] = 9
-        changed_logits, _ = self.model(changed)
+        changed_logits, _, _ = self.model(changed)
         self.assertTrue(torch.allclose(logits[:, :-1], changed_logits[:, :-1]))
 
     def test_generation_methods_respect_output_length(self) -> None:

@@ -29,12 +29,15 @@ class BPETokenizer:
         return len(self.vocabulary)
 
     @classmethod
-    def train(cls, text: str, *, max_merges: int = 100) -> "BPETokenizer":
-        if not isinstance(text, str):
-            raise TypeError("text must be a string")
+    def train(cls, text: str | list[str], *, max_merges: int = 100) -> "BPETokenizer":
+        if isinstance(text, str):
+            words = [list(text)]
+        elif isinstance(text, list) and all(isinstance(w, str) for w in text):
+            words = [list(w) for w in text]
+        else:
+            raise TypeError("text must be a string or list of strings")
         if max_merges < 0:
             raise ValueError("max_merges must be non-negative")
-        words = [list(text)]
         alphabet = sorted({symbol for word in words for symbol in word})
         merges: list[tuple[str, str]] = []
         for _ in range(max_merges):

@@ -54,7 +54,22 @@ class TextRetriever:
             scored.append(RetrievedChunk(chunk.source, chunk.index, chunk.text, score))
         return sorted(scored, key=lambda item: (-item.score, item.source, item.index))[:top_k]
 
+    def join(self, chunks: list[RetrievedChunk]) -> str:
+        """Assemble retrieved chunks with NO truncation.
+
+        Truncation belongs to the caller and must be denominated in tokens:
+        this method returning an untruncated string is what makes D1
+        impossible to reintroduce here. See ``src/rag/prompt.py``.
+        """
+        return "\n\n".join(f"[Source: {item.source}]\n{item.text}" for item in chunks)
+
     def prompt(self, question: str, *, top_k: int = 3, max_context_chars: int = 2_000) -> tuple[str, list[RetrievedChunk]]:
+        """DEPRECATED character-budgeted path, retained for existing callers.
+
+        Prefer ``rag_prompt`` in ``src/rag/prompt.py``, which budgets in
+        tokens. ``max_context_chars`` exists for backward compatibility only
+        and is not what the RAG evaluation uses.
+        """
         retrieved = self.retrieve(question, top_k=top_k)
-        context = "\n\n".join(f"[Source: {item.source}]\n{item.text}" for item in retrieved)
+        context = self.join(retrieved)
         return f"Use only the supplied context to answer. If it is insufficient, say so.\n\nContext:\n{context[:max_context_chars]}\n\nQuestion: {question}\nAnswer:", retrieved

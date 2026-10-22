@@ -43,10 +43,14 @@ def attention_weights(model: MiniGPT, token_ids: torch.Tensor) -> torch.Tensor:
     for block, hidden in zip(model.blocks, inputs):
         attention = block.attention
         batch, sequence, _ = hidden.shape
-        qkv = attention.qkv(hidden).view(batch, sequence, 3, attention.num_heads, attention.head_dim)
-        query, key, _ = qkv.unbind(dim=2)
-        query, key = query.transpose(1, 2), key.transpose(1, 2)
-        scores = (query @ key.transpose(-2, -1)) * (attention.head_dim**-0.5)
+        q = attention.q(hidden).view(batch, sequence, attention.num_heads, attention.head_dim).transpose(1, 2)
+        kv = attention.kv(hidden).view(batch, sequence, 2, attention.num_kv_heads, attention.head_dim)
+        k = kv[:, :, 0]  # key (index 0)
+        if attention.num_kv_heads < attention.num_heads:
+            gsz = attention.num_heads // attention.num_kv_heads
+            k = k.repeat_interleave(gsz, dim=2)
+        k = k.transpose(1, 2)
+        scores = (q @ k.transpose(-2, -1)) * (attention.head_dim**-0.5)
         causal = torch.ones(sequence, sequence, dtype=torch.bool, device=hidden.device).tril()
         scores = scores.masked_fill(~causal, float("-inf"))
         maps.append(F.softmax(scores, dim=-1)[0])

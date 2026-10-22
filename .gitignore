@@ -10,3 +10,13 @@ docs/lectures/
 # Checkpoints, optimizer state and raw run outputs. Every one of these is
 # reproducible from `results/` + the run scripts, so they stay local.
 artifacts/
+
+# Source corpora for acts 4, 6, 8, 9 and 10: 1.1 GB of downloads. Fetch them
+# with `python -m tools.fetch_data`; the script documents the upstream dataset
+# for each file and verifies the record count and field schema on arrival.
+# The processed token corpus (artifacts/scaling/corpus_tokens.mmap) is derived
+# from the C4 shard by src/scaling/preprocess.py.
+data/v2/
+
+# Browser-automation scratch from local verification runs.
+.playwright-mcp/
