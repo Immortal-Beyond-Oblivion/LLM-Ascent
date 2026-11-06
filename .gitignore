@@ -34,3 +34,6 @@ video/ascent/assets/fig/
 video/.env.local
 video/.env*
 web-ui-fixed.png
+
+# Model weights stay local: 100 MB of tensors that re-derive from a run.
+checkpoints/
