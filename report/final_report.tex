@@ -435,7 +435,7 @@ $n$ is 1 in substance. No error bar in this table is informative.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act0_ngram_order_smoothing.png}
+\includegraphics[width=\linewidth]{act0_ngram_order_smoothing}
 \caption{Act 0. \emph{Left:} validation perplexity (log scale) against n-gram
 order, one series per smoothing scheme, over the held-out 10\% of
 TinyShakespeare. \emph{Right:} validation bits per character for all 12
@@ -513,7 +513,7 @@ Wilson interval, because the quantity is continuous.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act1_rnn_lstm_gru.png}
+\includegraphics[width=\linewidth]{act1_rnn_lstm_gru}
 \caption{Act 1. \emph{Left:} validation loss of the RNN, LSTM and GRU, with
 error bars of $\pm 1$ sample standard deviation over \textbf{$n = 3$ seeds}.
 \emph{Right:} the gradient demonstration: the total $L_2$ gradient norm at the
@@ -615,7 +615,7 @@ Section~\ref{sec:act2-alibi}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.78\linewidth]{act2_ablations.png}
+\includegraphics[width=0.78\linewidth]{act2_ablations}
 \caption{Act 2. Validation loss for all 18 ablation configurations, coloured by
 the component being ablated, with the parameter count beside each label.
 \textbf{What is plotted:} 18 configurations. \textbf{Interval type:} none ---
@@ -732,7 +732,7 @@ perplexity is not comparable across tokenizers and is not shown. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act3_tokenizer_comparison.png}
+\includegraphics[width=\linewidth]{act3_tokenizer_comparison}
 \caption{Act 3. \emph{Left:} validation bits per character for the four
 tokenizer families under both context controls, with the control indicated by
 fill opacity. \emph{Right:} the number of characters of text visible in the
@@ -934,7 +934,7 @@ not depend on reconstructing the tracked set.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act4_scaling_ladder.png}
+\includegraphics[width=\linewidth]{act4_scaling_ladder}
 \caption{Act 4. The ladder, with the two architecture families drawn
 separately: the canonical family (solid blue, MiniGPT with learned absolute
 positions) and the other family (dashed red, no learned position table), one
@@ -956,7 +956,7 @@ the profile's compatible range. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\linewidth]{act4_loss_vs_N_fixed_D.png}
+\includegraphics[width=0.8\linewidth]{act4_loss_vs_N_fixed_D}
 \caption{Act 4. Validation loss against non-embedding parameters $N$ at three
 fixed training-token budgets $D$, read from the tracked equal-$D$ table.
 Circles mark rungs that have a canonical run, squares rungs that have only
@@ -1314,7 +1314,7 @@ contains it. Neither range excludes anything the paper compares against.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act4_profile_likelihood.png}
+\includegraphics[width=\linewidth]{act4_profile_likelihood}
 \caption{Act 4. The profile likelihood over $\alpha$ and over $\beta$, under
 both parameter conventions, and the diagnosis of the asymmetry between them.
 \emph{Top left:} $R^2$ against $\alpha$ on the total-parameter axis (solid
@@ -1864,7 +1864,7 @@ source data in \texttt{report/tables/act5\_kv\_cache.csv}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act5_kv_cache.png}
+\includegraphics[width=\linewidth]{act5_kv_cache}
 \caption{Act 5a. \emph{Left:} generation latency with and without a KV cache
 against context length. \emph{Right:} cache memory against context length for
 two model shapes. \textbf{What is plotted:} 4 context lengths for latency and
@@ -1926,7 +1926,7 @@ test was never available. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\linewidth]{act5_mqa_paired.png}
+\includegraphics[width=0.8\linewidth]{act5_mqa_paired}
 \caption{Act 5b. The six paired differences in validation loss between MQA
 ($G = 1$) and MHA ($G = 8$) at the 2.6M rung. \textbf{What is plotted:} 6
 paired seeds, one point each, with the mean and the interval. \textbf{Interval
@@ -2015,7 +2015,7 @@ decoding}; the best cell was 0.622$\times$. % claims: A5C-01
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act5_speculative.png}
+\includegraphics[width=\linewidth]{act5_speculative}
 \caption{Act 5c. Wall-clock speedup relative to plain cached decoding (left)
 and acceptance rate (right) against the number of drafted tokens $K$, for the
 1.7$\times$ and 4.2$\times$ model gaps. \textbf{What is plotted:} 2 gaps
@@ -2185,7 +2185,7 @@ under a fixed judge, not an absolute measure of text quality. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act6_decoding_tradeoff.png}
+\includegraphics[width=\linewidth]{act6_decoding_tradeoff}
 \caption{Act 6a. The quality/diversity and quality/cost trade-offs across the
 15-configuration decoding sweep. \textbf{What is plotted:} 15 configurations,
 each from 120 generations (40 prompts $\times$ 3 seeds). \textbf{Interval
@@ -2285,7 +2285,7 @@ was trained on C4 and never on MNLI. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act6_bestofn_selfconsistency.png}
+\includegraphics[width=\linewidth]{act6_bestofn_selfconsistency}
 \caption{Act 6b and 6c. \emph{Left:} best-of-$n$ reranked bits-per-character
 and the mean sample, against $n$, with greedy drawn as a reference line.
 \emph{Right:} self-consistency accuracy on MNLI against the number of votes,
@@ -2391,7 +2391,7 @@ source data in \texttt{report/tables/act7\_icl\_control.csv}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.62\linewidth]{act7_icl_copy_vs_compute.png}
+\includegraphics[width=0.62\linewidth]{act7_icl_copy_vs_compute}
 \caption{Act 7b. On the 18 same-task held-out addition items: the first
 generated token is the demonstration's answer in 18/18 items with a
 demonstration and 0/18 without, while the exact match on the query's own
@@ -2490,7 +2490,7 @@ Source: \texttt{results/v2/act7/6.3M\_sft\_peft.json}; table source data in
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act7_icl_vs_sft.png}
+\includegraphics[width=\linewidth]{act7_icl_vs_sft}
 \caption{Act 7a and 7b. Held-out exact match against the number of instruction
 training examples for full fine-tuning, with the zero-shot floor and the
 in-context-learning arm drawn as horizontal lines, and the per-seed spread
@@ -2507,7 +2507,7 @@ Source: \texttt{results/v2/act7/6.3M\_sft\_peft.json}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act7_peft_matched_budget.png}
+\includegraphics[width=\linewidth]{act7_peft_matched_budget}
 \caption{Act 7c and 7d. \emph{Left:} the parameter-efficient family at a
 matched 20,000-trainable-parameter budget, with full fine-tuning shown in grey
 because it is \emph{not} budget-matched. \emph{Right:} the LoRA rank sweep
@@ -2669,7 +2669,7 @@ candidate passages were dropped for number truncation. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act8_hallucination_by_condition.png}
+\includegraphics[width=\linewidth]{act8_hallucination_by_condition}
 \caption{Act 8b. \emph{Left:} the choice rate --- the share of items on which
 the model prefers the asserted number --- under each condition, with the
 per-item uniform chance level of 0.1838 drawn as a dashed line and 95\% Wilson
@@ -2689,7 +2689,7 @@ reported and labelled and never used to rank conditions. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act8_contrast_distribution.png}
+\includegraphics[width=\linewidth]{act8_contrast_distribution}
 \caption{Act 8c. \emph{Left:} the paired per-item contrasts in rate, with 95\%
 bootstrap intervals that resample items. \emph{Right:} the paired
 log-probability contrasts in nats, with bootstrap intervals; points are coloured
@@ -3003,7 +3003,7 @@ source data in \texttt{report/tables/act9\_head\_ablation.csv}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\linewidth]{act9_head_ablation.png}
+\includegraphics[width=0.92\linewidth]{act9_head_ablation}
 \caption{Act 9a. The change in held-out cross-entropy caused by ablating each
 of the 64 heads, one bar per head (heads within a layer, left to right), with
 the random single-head null drawn as a shaded band of mean $\pm$ 2 standard
@@ -3211,7 +3211,7 @@ data in \texttt{report/tables/act9\_9c\_controls.csv}.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{act9_lens_controls.png}
+\includegraphics[width=\linewidth]{act9_lens_controls}
 \caption{Act 9c. \emph{Left:} the median rank of each of the five control
 targets, per layer, on a logarithmic rank axis. \emph{Right:} the median rank
 at layer 5 for the same five targets. \textbf{What is plotted:} 5 conditions
@@ -3226,7 +3226,7 @@ passage (iii) and a random token (v) are far worse. Source:
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.92\linewidth]{act9_logit_lens.png}
+\includegraphics[width=0.92\linewidth]{act9_logit_lens}
 \caption{Act 9c and 9b. \emph{Left:} the median rank of the asserted number
 under the model's own readout applied to each layer's residual, in the first
 lens run, on a logarithmic rank axis (34 items). \emph{Right:} the hit rate of
