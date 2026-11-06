@@ -1,15 +1,15 @@
 # Reading and defending Project Ascent
 
-A study guide to `report/LLM_Ascent_final report.pdf` (84 pages).
+A study guide to `report/LLM_Ascent_final_report.pdf` (94 pages, A4, compiled
+2026-11-07 with Tectonic).
 
 Everything here is keyed to the document you are holding: **Table 1–38** and
 **Figure 1–20** refer to the PDF's own numbering, and every number is quoted
 from the report or from the tracked file named beside it.
 
-> **One warning before you start.** The PDF is the draft of 21 October. Three
-> numbers inside it are stale, and one whole subsection (Act 4's rescue) has
-> moved since. They are listed in §12. Read that section before the meeting,
-> not after.
+> **The PDF is current.** It was rebuilt from the source on 7 November and every
+> Act 4 number in it matches the widened eight-rung ladder. §12 records what
+> changed and what to say if you are asked about the point set.
 
 ---
 
@@ -782,8 +782,8 @@ Keep this open during the meeting.
 | Head ablation | L0 H5: +0.832 nats, z = +7.82 / +42.8; redundancy 0.97 |
 | Logit lens | asserted 82, edited 82, non-numeric 86, absent 484, random 735 (of 6,487) |
 | Rollout | 0/34, chance 0.0078 |
-| Act 4 clean fit (PDF) | α 0.209, β 0.474, E 1.348, R² 0.9955, 2,292 points, 4 rungs |
-| Act 4 profiles (PDF) | α [0.08, 0.54]; β [0.36, 0.56] |
+| Act 4 clean fit | α 0.589, β 0.461, E 1.964, R² 0.9960, 3,463 points, 8 rungs |
+| Act 4 profiles | α [0.34, 0.82]; β [0.38, 0.54] |
 | Withdrawn fit | α 0.445, β 0.290, E 1.605; R² +0.9957 on other family, −1.3123 on canonical |
 | Ledger | 102 rows: confirmed 75, exploratory 8, invalid 9, n.s. 7, superseded 1, ceiling 1, open 1 |
 | Taxonomy | 89 rows: 10 supported, 26 unsupported, 15 failures, 38 declined |

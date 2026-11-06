@@ -240,8 +240,9 @@ TAXONOMY = [
         "defect": "Two architecture families in one ladder (Act 4)",
         "source": "docs/implementation.md; results/v2/act4-scaling/clean_refit.json",
         "what": "THE LARGEST ENTRY, and the one whose lesson generalises: "
-                "A GOOD-LOOKING FIT IS NOT EVIDENCE OF A GOOD FIT. 11 of the "
-                "16 ladder runs are the canonical MiniGPT and 5 are a "
+                "A GOOD-LOOKING FIT IS NOT EVIDENCE OF A GOOD FIT. At the time of "
+                "the audit 11 of the 16 ladder runs were the canonical MiniGPT "
+                "and 5 were a "
                 "different family with no learned position table, and the "
                 "tracked fit consumed points from both, so 51.4% of the "
                 "fitted set came from a different model class. The fit was "
@@ -255,8 +256,8 @@ TAXONOMY = [
         "caught": "Three things, and the first is the one that generalises. "
                   "(i) An ABSOLUTE INVARIANT: the fit's own parameters score "
                   "R^2 = +0.9957 on the other family's 1428 points, +0.2874 "
-                  "on the reconstructed mixed set, and R^2 = -1.3123 on the "
-                  "canonical models' own 2292 points. No fit of these models "
+                  "on the reconstructed mixed set, and R^2 = -0.6661 on the "
+                  "canonical models' own 3463 points. No fit of these models "
                   "can score a negative R^2 on their own points, so that "
                   "single number is a violation of an absolute, not a "
                   "comparison. A residual plot could not have shown it: the "
@@ -281,7 +282,7 @@ TAXONOMY = [
                   "8.80 against a uniform-over-6,487-vocabulary "
                   "cross-entropy of ln 6487 = 8.78). Those five runs were "
                   "GOOD models that trained normally and finished at 3.578 "
-                  "nats at the 1.5M rung against the canonical 3.057; they "
+                  "nats at the 1.5M rung against the canonical 3.0468; they "
                   "were invisible because their trajectory started 15-25x "
                   "above uniform, so a plausible-looking curve sat at a "
                   "plausible-looking N with a plausible-looking R^2 and "
@@ -311,34 +312,35 @@ TAXONOMY = [
                 "on the same axis, and the confound was unstated: every "
                 "comparison of our exponent with a published one was a "
                 "comparison of two different quantities.",
-        "caught": "Two checks that SURVIVE, and one that has been "
-                  "WITHDRAWN. (i) The convention is the PUBLISHED one: "
-                  "Kaplan and Chinchilla regress on total parameters, so the "
-                  "total axis is the only axis on which a comparison is "
-                  "like-for-like. (ii) It is the STABLE one: under total N "
-                  "the point estimate and the fold-wise mean agree (+0.209 "
-                  "against +0.212) whereas under non-embedding they do not "
-                  "(+0.098 against +0.190), which is an instability signal. "
-                  "The third check, an ABSOLUTE PLAUSIBILITY CHECK on the "
-                  "fitted irreducible loss (the non-embedding axis puts E at "
-                  "0.706 nats, below what a next-token model can achieve, "
-                  "while the total axis puts it at 1.348, a plausible C4 "
-                  "unigram entropy), has been FALSIFIED BY MEASUREMENT and is "
+        "caught": "One ground that survives, and two that were withdrawn. "
+                  "(i) The convention is the PUBLISHED one: Kaplan and "
+                  "Chinchilla regress on total parameters, so the total axis "
+                  "is the only axis on which a comparison is like-for-like. "
+                  "This is the ground the paper still uses. (ii) It is the "
+                  "STABLE one: under total N the point estimate and the "
+                  "fold-wise mean agree (+0.589 against +0.587) -- but they "
+                  "now agree under non-embedding too (+0.407 against +0.407), "
+                  "so on the widened ladder stability no longer separates the "
+                  "two axes and the argument is RETIRED. (iii) An ABSOLUTE "
+                  "PLAUSIBILITY CHECK on the fitted irreducible loss, which "
+                  "put the two axes on opposite sides of what a next-token "
+                  "model can reach, was FALSIFIED BY MEASUREMENT and is "
                   "withdrawn: the corpus's measured unigram entropy under the "
-                  "6,487-token vocabulary is 4.9946 nats, and BOTH fitted E "
-                  "values lie below it (1.348 is 0.27x it, 0.706 is 0.14x it), "
-                  "so neither convention yields a physically possible "
-                  "irreducible loss and the physical-plausibility ground "
-                  "does not discriminate between them.",
+                  "6,487-token vocabulary is 4.9946 nats, BOTH fitted E "
+                  "values lie below it (1.964 is 0.39x it and 1.911 is "
+                  "0.38x it), and against the 2.5152 nats the best model "
+                  "actually reaches the two axes are 0.78x and 0.76x. The "
+                  "physical-plausibility ground therefore does not "
+                  "discriminate.",
         "invalidated": "Every comparison of our exponents with a published "
                        "value, in both directions. The result reverses: the "
                        "profile likelihood's compatible alpha range is "
-                       "[0.08, 0.54] on the total-parameter axis and "
-                       "[0.08, 0.26] on the non-embedding axis, so the "
-                       "alpha comparison is compatible on one axis and "
-                       "excluded on the other. The convention is now stated "
-                       "in the paper rather than left implied, and the "
-                       "reason for it is the two checks that survive.",
+                       "[0.34, 0.82] on the total-parameter axis and "
+                       "[0.20, 0.60] on the non-embedding axis, so the "
+                       "alpha comparison is compatible on both axes and "
+                       "discriminates between neither. The convention is now "
+                       "stated in the paper rather than left implied, and the "
+                       "paper reports one ground for it rather than three.",
     },
     {
         "defect": "Three N conventions in one table, none of them flagged (Act 4)",
@@ -501,7 +503,8 @@ def headline_table() -> None:
     body = f"""% GENERATED by tools/build_act10_tables.py -- do not edit by hand.
 % Source: report/claims.csv ({n_ledger} rows) and the ids listed in that
 % script.  Regenerate with: python tools/build_act10_tables.py
-\\begin{{longtable}}{{L{{7.2cm}}L{{1.7cm}}L{{3.9cm}}L{{1.6cm}}}}
+{{\\small
+\\begin{{longtable}}{{L{{6.5cm}}L{{1.6cm}}L{{4.3cm}}L{{1.9cm}}}}
 \\caption{{The headline claims of this paper: {len(selected)} of the
 {n_ledger} rows of the tracked claims ledger
 (\\texttt{{report/claims.csv}}), with the sample size, the interval and the
@@ -521,6 +524,7 @@ artefact and this table is its summary.}}\\\\
 """ + "\n".join(tex_rows) + """
 \\bottomrule
 \\end{longtable}
+}
 """
     write_tex("act10_headline_claims.tex", body)
 
@@ -545,6 +549,7 @@ def failure_taxonomy() -> None:
     body = f"""% GENERATED by tools/build_act10_tables.py -- do not edit by hand.
 % Source: the defect records in docs/implementation.md, quoted in that file.
 % Regenerate with: python tools/build_act10_tables.py
+{{\\small
 \\begin{{longtable}}{{L{{2.3cm}}L{{4.3cm}}L{{4.4cm}}L{{3.2cm}}}}
 \\caption{{The measurement-failure taxonomy: {len(TAXONOMY)} recorded defects,
 each with what it was, how it was caught, and what it invalidated.
@@ -565,6 +570,7 @@ each with what it was, how it was caught, and what it invalidated.
 """ + "\n".join(tex_rows) + """
 \\bottomrule
 \\end{longtable}
+}
 """
     write_tex("act10_failure_taxonomy.tex", body)
 

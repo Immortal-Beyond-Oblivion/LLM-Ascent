@@ -77,6 +77,8 @@ BASE_MACROS = {
     "includegraphics", "resizebox", "scalebox", "rotatebox", "parbox",
     "vspace", "hspace", "smallskip", "medskip", "bigskip", "noindent",
     "indent", "linebreak", "newpage", "clearpage", "pagebreak", "hfill",
+    "tableofcontents", "renewcommand", "appendix", "setlength",
+    "allowbreak", "arabic",
     "vfill", "hfill", "textbf", "url", "verb", "texttt", "LaTeX", "LaTeXe",
     "ae", "oe", "aa", "AA", "o", "l", "i", "j", "ss", "pounds", "copyright",
     "S", "P", "today", "appendix", "today", "figurename", "tablename",
@@ -533,6 +535,52 @@ def check_math_balance(tex: str, errors: list[str]) -> None:
         errors.append("the file ends in math mode (an odd number of $)")
 
 
+def check_bare_underscore(tex: str, errors: list[str]) -> None:
+    """An unescaped ``_`` outside math is ``Missing $ inserted``.
+
+    A CSV path written into a generated table as ``findings_taxonomy.csv``
+    stopped the whole document compiling, on this machine and on Overleaf,
+    and nothing caught it: the file existed, the references resolved, and the
+    checker only looked at ``final_report.tex``.  This check walks the text
+    the way TeX does --- ``_`` is legal inside ``$...$`` and inside math
+    environments, and illegal everywhere else.
+    """
+    in_math = False
+    in_math_env = False
+    # Arguments of these commands are filenames or keys, not typeset text, so
+    # an underscore inside them is legal.
+    inert = re.compile(
+        r"\\(includegraphics|input|include|label|ref|eqref|autoref|cite|url|"
+        r"graphicspath|bibliography|begin|end|newcolumntype)"
+        r"(\[[^\]]*\])?\{[^{}]*\}")
+    for lineno, line in enumerate(tex.split("\n"), 1):
+        if re.search(r"\\begin\{(equation\*?|displaymath\*?|align\*?|gather\*?)\}",
+                     line):
+            in_math_env = True
+        if re.search(r"\\end\{(equation\*?|displaymath\*?|align\*?|gather\*?)\}",
+                     line):
+            in_math_env = False
+            continue
+        if in_math_env:
+            continue
+        line = inert.sub("", line)
+        j = 0
+        while j < len(line):
+            ch = line[j]
+            if ch == "\\" and j + 1 < len(line):
+                j += 2
+                continue
+            if ch == "$":
+                in_math = not in_math
+                j += 1
+                continue
+            if ch == "_" and not in_math:
+                errors.append(f"line {lineno}: unescaped _ outside math "
+                              f"(TeX will report 'Missing $ inserted')")
+                break
+            j += 1
+
+
 def collect_bundled(raw: str, tex_path: Path) -> str:
     """Return the document text plus the text of every ``\\input`` fragment.
 
@@ -586,6 +634,7 @@ def run_checks(tex_path: Path, claims_path: Path) -> tuple[list[str], list[str]]
     check_packages(tex, errors)
     check_paths(tex, tex_path, errors)
     check_math_balance(tex, errors)
+    check_bare_underscore(tex, errors)
     check_claims(raw, claims_path, errors, notes)
     return errors, notes
 
@@ -611,6 +660,7 @@ SELF_TEST_CASES = [
     ("missing generated fragment", "input",
      "the report bundle is incomplete"),
     ("unbalanced inline math", "math", "unbalanced $"),
+    ("unescaped underscore", "underscore", "unescaped _ outside math"),
 ]
 
 
@@ -719,6 +769,10 @@ def self_test(tex_path: Path, claims_path: Path) -> int:
                                     "$0.5295 at mean confidence $0.5255$",
                                     1), claims_text
 
+        def bare_underscore(tex_text, claims_text, figures_dst):
+            return tex_text.replace("findings\\_taxonomy.json",
+                                    "findings_taxonomy.json", 1), claims_text
+
         MUTATIONS = {
             "file": delete("act4_scaling_ladder.png"),
             "pdf": delete("act4_scaling_ladder.pdf"),
@@ -731,6 +785,7 @@ def self_test(tex_path: Path, claims_path: Path) -> int:
             "orphan": orphan,
             "input": missing_input,
             "math": unbalanced_math,
+            "underscore": bare_underscore,
         }
 
         for name, mutation, expect in SELF_TEST_CASES:

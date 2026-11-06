@@ -20,7 +20,7 @@
       "act": "4",
       "hypothesis": "The ladder's interior points all come from one model family, so one law can be fitted to all of them.",
       "test": "An absolute sign check: the tracked fit's own parameters evaluated on each candidate point set (R^2 against a constant-loss baseline), plus a provenance read of the run records, the checkpoints' state dicts and the architecture block.",
-      "result": "FALSIFIED. 11 of the 16 runs are the canonical MiniGPT and 5 are a different family with no learned position table. The tracked parameters score R^2 = +0.9957 on the other family's 1,428 points and -1.3123 on the canonical family's own 2,292 points; 51.4% of the fitted set came from the other family, which owned the entire top of the ladder. alpha = 0.445, beta = 0.290 and E = 1.605 are withdrawn.",
+      "result": "FALSIFIED. 14 of the 23 non-tiny runs are the canonical MiniGPT and 5 are a different family with no learned position table; 3 more are an unidentifiable architecture and 1 is a superseded duplicate. The tracked parameters score R^2 = +0.9957 on the other family's 1,428 points and -0.6661 on the canonical family's own 3,463 points; 51.4% of the withdrawn fitted set came from the other family, which owned the entire top of the ladder. alpha = 0.445, beta = 0.290 and E = 1.605 are withdrawn.",
       "status": "measurement_failure",
       "preregistered": false,
       "preregistration_note": "No falsifier was written for this hypothesis. The pre-registered Act 4 condition judges the SHAPE of the fit, not the ladder's homogeneity; homogeneity was an assumption that was never a measurement.",
@@ -156,7 +156,7 @@
       "preregistration_note": "The confound was never stated in advance: it was implicit in a column name in a CSV.",
       "do_not_make": "That the non-embedding and total-parameter axes give the same answer.",
       "source_json": "results/v2/act4-scaling/clean_refit.json; results/v2/act4-scaling/unigram_entropy.json",
-      "caveat": "The result reverses on the corrected axis: the compatible alpha range is [0.08, 0.54] on total N and [0.08, 0.26] on non-embedding N."
+      "caveat": "The result reverses on the corrected axis: the compatible alpha range is [0.34, 0.82] on total N and [0.20, 0.60] on non-embedding N."
     },
     {
       "id": "MF4-04",
@@ -345,7 +345,7 @@
       "act": "4",
       "hypothesis": "The ladder identifies alpha well enough to compare it with a published exponent.",
       "test": "The profile likelihood over alpha with the other four parameters re-optimised, plus the joint (E, alpha) profile on a grid of E.",
-      "result": "UNSUPPORTED as a point claim. The compatible alpha range on the total-parameter axis is [0.08, 0.54], which contains both published values, so the ladder discriminates between none of them; and the width is a RIDGE, not noise: fixing E on a grid and re-optimising alpha traces a monotone ridge with d(alpha)/dE = +0.5786.",
+      "result": "UNSUPPORTED as a point claim. The compatible alpha range on the total-parameter axis is [0.34, 0.82], which contains both published values, so the ladder discriminates between none of them; and the width is a RIDGE, not noise: fixing E on a grid and re-optimising alpha traces a monotone ridge with d(alpha)/dE = +0.5542.",
       "status": "unsupported",
       "preregistered": false,
       "preregistration_note": "No falsifier was written for the profile; the ridge was found after the width was reported as uncertainty.",
@@ -357,12 +357,12 @@
       "id": "F4-05",
       "act": "4",
       "hypothesis": "The ladder identifies beta well enough to compare it with a published exponent.",
-      "test": "The profile likelihood over beta on the same 2,292 points, plus a percentile bootstrap over the points.",
-      "result": "SUPPORTED. The compatible beta range is [0.36, 0.56]: it EXCLUDES Kaplan's 0.30 and CONTAINS Chinchilla's 0.50. The bootstrap gives beta = 0.4742 with a 95% interval of [0.4607, 0.4871].",
+      "test": "The profile likelihood over beta on the same 3,463 points.",
+      "result": "SUPPORTED. The compatible beta range is [0.38, 0.54]: it EXCLUDES Kaplan's 0.30 and CONTAINS Chinchilla's 0.50.",
       "status": "supported",
       "preregistered": false,
       "preregistration_note": "No falsifier was written for the beta profile; the asymmetry against alpha was diagnosed from the fits, not pre-registered.",
-      "do_not_make": "That the bootstrap interval is a sampling interval over runs: it is a RESAMPLING-REPRODUCIBILITY interval, because the 2,292 points are not exchangeable (many share a run).",
+      "do_not_make": "That the range is a sampling interval over runs. It is a compatibility range over a fixed point set, and the points are not exchangeable (many share a run).",
       "source_json": "results/v2/act4-scaling/clean_refit.json; results/v2/act4-scaling/beta_bootstrap.json",
       "caveat": "The profile is the honest statement about what the data cannot distinguish; the bootstrap interval says only that the fit reproduces under resampling. beta is two to three times better constrained than alpha on the same points."
     },
@@ -687,7 +687,7 @@
       "status": "declined_claim",
       "preregistered": false,
       "preregistration_note": "Not a hypothesis; a boundary the paper states explicitly.",
-      "do_not_make": "The profile likelihood is the statement: the compatible range is [0.08, 0.54] on the total-parameter axis, and the point estimate +0.209 is not an interval.",
+      "do_not_make": "The profile likelihood is the statement: the compatible range is [0.34, 0.82] on the total-parameter axis, and the point estimate +0.589 is not an interval.",
       "source_json": "results/v2/act4-scaling/clean_refit.json",
       "caveat": "Published in Section 'Claims we do not make'."
     },
@@ -713,7 +713,7 @@
       "status": "declined_claim",
       "preregistered": false,
       "preregistration_note": "Not a hypothesis; a boundary the paper states explicitly.",
-      "do_not_make": "On alpha the ladder discriminates nothing: the total-N compatible range [0.08, 0.54] contains both published values (Kaplan's 0.34 and Chinchilla's 0.50) and most of the plausible range. On beta it does discriminate: the range [0.36, 0.56] EXCLUDES Kaplan's 0.30 and CONTAINS Chinchilla's 0.50. So the ladder is informative about beta and uninformative about alpha, and a single 'consistent with Chinchilla' label would misdescribe both.",
+      "do_not_make": "On alpha the ladder discriminates nothing: the total-N compatible range [0.34, 0.82] contains both published values (Kaplan's 0.34 and Chinchilla's 0.50). On beta it does discriminate: the range [0.38, 0.54] EXCLUDES Kaplan's 0.30 and CONTAINS Chinchilla's 0.50. So the ladder is informative about beta and uninformative about alpha, and a single 'consistent with Chinchilla' label would misdescribe both.",
       "source_json": "results/v2/act4-scaling/clean_refit.json",
       "caveat": "Published in Section 'Claims we do not make'."
     },
@@ -726,7 +726,7 @@
       "status": "declined_claim",
       "preregistered": false,
       "preregistration_note": "Not a hypothesis; a boundary the paper states explicitly.",
-      "do_not_make": "The total-N compatible beta range is [0.36, 0.56] and EXCLUDES Kaplan's 0.30; the non-embedding range [0.34, 0.48] excludes it too. On beta this ladder is informative, so no compatibility claim may be made for Kaplan's value.",
+      "do_not_make": "The total-N compatible beta range is [0.38, 0.54] and EXCLUDES Kaplan's 0.30; the non-embedding range [0.38, 0.54] excludes it too. On beta this ladder is informative, so no compatibility claim may be made for Kaplan's value.",
       "source_json": "results/v2/act4-scaling/clean_refit.json",
       "caveat": "Published in Section 'Claims we do not make'."
     },
@@ -739,7 +739,7 @@
       "status": "declined_claim",
       "preregistered": false,
       "preregistration_note": "Not a hypothesis; a boundary the paper states explicitly.",
-      "do_not_make": "The compatible range is far too wide to identify any published value: the point estimate is +0.209 and the fold-wise estimates run from +0.118 to +0.348.",
+      "do_not_make": "The compatible range is far too wide to identify any published value: the point estimate is +0.589 and the fold-wise estimates run from +0.501 to +0.691.",
       "source_json": "results/v2/act4-scaling/clean_refit.json",
       "caveat": "Published in Section 'Claims we do not make'."
     },
@@ -752,7 +752,7 @@
       "status": "declined_claim",
       "preregistered": false,
       "preregistration_note": "Not a hypothesis; a boundary the paper states explicitly.",
-      "do_not_make": "It is a statement about what the data cannot distinguish, not a confidence interval and not a fit covariance; and in alpha the width is not even noise, but an (E, alpha) degeneracy with d(alpha)/dE = +0.5786.",
+      "do_not_make": "It is a statement about what the data cannot distinguish, not a confidence interval and not a fit covariance; and in alpha the width is not even noise, but an (E, alpha) degeneracy with d(alpha)/dE = +0.5542.",
       "source_json": "results/v2/act4-scaling/clean_refit.json; results/v2/act4-scaling/local_exponent.json",
       "caveat": "Published in Section 'Claims we do not make'."
     },
@@ -778,7 +778,7 @@
       "status": "declined_claim",
       "preregistered": false,
       "preregistration_note": "Not a hypothesis; a boundary the paper states explicitly.",
-      "do_not_make": "They do not: the non-embedding axis's compatible range is [0.08, 0.26] and does not contain 0.34, and its point estimate (+0.098) sits far from its own fold mean (+0.190).",
+      "do_not_make": "They agree on the verdict but not on the number: the axis is the published convention (total parameters, point estimate +0.589), and the non-embedding axis gives +0.407. No claim is made that the two conventions give the same estimate.",
       "source_json": "results/v2/act4-scaling/clean_refit.json",
       "caveat": "Published in Section 'Claims we do not make'."
     },
@@ -850,13 +850,13 @@
     {
       "id": "D4-14",
       "act": "4",
-      "hypothesis": "That the rescue has been run",
+      "hypothesis": "That the rescue, once run, narrows the alpha range enough to identify a published exponent",
       "test": "n/a -- a boundary, not a test",
       "result": "not claimed",
       "status": "declined_claim",
       "preregistered": false,
       "preregistration_note": "Not a hypothesis; a boundary the paper states explicitly.",
-      "do_not_make": "It is in flight and unfinished: the Act 4 numbers in this paper are the current four-rung clean fit, and no rescue number is reported.",
+      "do_not_make": "It did not: the six arms finished and the ladder now spans 8 rungs, but the compatible alpha range is [0.34, 0.82] -- wider, not narrower, than the four-rung range it replaced.",
       "source_json": "src/scaling/rescue.py",
       "caveat": "Published in Section 'Claims we do not make'."
     },

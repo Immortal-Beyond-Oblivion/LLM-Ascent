@@ -1,8 +1,8 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[journal,onecolumn,11pt,a4paper]{IEEEtran}
 
 \usepackage[margin=2.5cm]{geometry}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
+\usepackage{newtxtext,newtxmath}
+\usepackage[htt]{hyphenat}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
@@ -10,6 +10,17 @@
 \usepackage{amsmath}
 \usepackage{longtable}
 \usepackage[hidelinks]{hyperref}
+
+% Long result paths in running text have no breakpoint; let TeX stretch the
+% line a little rather than overrun the margin.
+\setlength{\emergencystretch}{3em}
+
+% Arabic table numbers: the report has more than 30 tables and roman numerals
+% stop being readable.
+\renewcommand{\thetable}{\arabic{table}}
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
 
 % Figures are tracked in report/figures/ (never under artifacts/, which is
 % git-ignored), so `report/` is self-contained: unzip it onto Overleaf and it
@@ -101,9 +112,51 @@ caught by such an invariant or by a positive control, and not one of them by
 comparing two implementations.
 \end{abstract}
 
-% GENERATED FILE: report/tables/findings_table.tex must be present
-% next to this document.  Regenerate with: python -m src.eval.findings_table
-\input{tables/findings_table.tex}
+\newpage
+\tableofcontents
+\newpage
+
+\section{Results at a glance}
+\label{sec:glance}
+
+Three results carry this report. Each is a measurement on a model small enough
+that the measurement, not the model, is the contribution; each has a control
+that makes it mean something; and each is traceable to a tracked file that
+\texttt{tools/reproduce.py} re-derives without retraining.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{L{2.4cm}L{7.4cm}L{4.2cm}}
+\toprule
+Finding & Headline result & Evidence \\
+\midrule
+1. Calibration & Over 4,064 held-out next-token predictions the model is
+accurate $52.95\%$ of the time at a mean confidence of $52.55\%$, expected
+calibration error $0.0233$. It is a competent next-token predictor.
+& \texttt{results/v2/act10/} \\
+2. Instruction tuning & Tuning on 512 examples lifts held-out instruction
+following from $0.0000$ to $0.6016$ while next-token accuracy on the tuned
+distribution does not move ($-0.0009$, 95\% $[-0.0160, +0.0142]$) and the
+calibration error on that distribution rises from $0.1118$ to $0.2772$.
+Tuning retargets competence; it does not add it.
+& \texttt{results/v2/act10/} \\
+3. Scaling & On the pre-registered point set --- 3,463 points over 8 rungs ---
+the fit gives $\alpha = 0.589$ (compatible range $[0.34,\ 0.82]$),
+$\beta = 0.461$ ($[0.38,\ 0.54]$), $E = 1.964$ and $R^2 = 0.9960$. The
+$\beta$ range excludes Kaplan's $0.30$ and contains Chinchilla's $0.50$; the
+$\alpha$ range contains both and discriminates between none.
+& \texttt{results/v2/act4-scaling/} \\
+\bottomrule
+\end{tabular}
+\caption{The three findings, the number each one turns on, and the directory
+the number is read from. Every other result in this report is either a
+supporting measurement for one of these three or an explicit negative; the
+full population of 89 hypotheses, failures and declined claims is in
+Appendix~\ref{app:taxonomy}. \textbf{Interval type:} Wilson intervals for
+proportions and paired differences elsewhere; the ranges above are profile
+compatibility ranges, not standard errors.}
+\label{tab:glance}
+\end{table}
 
 \section{Introduction and research questions}
 \label{sec:intro}
@@ -224,7 +277,7 @@ Acts 5--9 can be regenerated without retraining:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{2.2cm}R{2.9cm}R{2.9cm}R{1.9cm}R{2.5cm}R{2.2cm}}
+\begin{tabular}{L{2.0cm}R{2.7cm}R{2.7cm}R{1.7cm}R{2.3cm}R{2.0cm}}
 \toprule
 Rung & Non-embedding params & Total params & Steps & Tokens & Validation loss \\
 \midrule
@@ -701,7 +754,7 @@ exposure rather than tokenization quality.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{2.5cm}L{2.9cm}R{2.4cm}R{2.4cm}R{2.1cm}R{1.9cm}}
+\begin{tabular}{L{2.4cm}L{2.7cm}R{2.3cm}R{2.3cm}R{2.0cm}R{1.7cm}}
 \toprule
 Tokenizer & Control & Bits/char & Ppl/char & Chars/token & Vocab \\
 \midrule
@@ -1627,7 +1680,7 @@ absorbing. % claims: A4-15
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{1.6cm}R{2.2cm}R{2.2cm}R{2.2cm}R{2.2cm}R{2.2cm}R{2.2cm}}
+\begin{tabular}{L{1.3cm}R{1.95cm}R{1.95cm}R{1.95cm}R{1.95cm}R{1.95cm}R{1.95cm}}
 \toprule
 $D$ (tokens) & 0.8M & 1.5M & 2.6M & 4.1M & 6.3M & 9.0M \\
 \midrule
@@ -1903,9 +1956,9 @@ Seed & MQA ($G{=}1$) & MHA ($G{=}8$) & Difference & Provenance \\
 46 & 2.8429 & 2.8129 & $+0.0300$ & full run \\
 47 & 2.8474 & 2.8190 & $+0.0284$ & full run \\
 \midrule
-\multicolumn{5}{l}{\emph{Primary analysis ($n = 5$, seed 42 excluded)}: mean
+\multicolumn{5}{L{13.9cm}}{\emph{Primary analysis ($n = 5$, seed 42 excluded)}: mean
 $+0.0253$, two-sided $p = 0.0009$, 5/5 direction-consistent} \\
-\multicolumn{5}{l}{\emph{Sensitivity check ($n = 6$, all seeds)}: mean
+\multicolumn{5}{L{13.9cm}}{\emph{Sensitivity check ($n = 6$, all seeds)}: mean
 $+0.0285$, s.d. 0.0097, $t = 7.182$ on 5 d.f., two-sided $p = 0.0008$,
 6/6 direction-consistent} \\
 \bottomrule
@@ -2146,7 +2199,7 @@ biases.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{3.0cm}R{2.6cm}R{2.4cm}R{2.4cm}R{2.4cm}R{1.8cm}}
+\begin{tabular}{L{2.8cm}R{2.4cm}R{2.2cm}R{2.2cm}R{2.2cm}R{1.6cm}}
 \toprule
 Configuration & BPC (ref.) & s.d. & rep-4 & distinct-2 & Seconds \\
 \midrule
@@ -2634,7 +2687,7 @@ be extracted and verified mechanically from C4 without an annotator.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{2.6cm}R{1.5cm}R{1.8cm}L{2.6cm}R{1.8cm}L{3.4cm}}
+\begin{tabular}{L{2.5cm}R{1.5cm}R{1.7cm}L{2.5cm}R{1.7cm}L{3.4cm}}
 \toprule
 Condition & Count & Rate & Wilson 95\% & Chance-adj. & Bootstrap 95\% \\
 \midrule
@@ -2741,7 +2794,7 @@ is higher, so a directional claim would be reading noise. % claims: A8B-06
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{6.0cm}R{1.4cm}R{2.6cm}R{1.5cm}R{2.6cm}}
+\begin{tabular}{L{5.8cm}R{1.4cm}R{2.5cm}R{1.5cm}R{2.5cm}}
 \toprule
 Statistic & $n$ & Mean (nats) & $p$ & Bootstrap 95\% \\
 \midrule
@@ -2843,7 +2896,7 @@ leave the model at chance.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{5.4cm}R{2.4cm}R{2.2cm}R{2.4cm}R{2.2cm}}
+\begin{tabular}{L{4.9cm}R{2.3cm}R{2.1cm}R{2.3cm}R{2.1cm}}
 \toprule
  & \multicolumn{2}{c}{Greedy ($n = 40$)} & \multicolumn{2}{c}{Sampled ($n = 120$)} \\
 Rate & Count & Wilson 95\% & Count & Wilson 95\% \\
@@ -3116,7 +3169,7 @@ against something the model does, rather than being read by eye.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{5.0cm}R{2.5cm}R{2.6cm}L{3.3cm}R{1.1cm}}
+\begin{tabular}{L{4.6cm}R{2.4cm}R{2.5cm}L{3.1cm}R{1.1cm}}
 \toprule
 Quantity & Attention rollout & Raw last-layer attention & Reference & $n$ \\
 \midrule
@@ -3180,7 +3233,7 @@ run to find out which of the two it was.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{4.6cm}R{1.1cm}*{8}{R{1.15cm}}}
+\begin{tabular}{L{3.6cm}R{1.0cm}*{8}{R{0.92cm}}}
 \toprule
 Condition & $n$ & L0 & L1 & L2 & L3 & L4 & L5 & L6 & L7 \\
 \midrule
@@ -3675,7 +3728,7 @@ it is recorded as an open item rather than guessed at. % claims: A10C-04
 \label{sec:act10d}
 
 \texttt{python -m tools.reproduce} loads the tracked canonical checkpoints from
-\texttt{checkpoints/canonical/} and re-derives nine headline numbers of this
+\texttt{checkpoints/\allowbreak canonical/} and re-derives ten headline numbers of this
 paper. It trains nothing. Each check prints the value it derived beside the
 value the paper claims and marks them MATCH or MISMATCH, and the script exits
 non-zero if any check fails.
@@ -4087,5 +4140,25 @@ Wilson, E. B. (1927).
 Journal of the American Statistical Association 22(158):209--212.
 
 \end{thebibliography}
+
+\clearpage
+\appendix
+
+\section{The full findings taxonomy}
+\label{app:taxonomy}
+
+Every hypothesis this project put at risk, every measurement failure it caught,
+and every claim it declines to make, one row each: 89 rows in four populations,
+10 \emph{supported}, 26 \emph{unsupported}, 15 \emph{measurement failures} and
+38 \emph{declined claims}. The table is generated from
+\texttt{report/tables/findings\_taxonomy.csv} by
+\texttt{src/eval/findings\_table.py}, and each row names the tracked file its
+outcome is read from. It is placed here rather than at the front because it is
+a reference table, not an argument: the argument is
+Section~\ref{sec:glance} and the acts that follow it.
+
+% GENERATED FILE: report/tables/findings_table.tex must be present next to
+% this document. Regenerate with: python -m src.eval.findings_table
+\input{tables/findings_table.tex}
 
 \end{document}

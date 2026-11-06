@@ -116,11 +116,11 @@ def counts(rows: list[dict]) -> dict[str, int]:
 
 
 def write_findings_table(rows: list[dict], tables: Path) -> None:
-    """Table 1: the findings taxonomy, as a longtable."""
+    """The findings taxonomy, as a longtable."""
     c = counts(rows)
     n = len(rows)
     caption = (
-        "Table 1: the findings taxonomy, one row per pre-registered "
+        "The findings taxonomy: one row per pre-registered "
         "hypothesis, per recorded measurement failure and per declined claim. "
         f"\\textbf{{Rows:}} {n} --- {c['supported']} \\emph{{supported}}, "
         f"{c['unsupported']} \\emph{{unsupported}}, {c['measurement_failure']} "
@@ -129,23 +129,24 @@ def write_findings_table(rows: list[dict], tables: Path) -> None:
         "four populations. \\textbf{What is measured:} the hypothesis each act "
         "put at risk, the test it was put at risk by, and the outcome, read "
         "from the tracked result files named in the CSV twin "
-        "(\\texttt{report/tables/findings_taxonomy.csv}). "
+        "(\\texttt{report/tables/findings\\_taxonomy.csv}). "
         "\\textbf{Interval type:} per row, as stated in the paper's own "
         "tables; this table is a taxonomy, not an estimate. "
         "\\textbf{Pre-registration:} only Act~4's row "
-        "(\\texttt{results/v2/act4-scaling/FALSIFICATION\_CONDITION.md}) was "
-        "falsifier-first; every other row is marked post-hoc in the "
+        "(\\texttt{FALSIFICATION\\_CONDITION.md} in the act's result "
+        "directory) was falsifier-first; every other row is marked post-hoc in the "
         "\\emph{preregistered} column of the CSV, and the paper says so."
     )
     lines = [
-        "\\begin{longtable}{L{1.05cm}L{3.5cm}L{3.3cm}L{3.9cm}L{1.85cm}L{2.6cm}}",
+        "{\\small",
+        "\\begin{longtable}{L{0.9cm}L{2.8cm}L{2.7cm}L{3.0cm}L{1.9cm}L{2.1cm}}",
         "\\caption{%s}\\label{tab:findings}\\\\" % caption,
         "\\toprule",
         "\\textbf{Act} & \\textbf{Hypothesis} & \\textbf{Test} & "
         "\\textbf{Result} & \\textbf{Status} & \\textbf{Do-not-make note} \\\\",
         "\\midrule",
         "\\endfirsthead",
-        "\\caption[]{Table 1 (continued).}\\label{tab:findings-cont}\\\\",
+        "\\multicolumn{6}{c}{\\emph{Table~\\thetable{} (continued)}}\\\\",
         "\\toprule",
         "\\textbf{Act} & \\textbf{Hypothesis} & \\textbf{Test} & "
         "\\textbf{Result} & \\textbf{Status} & \\textbf{Do-not-make note} \\\\",
@@ -167,11 +168,12 @@ def write_findings_table(rows: list[dict], tables: Path) -> None:
                 tex_escape(row["hypothesis"]),
                 tex_escape(row["test"]),
                 tex_escape(row["result"]),
-                tex_escape(row["status"].replace("_", "\\_")),
+                tex_escape(row["status"].replace("_", " ")),
                 note,
             )
         )
     lines.append("\\end{longtable}")
+    lines.append("}")
     (tables / "findings_table.tex").write_text("\n".join(lines) + "\n",
                                                encoding="utf-8")
 

@@ -234,31 +234,6 @@ def ladder_figure(results_dir: Path, out_dir: Path) -> None:
     tracked = _load(results_dir / "fit_results.json")["secondary"]
     on = clean["tracked_params_on_candidate_sets"]
     entropy = _load(results_dir / "unigram_entropy.json")
-    fig.suptitle(
-        "Act 4: %d runs, %d interior points (D >= 5M) -- %d canonical "
-        "(%.1f%%), %d other.\nCLEAN FIT (canonical family, TOTAL-N axis, "
-        "%d points, %d rungs): alpha = %.3f, beta = %.3f, E = %.3f, "
-        "R2 = %.4f; the profile likelihood's compatible ALPHA range is "
-        "[%.2f, %.2f], which contains Chinchilla's 0.34 AND 0.50, so this "
-        "ladder DISCRIMINATES BETWEEN NONE OF THEM.\nE is an "
-        "EXTRAPOLATED asymptote, not a measured entropy: the corpus's "
-        "measured unigram entropy is %.4f nats.  The WITHDRAWN fit "
-        "(alpha = %.3f) describes the OTHER family: R2 = %+.3f on its %d "
-        "points, %+.3f on the canonical points."
-        % (prov["runs_total"], prov["points_D5M_total"],
-           prov["points_D5M_canonical"],
-           100.0 * prov["points_D5M_canonical"] / prov["points_D5M_total"],
-           prov["points_D5M_other"],
-           canonical["n_points"], canonical["n_rungs"],
-           canonical["alpha"], canonical["beta"], canonical["E"],
-           canonical["r2_vs_constant_baseline"],
-           prof["compatible_alpha_min"], prof["compatible_alpha_max"],
-           entropy["held_out_region"]["entropy_nats"],
-           tracked["alpha"],
-           on["other_family_only_D5M"]["r2"],
-           on["other_family_only_D5M"]["n"],
-           on["canonical_only_D5M"]["r2"]),
-        fontsize=9.5, y=0.995)
     fig.subplots_adjust(left=0.07, right=0.985, top=0.80, bottom=0.09)
     _save(fig, out_dir, "act4_scaling_ladder")
 
@@ -496,18 +471,6 @@ def profile_figure(results_dir: Path, out_dir: Path) -> None:
                  "variation (hundreds of points per run)",
                  fontsize=9.5)
 
-    fig.suptitle(
-        "Act 4: the profile likelihood is the statement.  On the TOTAL-N axis "
-        "the compatible ALPHA range is [%.2f, %.2f]: it contains Chinchilla's "
-        "0.34 and 0.50, so this ladder is COMPATIBLE WITH PUBLISHED EXPONENTS "
-        "ACROSS THEIR ENTIRE RANGE AND DISCRIMINATES BETWEEN NONE OF THEM.\n"
-        "The BETA range is [%.2f, %.2f] and EXCLUDES Chinchilla's 0.28, so no "
-        "compatibility claim may be made for beta.  E is an EXTRAPOLATED "
-        "asymptote: the corpus's measured unigram entropy is %.4f nats."
-        % (total["compatible_alpha_min"], total["compatible_alpha_max"],
-           btotal["compatible_beta_min"], btotal["compatible_beta_max"],
-           entropy["held_out_region"]["entropy_nats"]),
-        fontsize=9.5, y=0.995)
     fig.subplots_adjust(left=0.07, right=0.985, top=0.86, bottom=0.06)
     _save(fig, out_dir, "act4_profile_likelihood")
 
