@@ -79,7 +79,7 @@
   </div>
 </header>
 <main>
-  <div class="banner">These are tiny research models (about 10<sup>5</sup> parameters, trained for minutes). Output is mostly word salad — this page is for inspecting how the system behaves, not for useful answers.</div>
+  <div class="banner">These are tiny research models (the canonical set is 1.5M, 2.6M and 6.3M non-embedding parameters at a 128-token context, trained for hours). Output is mostly word salad — this page is for inspecting how the system behaves, not for useful answers.</div>
   <div id="global-error" class="error" hidden></div>
 
   <nav role="tablist">
@@ -99,7 +99,7 @@
     <div class="grid">
       <div><label for="p-mode">Decoding</label>
         <select id="p-mode"><option value="greedy">greedy</option><option value="sample" selected>sample</option><option value="beam">beam search</option></select></div>
-      <div><label for="p-max">Max new tokens</label><input id="p-max" type="number" min="1" max="300" value="120"></div>
+      <div><label for="p-max">Max new tokens</label><input id="p-max" type="number" min="1" max="300" value="80"></div>
       <div><label for="p-temp">Temperature</label><input id="p-temp" type="number" min="0.05" max="5" step="0.05" value="0.8"></div>
       <div><label for="p-topk">Top-k</label><input id="p-topk" type="number" min="1" placeholder="off" value="20"></div>
       <div><label for="p-topp">Top-p</label><input id="p-topp" type="number" min="0.01" max="1" step="0.01" placeholder="off"></div>
@@ -130,11 +130,11 @@
   <!-- RAG -->
   <section class="panel" id="tab-rag" hidden>
     <h2>Retrieval-augmented answer vs closed-book</h2>
-    <p class="hint">Retrieves chunks from local documents by word overlap and shows the exact prompt. The default context budget is the v1 behaviour (half the context length in characters), which is why v1 RAG could not work — raise it to see the effect.</p>
+    <p class="hint">Retrieves chunks from local documents by word overlap and shows the exact prompt. The context budget is denominated in TOKENS — the same builder the Act 8 evaluation uses — so the retrieved text is no longer cut off by a character budget. The answer is shown against a closed-book baseline with no context at all.</p>
     <div class="row">
       <div class="grow"><label for="r-q">Question</label><input id="r-q" type="text" maxlength="300" value="Which planet is red?"></div>
       <div style="width:110px"><label for="r-k">Top-k chunks</label><input id="r-k" type="number" min="1" max="5" value="3"></div>
-      <div style="width:150px"><label for="r-chars">Context chars</label><input id="r-chars" type="number" min="16" max="4000" placeholder="auto"></div>
+      <div style="width:190px"><label for="r-chars">Context budget</label><input id="r-chars" type="text" value="token-based" readonly title="The context budget is denominated in tokens and is the same builder the Act 8 evaluation uses."></div>
       <div style="width:130px"><label for="r-max">Max new tokens</label><input id="r-max" type="number" min="1" max="150" value="60"></div>
     </div>
     <label>Documents</label>
@@ -233,7 +233,7 @@ async function loadModels() {
     models = data.models;
     modelSelect.replaceChildren();
     if (!models.length) {
-      modelSelect.append(el("option", { value: "" }, "No checkpoints found under artifacts/"));
+      modelSelect.append(el("option", { value: "" }, "No checkpoints found"));
       showGlobal("No trained checkpoints were found. Train one first (see the README), then reload.");
       return;
     }
@@ -242,7 +242,9 @@ async function loadModels() {
         `${m.id} · ${m.tokenizer} · ${m.parameters.toLocaleString()} params · ctx ${m.context_length}`;
       modelSelect.append(el("option", { value: m.id, disabled: m.error ? "" : false }, label));
     }
-    const preferred = models.find((m) => !m.error && m.id.endsWith("bpe")) || models.find((m) => !m.error);
+    // The default is the strongest model that loads. The canonical set is
+    // ordered by the server, so the first loadable entry is the largest one.
+    const preferred = models.find((m) => !m.error);
     if (preferred) modelSelect.value = preferred.id;
   } catch (error) { showGlobal("Could not list models: " + error.message); }
 }
@@ -270,6 +272,19 @@ function notices(container, data) {
 }
 
 // ------------------------------------------------------------ playground
+// The server caps new tokens by decoding mode: 300 for greedy and sampling,
+// 100 for beam search, which is the expensive one. The field has to follow,
+// or a value that is valid in one mode is rejected in the other.
+const TOKEN_CAP = { greedy: 300, sample: 300, beam: 100 };
+function applyTokenCap() {
+  const cap = TOKEN_CAP[$("#p-mode").value] || 300;
+  const field = $("#p-max");
+  field.max = cap;
+  if (Number(field.value) > cap) field.value = cap;
+}
+$("#p-mode").addEventListener("change", applyTokenCap);
+applyTokenCap();
+
 $("#p-run").addEventListener("click", async () => {
   const button = $("#p-run"), msgs = $("#p-msgs");
   button.disabled = true; clear(msgs);
@@ -287,7 +302,13 @@ $("#p-run").addEventListener("click", async () => {
     chips($("#p-stats"), [`${data.prompt_tokens} prompt tokens`, `${data.new_tokens} new tokens`,
       `${data.seconds}s`, data.tokens_per_second ? `${data.tokens_per_second} tok/s` : null,
       `3-gram repetition ${data.repetition_3gram}`, data.prompt_unknown_tokens ? `${data.prompt_unknown_tokens} <unk> in prompt` : null]);
-  } catch (error) { show(msgs, "error", error.message); }
+  } catch (error) {
+    show(msgs, "error", error.message);
+    // Clear the previous run's output: a stale success sitting next to an
+    // error reads as if it were this run's answer.
+    $("#p-out").replaceChildren();
+    chips($("#p-stats"), []);
+  }
   button.disabled = false;
 });
 
@@ -337,7 +358,7 @@ $("#r-run").addEventListener("click", async () => {
   const documents = [...document.querySelectorAll("#r-docs input:checked")].map((i) => i.value);
   try {
     const data = await api("/api/rag", { model: currentModel(), question: $("#r-q").value, documents,
-      top_k: optNumber("#r-k", true), context_chars: optNumber("#r-chars", true), max_new_tokens: optNumber("#r-max", true) });
+      top_k: optNumber("#r-k", true), max_new_tokens: optNumber("#r-max", true) });
     $("#r-result").hidden = false;
     $("#r-sources").replaceChildren(...data.sources.map((s) => el("div", { class: "out", style: "margin-bottom:6px" },
       el("strong", {}, `${s.source} #${s.chunk} · score ${s.score}\n`), s.text)));
@@ -351,7 +372,13 @@ $("#r-run").addEventListener("click", async () => {
       `The RAG prompt (${data.with_context.prompt_tokens} tokens) exceeds the ${data.context_length}-token context, so its beginning — including the instruction — is cropped before the model sees it.`));
     if (data.unknown_characters.length) items.push(el("div", { class: "notice" }, "Characters outside the vocabulary are read as <unk>: " + data.unknown_characters.map((c) => JSON.stringify(c)).join(" ")));
     msgs.replaceChildren(...items);
-  } catch (error) { show(msgs, "error", error.message); }
+  } catch (error) {
+    show(msgs, "error", error.message);
+    // Clear the previous run's output: a stale success sitting next to an
+    // error reads as if it were this run's answer.
+    $("#p-out").replaceChildren();
+    chips($("#p-stats"), []);
+  }
   button.disabled = false;
 });
 
@@ -392,7 +419,13 @@ $("#a-run").addEventListener("click", async () => {
     }
     redrawAttention();
     if (attention.cropped) msgs.append(el("div", { class: "notice" }, "Only the last 64 tokens of the prompt are shown."));
-  } catch (error) { show(msgs, "error", error.message); }
+  } catch (error) {
+    show(msgs, "error", error.message);
+    // Clear the previous run's output: a stale success sitting next to an
+    // error reads as if it were this run's answer.
+    $("#p-out").replaceChildren();
+    chips($("#p-stats"), []);
+  }
   button.disabled = false;
 });
 $("#a-layer").addEventListener("change", () => attention && redrawAttention());

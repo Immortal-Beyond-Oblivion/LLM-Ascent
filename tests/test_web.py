@@ -41,11 +41,12 @@ KNOWLEDGE = (
 )
 PNG = b"\x89PNG\r\n\x1a\nfake-image-bytes"
 CONTEXT = 32
+WIDE_CONTEXT = 128
 
 
-def write_checkpoint(directory: Path, tokenizer, *, seed: int):
+def write_checkpoint(directory: Path, tokenizer, *, seed: int, context_length: int = CONTEXT):
     torch.manual_seed(seed)
-    model = MiniGPT(GPTConfig(tokenizer.vocabulary_size, context_length=CONTEXT, embedding_dim=16,
+    model = MiniGPT(GPTConfig(tokenizer.vocabulary_size, context_length=context_length, embedding_dim=16,
                               num_heads=2, num_layers=2, dropout=0.0))
     model.eval()
     if isinstance(tokenizer, CharacterTokenizer):
@@ -65,10 +66,17 @@ class Fixture:
         self.root = Path(self._tmp.name)
         artifacts = self.root / "artifacts"
         data = self.root / "data"
-        self.char_tokenizer = CharacterTokenizer.from_text(CORPUS)
+        # The character vocabulary must cover the KNOWLEDGE document too, or
+        # the RAG path round-trips it to <unk> and the test proves nothing.
+        self.char_tokenizer = CharacterTokenizer.from_text(CORPUS + KNOWLEDGE)
         self.bpe_tokenizer = BPETokenizer.train(CORPUS * 5, max_merges=10)
         self.char_model = write_checkpoint(artifacts / "tiny" / "char", self.char_tokenizer, seed=1)
         self.bpe_model = write_checkpoint(artifacts / "tiny" / "bpe", self.bpe_tokenizer, seed=2)
+        # A window the size of the real models'. The 32-token window of the
+        # tiny models cannot hold the shared SFT contract plus a question, so
+        # the RAG path needs a realistically sized one to be exercised.
+        self.wide_char_model = write_checkpoint(artifacts / "tiny" / "wide", self.char_tokenizer,
+                                                 seed=4, context_length=WIDE_CONTEXT)
         (artifacts / "broken").mkdir(parents=True)
         (artifacts / "broken" / "checkpoint.pt").write_bytes(b"this is not a checkpoint")
 
@@ -79,8 +87,9 @@ class Fixture:
                          {"mode": "top-k sampling (k=20, T=0.8)", "repetition_3gram": 0.12, "characters_per_second": 3144.0}]}
             for name, bits in (("character", 3.45), ("bpe", 3.09))
         ]
-        (artifacts / "tick-204").mkdir(parents=True)
-        self.comparison_path = artifacts / "tick-204" / "comparison.json"
+        # The tracked results live under results/, not artifacts/.
+        (self.root / "results" / "v1").mkdir(parents=True)
+        self.comparison_path = self.root / "results" / "v1" / "comparison.json"
         self.comparison_text = json.dumps(comparison)
         self.comparison_path.write_text(self.comparison_text, encoding="utf-8")
         (artifacts / "tick-403" / "sub").mkdir(parents=True)
@@ -153,12 +162,12 @@ class WebCase(unittest.TestCase):
 class ReadOnlyEndpointTests(WebCase):
     def test_health_models_and_documents(self) -> None:
         status, health = self.get("/api/health")
-        self.assertEqual((status, health), (200, {"status": "ok", "models": 3}))
+        self.assertEqual((status, health), (200, {"status": "ok", "models": 4}))
 
         status, data = self.get("/api/models")
         self.assertEqual(status, 200)
         by_id = {model["id"]: model for model in data["models"]}
-        self.assertEqual(set(by_id), {"tiny/char", "tiny/bpe", "broken"})
+        self.assertEqual(set(by_id), {"tiny/char", "tiny/bpe", "tiny/wide", "broken"})
         char, bpe = by_id["tiny/char"], by_id["tiny/bpe"]
         self.assertEqual(char["tokenizer"], "character")
         self.assertEqual(char["vocabulary_size"], FIXTURE.char_tokenizer.vocabulary_size)
@@ -307,7 +316,7 @@ class ResultsTests(WebCase):
         self.assertIsNone(data["v2_summary"])
 
     def test_v2_summary_and_figures_appear_when_present(self) -> None:
-        v2 = FIXTURE.root / "artifacts" / "v2"
+        v2 = FIXTURE.root / "results" / "v2"
         try:
             (v2 / "figures").mkdir(parents=True)
             (v2 / "summary.json").write_text(json.dumps({"gate": "G1", "bpc": [3.1, 3.2]}), encoding="utf-8")
@@ -319,6 +328,29 @@ class ResultsTests(WebCase):
         finally:
             shutil.rmtree(v2, ignore_errors=True)
         self.assertIsNone(self.get("/api/results")[1]["v2_summary"])
+
+    def test_the_tracked_results_are_served(self) -> None:
+        """The Results tab used to read artifacts/, where nothing lives.
+
+        The measurements are tracked under results/ and the figures under
+        report/figures/, so the tab reported "no results yet" for a project
+        with 22 tracked result files.
+        """
+        root = FIXTURE.root
+        (root / "results" / "v2" / "act7").mkdir(parents=True)
+        (root / "results" / "v2" / "act7" / "x.json").write_text("{}", encoding="utf-8")
+        (root / "report" / "figures").mkdir(parents=True)
+        (root / "report" / "figures" / "act7_icl_copy_vs_compute.png").write_bytes(PNG)
+        try:
+            data = self.get("/api/results")[1]
+            self.assertIn("act7_icl_copy_vs_compute.png", data["figures"])
+            summary = data["v2_summary"]
+            self.assertIsNotNone(summary)
+            self.assertIn("act7", summary["acts"])
+            self.assertEqual(summary["acts"]["act7"]["n_files"], 1)
+        finally:
+            shutil.rmtree(root / "results" / "v2", ignore_errors=True)
+            shutil.rmtree(root / "report", ignore_errors=True)
 
     def test_corrupt_result_files_degrade_cleanly(self) -> None:
         v2 = FIXTURE.root / "artifacts" / "v2"
@@ -451,32 +483,69 @@ class ChatTests(WebCase):
 
 class RagTests(WebCase):
     def rag(self, **overrides):
-        body = {"model": "tiny/char", "question": "Which planet is red?", "documents": ["knowledge.txt"], "max_new_tokens": 4}
+        body = {"model": "tiny/wide", "question": "Which planet is red?", "documents": ["knowledge.txt"], "max_new_tokens": 4}
         body.update(overrides)
         return self.post("/api/rag", body)
 
-    def test_default_budget_reproduces_the_v1_truncation(self) -> None:
+    def test_a_window_too_small_for_the_question_is_a_clear_error(self) -> None:
+        """The shared builder refuses to build a prompt the model cannot
+        answer in, rather than silently truncating the question."""
+        status, data = self.rag(model="tiny/char")
+        self.assertEqual(status, 400)
+        self.assertIn("does not fit", data["error"])
+
+    def test_the_context_budget_is_in_tokens(self) -> None:
+        """Defect D1: the context used to be budgeted in CHARACTERS.
+
+        The old behaviour passed ``context_length // 2`` characters, which on
+        the canonical BPE admitted 9.2% of the retrieved passage. The budget
+        is now in tokens, it is the same builder the Act 8 evaluation uses,
+        and the retrieved text is no longer cut off.
+        """
         status, data = self.rag()
         self.assertEqual(status, 200)
         self.assertEqual(len(data["sources"]), 1)
         self.assertEqual((data["sources"][0]["source"], data["sources"][0]["chunk"], data["sources"][0]["score"]), ("knowledge.txt", 0, 0.75))
-        self.assertEqual(data["context_chars"], max(16, CONTEXT // 2))
+        self.assertEqual(data["context_budget"], "tokens")
+        self.assertEqual(data["context_length"], WIDE_CONTEXT)
         prompt = data["with_context"]["prompt"]
-        self.assertTrue(prompt.startswith("Use only the supplied context"))
-        self.assertIn("Question: Which planet is red?", prompt)
-        self.assertNotIn("Mars", prompt)  # the retrieved text was cut off (defect D1 in the design record)
-        self.assertTrue(data["with_context"]["prompt_cropped"])
+        # The shared SFT contract, not the old ad-hoc RAG template.
+        self.assertTrue(prompt.startswith("### Instruction:\n"))
+        self.assertTrue(prompt.endswith("### Response:\n"))
+        self.assertIn("Which planet is red?", prompt)
+        # The retrieved text is now inside the prompt. It may be cut short:
+        # the window is 128 tokens and the passage is longer, so the budget
+        # trims it, which is the point of a budget.
+        self.assertIn("Mars is known as the red", prompt)
+        self.assertIn("Mars is known", data["sources"][0]["text"])
+        # The source marker carries the document's NAME. An absolute path
+        # would leak the machine's layout into the prompt and could spend the
+        # whole window on a path.
+        self.assertIn("knowledge.txt", prompt)
+        self.assertNotIn(str(FIXTURE.root), prompt)
+        self.assertNotIn("/private/var", prompt)
+        # The assembled prompt must fit the window it was budgeted for.
+        self.assertLessEqual(data["with_context"]["prompt_tokens"], WIDE_CONTEXT)
+        self.assertFalse(data["with_context"]["prompt_cropped"])
         self.assertEqual(data["closed_book"]["prompt"], "Question: Which planet is red?\nAnswer:")
         self.assertIsInstance(data["with_context"]["answer"], str)
         self.assertIsInstance(data["closed_book"]["answer"], str)
         self.assertIsInstance(data["unknown_characters"], list)
-        self.assertEqual(data["context_length"], CONTEXT)
 
-    def test_larger_budget_includes_the_retrieved_text(self) -> None:
-        data = self.rag(context_chars=400)[1]
-        self.assertEqual(data["context_chars"], 400)
-        self.assertIn("Mars is known as the red planet", data["with_context"]["prompt"])
-        self.assertIn("Mars is known", data["sources"][0]["text"])
+    def test_a_question_too_long_for_the_window_is_a_clear_error(self) -> None:
+        """The builder refuses to build a prompt the model cannot answer in.
+
+        It does not silently truncate the question, and it does not return a
+        prompt that overflows the window: it says the question does not fit.
+        """
+        status, data = self.rag(question="Which planet is red? " * 8, max_new_tokens=8)
+        self.assertEqual(status, 400)
+        self.assertIn("does not fit", data["error"])
+
+    def test_a_moderate_question_still_fits_the_window(self) -> None:
+        status, data = self.rag(question="Which planet is red, and why?", max_new_tokens=8)
+        self.assertEqual(status, 200)
+        self.assertLessEqual(data["with_context"]["prompt_tokens"], WIDE_CONTEXT)
 
     def test_multiple_documents_rank_by_overlap(self) -> None:
         data = self.rag(question="boil water", documents=["knowledge.txt", "other.txt"])[1]
@@ -487,8 +556,8 @@ class RagTests(WebCase):
         bad = [
             {"documents": ["nope.txt"]}, {"documents": ["../data/knowledge.txt"]}, {"documents": ["secret.json"]},
             {"documents": ["knowledge.txt\n"]}, {"documents": []}, {"documents": "knowledge.txt"}, {"documents": [5]},
-            {"documents": ["knowledge.txt"] * 6}, {"documents": ["empty.txt"]}, {"context_chars": 5},
-            {"context_chars": 4001}, {"top_k": 6}, {"top_k": 0}, {"question": ""}, {"question": "q" * 301},
+            {"documents": ["knowledge.txt"] * 6}, {"documents": ["empty.txt"]},
+            {"top_k": 6}, {"top_k": 0}, {"question": ""}, {"question": "q" * 301},
             {"max_new_tokens": 151},
         ]
         for overrides in bad:
@@ -514,7 +583,7 @@ class AttentionTests(WebCase):
                     self.assertTrue(all(value == 0.0 for value in row[row_index + 1:]))
 
     def test_unknown_tokens_bpe_tokens_and_cropping(self) -> None:
-        self.assertEqual(self.post("/api/attention", {"model": "tiny/char", "prompt": "Ab"})[1]["tokens"], ["<unk>", "b"])
+        self.assertEqual(self.post("/api/attention", {"model": "tiny/char", "prompt": "%b"})[1]["tokens"], ["<unk>", "b"])
         ids = FIXTURE.bpe_tokenizer.encode("the cat")
         tokens = self.post("/api/attention", {"model": "tiny/bpe", "prompt": "the cat"})[1]["tokens"]
         self.assertEqual(tokens, [FIXTURE.bpe_tokenizer.decode([i]) for i in ids])
@@ -530,7 +599,7 @@ class AttentionTests(WebCase):
 class RegistryTests(unittest.TestCase):
     def test_discovery_cache_and_errors(self) -> None:
         registry = ModelRegistry(FIXTURE.root / "artifacts", cache_size=1)
-        self.assertEqual(set(registry.discover()), {"tiny/char", "tiny/bpe", "broken"})
+        self.assertEqual(set(registry.discover()), {"tiny/char", "tiny/bpe", "tiny/wide", "broken"})
         registry.get("tiny/char")
         registry.get("tiny/bpe")
         self.assertEqual(list(registry._cache), ["tiny/bpe"])  # least recently used model was evicted

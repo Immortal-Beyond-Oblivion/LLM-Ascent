@@ -87,7 +87,7 @@ def act4_tables(results: Path, tables: Path) -> None:
     # The ladder, split by architecture family.  One row per (rung, family).
     grouped: dict[tuple[str, str], list[dict]] = {}
     for key, run in per_run.items():
-        rung, seed = key.split("/")
+        rung = key.split("/")[0]
         grouped.setdefault((rung, run["family"]), []).append(run)
     rows = []
     for (rung, family), runs in sorted(grouped.items(),
@@ -515,18 +515,26 @@ def act9_control_tables(results: Path, tables: Path) -> None:
 def act5_tables(results: Path, tables: Path) -> None:
     kv = _load(results / "v2" / "act5" / "kv_cache.json")
     mqa = _load(results / "v2" / "act5" / "mqa_quality_2.6m.json")
+    # The canonical parameter counts come from the pinned checkpoints' own
+    # index, which was computed from the instantiated model. The ladder's
+    # SEARCH TARGET is a different number and must not be reported as a
+    # measurement: at the 1.5M rung the target was 1,536,000 and the model has
+    # 1,567,200 non-embedding parameters, a difference of exactly one
+    # 128 x 160 position table. Three conventions coexisted in one table for
+    # exactly this reason.
+    index = _load(REPO_ROOT / "checkpoints" / "canonical" / "INDEX.json")
+    pins = {m["rung"]: m for m in index["models"] if m["rung"] in
+            ("1.5M", "2.6M", "6.3M")}
+    tokens = {"1.5M": 30720000, "2.6M": 53084160, "6.3M": 125829120}
     _write(tables, "act5_canonical_models.csv",
-           ["rung", "non_embedding_params", "steps", "training_tokens",
-            "validation_loss", "source"],
+           ["rung", "non_embedding_params", "total_params", "steps",
+            "training_tokens", "validation_loss", "source"],
            [
-               ["1.5M", mqa["canonical_1.5M_pin"]["non_embedding_params"],
-                mqa["canonical_1.5M_pin"]["step"], 30720000,
-                mqa["canonical_1.5M_pin"]["val_loss"],
-                "results/v2/act5/mqa_quality_2.6m.json"],
-               ["2.6M", 2654208, 12960, 53084160, 2.8111,
-                "docs/implementation.md (canonical rung table)"],
-               ["6.3M", 6291456, 30720, 125829120, 2.5152,
-                "docs/implementation.md (canonical rung table)"],
+               [rung, pins[rung]["non_embedding_params"], pins[rung]["parameters"],
+                pins[rung]["completed_steps"], tokens[rung],
+                pins[rung]["val_loss"],
+                "checkpoints/canonical/INDEX.json (computed from the model)"]
+               for rung in ("1.5M", "2.6M", "6.3M")
            ])
 
     _write(tables, "act5_kv_cache.csv",

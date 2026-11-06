@@ -64,9 +64,11 @@
     "conclusion": "conclusion unchanged"
   },
   "canonical_1.5M_pin": {
-    "non_embedding_params": 1536000,
     "step": 7500,
     "val_loss": 3.0571,
-    "elapsed_s": 6566
+    "elapsed_s": 6566,
+    "target_non_embedding_params": 1536000,
+    "non_embedding_params": 1567200,
+    "_note": "non_embedding_params was 1,536,000, which is the ladder's SEARCH TARGET for this rung, not a measurement. The pinned checkpoint's actual non-embedding parameter count is 1,567,200, computed from the instantiated model and recorded in checkpoints/canonical/INDEX.json. The difference is exactly 20,480 = one 128 x 160 learned position table, which is the same difference that separates the two architecture families in Act 4. The target is kept under its own key."
   }
 }

@@ -50,97 +50,102 @@ ARTIFACTS = ROOT / "artifacts" / "scaling" / "checkpoints"
 # authoritative; the threshold is only used where the block is absent.
 FIRST_LOSS_THRESHOLD = 20.0
 
+#: How far above its own run's final validation loss a point may sit and
+#: still count as "past the transient". Scale-free, so it means the same thing
+#: at every rung.
+TRANSIENT_MARGIN = 0.5
+
 
 # --------------------------------------------------------------------------
 # provenance
 # --------------------------------------------------------------------------
 
-def run_configs(ladder_dir: Path = ARTIFACTS) -> dict[tuple[str, str], dict]:
-    """Architecture fingerprint for every ladder run.
+def run_configs(ladder_dir: Path = ARTIFACTS) -> dict[tuple[str, str, str], dict]:
+    """Architecture fingerprint and role for every ladder run.
 
-    Authority order:
-      1. the ``architecture`` block in the run's metrics.json (written by the
-         training code itself);
-      2. the total parameter count and the presence of a learned position
-         table, read from a surviving checkpoint;
-      3. the first logged validation loss, which separates the two families
-         by more than an order of magnitude.
+    The authority is the manifest in ``src/scaling/ladder_manifest.py``, which
+    names each run, its role in the fit and the reason for that role. The
+    manifest exists because the first version of this fit was computed over a
+    mixture of two architecture families and nothing complained: the old
+    ``in_fitted_set`` column reproduced the point COUNT and not the point SET.
+
+    Keys are ``(rung, seed, arm)``. The arm is the D/N ratio of the design
+    point, so the 9.0M rung at D = 20N and the 9.0M rung at D = 10N are
+    different runs rather than one run counted twice.
     """
-    out: dict[tuple[str, str], dict] = {}
-    for rung_dir in sorted(ladder_dir.iterdir()):
-        if not rung_dir.is_dir() or rung_dir.name == "tiny":
-            continue
-        for seed_dir in sorted(rung_dir.iterdir()):
-            metrics = seed_dir / "metrics.json"
-            if not metrics.exists():
-                continue
-            m = json.loads(metrics.read_text(encoding="utf-8"))
-            history = m.get("history") or []
-            if not history:
-                continue
-            arch = m.get("architecture") or {}
-            first = history[0]["val_loss"]
-            family = ("canonical" if (arch.get("model_class") == "MiniGPT"
-                                      or first < FIRST_LOSS_THRESHOLD)
-                      else "other")
-            model_class = arch.get("model_class")
-            positional = arch.get("positional_encoding")
-            if not model_class:
-                model_class = "MiniGPT" if family == "canonical" else "alibi_like"
-            if not positional:
-                positional = ("learned_absolute" if family == "canonical"
-                              else "none")
-            out[(rung_dir.name, seed_dir.name.replace("seed", ""))] = {
-                "model_class": model_class,
-                "positional_encoding": positional,
-                "num_heads": arch.get("num_heads"),
-                "num_kv_heads": arch.get("num_kv_heads"),
-                "embedding_dim": arch.get("embedding_dim"),
-                "num_layers": arch.get("num_layers"),
-                "context_length": arch.get("context_length"),
-                "vocab_size": 6487,
-                "total_params": m.get("total_params"),
-                "non_embedding_params": m.get("non_embedding_params"),
-                "first_val_loss": first,
-                "final_val_loss": history[-1]["val_loss"],
-                "steps": m.get("steps"),
-                "tokens": m.get("tokens"),
-                "family": family,
-                "evidence": ("architecture block" if arch.get("model_class")
-                             else "first-loss threshold"),
-            }
-            out[(rung_dir.name, seed_dir.name.replace("seed", ""))]["config_hash"] = (
-                f"{model_class}|{positional}|L{arch.get('num_layers')}"
-                f"|H{arch.get('num_heads')}|d{arch.get('embedding_dim')}"
-                f"|V6487|C{arch.get('context_length')}"
-            )
+    from src.scaling.ladder_manifest import build_manifest
+
+    manifest = build_manifest()
+    out: dict[tuple[str, str, str], dict] = {}
+    for run in manifest["runs"]:
+        key = (run["rung"], run["seed"], run["arm"])
+        out[key] = {
+            "model_class": run["model_class"],
+            "positional_encoding": run["positional_encoding"],
+            "num_heads": run["num_heads"],
+            "num_kv_heads": run["num_heads"] if run["family"] == "canonical" else None,
+            "embedding_dim": run["embedding_dim"],
+            "num_layers": run["num_layers"],
+            "context_length": run["context_length"],
+            "vocab_size": 6487,
+            "total_params": run["total_params"],
+            "non_embedding_params": run["non_embedding_params"],
+            "first_val_loss": run["first_logged_val_loss"],
+            "final_val_loss": run["final_val_loss"],
+            "steps": run["steps"],
+            "tokens": run["tokens"],
+            "family": run["family"],
+            "role": run["role"],
+            "role_reason": run["role_reason"],
+            "arm": run["arm"],
+            "source": run["source"],
+            "d_over_n": run["d_over_n"],
+            "config_hash": run["config_hash"],
+            "live_config_hash": run["live_config_hash"],
+            "evidence": ("the manifest" if run["source"] == "rescue"
+                         else "architecture block, or the shape its siblings recorded"),
+        }
     return out
 
 
 def load_points(csv_path: Path, configs: dict) -> list[dict]:
-    """Load the ladder points and tag each with its run's configuration.
+    """Load the ladder points and tag each with its run's role.
 
-    The selection rule is reproduced here rather than trusted from the CSV's
-    ``in_fitted_set`` column: that column reproduces the point COUNT (2,776)
-    but not the point SET -- evaluating the tracked fit's own parameters on it
-    gives R^2 0.287, so the flag is a coincidental match, not the rule.
+    The selection rule is a ROLE, not a flag. A flag that reproduces a point
+    count is not a selection rule; it is a coincidence that looks like one.
     """
     points: list[dict] = []
     with open(csv_path, encoding="utf-8") as fh:
         for row in csv.DictReader(fh):
-            key = (row["rung"], row["seed"])
+            arm = (row.get("arm") or "ladder").strip() or "ladder"
+            key = (row["rung"], row["seed"], arm)
             cfg = configs.get(key)
             if cfg is None:
                 continue
+            total = row.get("total_params") or cfg.get("total_params") or 0
+            final = float(cfg.get("final_val_loss") or 0.0)
+            loss = float(row["validation_loss"])
             points.append({
-                "rung": row["rung"], "seed": row["seed"],
+                "rung": row["rung"], "seed": row["seed"], "arm": arm,
                 "N": float(row["non_embedding_params"]),
-                "N_total": float(cfg.get("total_params") or 0.0),
+                "N_total": float(total),
                 "D": float(row["training_tokens"]),
-                "loss": float(row["validation_loss"]),
-                "in_fitted_set": row["in_fitted_set"].strip().lower() in ("1", "true", "yes"),
-                "family": cfg["family"],
-                "config_hash": cfg["config_hash"],
+                "loss": loss,
+                # "Past the transient" is a property of the LOSS, not of an
+                # absolute token count. The old filter was D >= 5,000,000,
+                # which is past the transient for a rung whose run reaches
+                # 180M tokens and absurdly early for one that reaches 6M: it
+                # kept 7 of the 0.3M rung's 32 points, so that rung's
+                # asymptote was fitted from 7 points over a 1.2M-token D
+                # range and its local exponent came out as -1.16. The
+                # rescue widened the ladder into the range where an absolute
+                # floor stops being a proxy for the transient.
+                "converged": bool(final and loss <= final + TRANSIENT_MARGIN),
+                "final_val_loss": final,
+                "role": (row.get("role") or cfg["role"]).strip(),
+                "family": (row.get("family") or cfg["family"]).strip(),
+                "source": (row.get("source") or cfg["source"]).strip(),
+                "config_hash": (row.get("config_hash") or cfg["config_hash"]).strip(),
             })
     return points
 
@@ -555,16 +560,40 @@ def main() -> None:
     configs = run_configs()
     points = load_points(LADDER / "ladder_points.csv", configs)
     D_MIN = 5_000_000
-    interior = [q for q in points if q["D"] >= D_MIN]
-    canonical = [q for q in interior if q["family"] == "canonical"]
-    other = [q for q in interior if q["family"] == "other"]
+    # TWO point sets, each with a job.
+    #
+    # ``d5m`` reproduces the tracked fit's own point set. The tracked fit's
+    # parameters must be evaluated on the set they were fitted to, or the
+    # diagnostic means nothing.
+    #
+    # ``converged`` is past each run's OWN transient, which is a property of
+    # the loss rather than of an absolute token count. The old D >= 5M floor
+    # is past the transient for a rung whose run reaches 180M tokens and
+    # absurdly early for one that reaches 6M: it kept 7 of the 0.3M rung's
+    # 32 points, so that rung's asymptote was fitted from 7 points over a
+    # 1.2M-token D range and its local exponent came out as -1.16. The
+    # rescue widened the ladder into the range where an absolute floor stops
+    # being a proxy for the transient.
+    d5m = [q for q in points if q["D"] >= D_MIN]
+    interior = [q for q in points if q["converged"]]
+    # The selection is by ROLE, from the manifest. A role says what a run is
+    # FOR; the old in_fitted_set flag only reproduced a point count, and the
+    # tracked fit's own parameters score R^2 0.287 on the set it flags.
+    canonical = [q for q in interior if q["role"] == "canonical_ladder"]
+    other = [q for q in interior if q["role"] == "other_family"]
+    canonical_d5m = [q for q in d5m if q["role"] == "canonical_ladder"]
+    other_d5m = [q for q in d5m if q["role"] == "other_family"]
 
     # The tracked fit's 12 endpoint points: one annealed endpoint per run that
     # the tracked fit consumed. Its run set is recovered from the tracked
     # count: 2,776 = the D>=5M points of the 12 runs that existed when the fit
     # was run (2.6M seeds 44-47 were added later, for the Act 5 MQA n=6 test).
+    # This set deliberately INCLUDES the runs the manifest excludes, because
+    # the tracked fit consumed them: that is the whole point of the
+    # diagnostic.
     LATE = {("2.6M", "44"), ("2.6M", "45"), ("2.6M", "46"), ("2.6M", "47")}
-    as_tracked = [q for q in interior if (q["rung"], q["seed"]) not in LATE]
+    as_tracked = [q for q in d5m
+                  if q["source"] == "ladder" and (q["rung"], q["seed"]) not in LATE]
 
     def endpoints(sel):
         best: dict[tuple[str, str], dict] = {}
@@ -595,17 +624,21 @@ def main() -> None:
     tracked_params_on = {
         "as_tracked_12_runs_D5M": {"n": len(as_tracked),
                                    "r2": round(r2_of(as_tracked, tsec), 6)},
-        "other_family_only_D5M": {"n": len(other),
-                                   "r2": round(r2_of(other, tsec), 6)},
-        "canonical_only_D5M": {"n": len(canonical),
-                               "r2": round(r2_of(canonical, tsec), 6)},
+        "other_family_only_D5M": {"n": len(other_d5m),
+                                   "r2": round(r2_of(other_d5m, tsec), 6)},
+        "canonical_only_D5M": {"n": len(canonical_d5m),
+                               "r2": round(r2_of(canonical_d5m, tsec), 6)},
         "tracked_secondary_params_R2_claim": tracked["secondary"]["r2"],
     }
 
     fits = {
         "as_tracked_12_runs_D5M": summarise_fit("as_tracked_12_runs_D5M", as_tracked),
-        "other_family_only_D5M": summarise_fit("other_family_only_D5M", other),
-        "canonical_only_D5M": summarise_fit("canonical_only_D5M", canonical),
+        "other_family_only_D5M": summarise_fit("other_family_only_D5M", other_d5m),
+        "canonical_only_D5M": summarise_fit("canonical_only_D5M", canonical_d5m),
+        # The paper's fit: past each run's own transient, on the canonical
+        # family only.
+        "canonical_only_converged": summarise_fit("canonical_only_converged", canonical),
+        "other_family_only_converged": summarise_fit("other_family_only_converged", other),
     }
     primary_fits = {
         "endpoints_all_16_runs": summarise_fit("endpoints_all_16_runs",
@@ -619,27 +652,49 @@ def main() -> None:
     # count. Published exponents (Kaplan, Chinchilla) use TOTAL parameters, so
     # the two are not on the same axis; the fit is therefore reported under
     # both conventions and the paper states which one it uses and why.
-    canonical_total = [dict(q, N=q["N_total"]) for q in canonical]
-    other_total = [dict(q, N=q["N_total"]) for q in other]
+    # Two point sets, two names, no aliasing. ``canonical`` is the CONVERGED
+    # set (past each run's own transient); ``canonical_d5m`` is the D >= 5M
+    # set the tracked fit used. The keys below must follow their names or the
+    # diagnostic silently compares a fit against a different point set --
+    # which is exactly what happened when ``canonical`` changed meaning and
+    # these lines kept reading it.
+    canonical_total = [dict(q, N=q["N_total"]) for q in canonical_d5m]
+    other_total = [dict(q, N=q["N_total"]) for q in other_d5m]
+    canonical_total_conv = [dict(q, N=q["N_total"]) for q in canonical]
+    other_total_conv = [dict(q, N=q["N_total"]) for q in other]
     fits_total = {
         "canonical_only_D5M_total_N": summarise_fit("canonical_only_D5M_total_N",
                                                      canonical_total),
         "other_family_only_D5M_total_N": summarise_fit("other_family_only_D5M_total_N",
                                                         other_total),
+        "canonical_only_converged_total_N": summarise_fit(
+            "canonical_only_converged_total_N", canonical_total_conv),
+        "other_family_only_converged_total_N": summarise_fit(
+            "other_family_only_converged_total_N", other_total_conv),
     }
 
     profiles = {
-        "canonical_only_D5M_non_embedding_N": profile_alpha(canonical),
+        "canonical_only_D5M_non_embedding_N": profile_alpha(canonical_d5m),
         "canonical_only_D5M_total_N": profile_alpha(canonical_total),
+        "canonical_only_converged_non_embedding_N": profile_alpha(canonical),
+        "canonical_only_converged_total_N": profile_alpha(canonical_total_conv),
     }
     beta_profiles = {
-        "canonical_only_D5M_non_embedding_N": profile_beta(canonical),
+        "canonical_only_D5M_non_embedding_N": profile_beta(canonical_d5m),
         "canonical_only_D5M_total_N": profile_beta(canonical_total),
+        "canonical_only_converged_non_embedding_N": profile_beta(canonical),
+        "canonical_only_converged_total_N": profile_beta(canonical_total_conv),
     }
 
     fold_estimates = {}
     for name, fit in (("canonical_only_D5M", fits["canonical_only_D5M"]),
-                      ("other_family_only_D5M", fits["other_family_only_D5M"])):
+                      ("other_family_only_D5M", fits["other_family_only_D5M"]),
+                      ("canonical_only_D5M_total_N",
+                       fits_total["canonical_only_D5M_total_N"]),
+                      ("canonical_only_converged",
+                       fits["canonical_only_converged"]),
+                      ("canonical_only_converged_total_N",
+                       fits_total["canonical_only_converged_total_N"])):
         fold_estimates[name] = [
             {"rung": rung, "alpha": v.get("alpha"), "r2": v.get("r2"),
              "n_train": v.get("n_train")}
@@ -650,20 +705,25 @@ def main() -> None:
         "act": "4",
         "purpose": "separate the two architecture families the ladder mixed",
         "provenance": {
-            "runs_total": len(configs),
-            "runs_canonical": sum(1 for c in configs.values()
-                                  if c["family"] == "canonical"),
-            "runs_other": sum(1 for c in configs.values() if c["family"] == "other"),
+            "runs_total": len({(k[0], k[1], k[2]) for k in configs if k[0] != "tiny"}),
+            "runs_canonical_ladder": sum(1 for c in configs.values()
+                                         if c.get("role") == "canonical_ladder"),
+            "runs_other_family": sum(1 for c in configs.values()
+                                     if c.get("role") == "other_family"),
             "rungs_canonical": sorted({k[0] for k, v in configs.items()
                                        if v["family"] == "canonical"}),
             "rungs_other": sorted({k[0] for k, v in configs.items()
                                    if v["family"] == "other"}),
-            "points_interior_D5M": len(interior),
-            "points_interior_canonical": len(canonical),
-            "points_interior_other": len(other),
-            "share_of_interior_points_from_the_other_family": round(
-                len(other) / len(interior), 4),
-            "per_run": {f"{k[0]}/seed{k[1]}": v for k, v in sorted(configs.items())},
+            "points_logged": len(points),
+            "points_D5M_total": len(d5m),
+            "points_D5M_canonical": len(canonical_d5m),
+            "points_D5M_other": len(other_d5m),
+            "points_converged_total": len(interior),
+            "points_converged_canonical": len(canonical),
+            "points_converged_other": len(other),
+            "share_of_D5M_points_from_the_other_family": round(
+                len(other_d5m) / len(d5m), 4),
+            "per_run": {f"{k[0]}/seed{k[1]}/{k[2]}": v for k, v in sorted(configs.items())},
         },
         "tracked_params_on_candidate_sets": tracked_params_on,
         "fits": fits,
@@ -710,29 +770,18 @@ def main() -> None:
     }
     Path(args.out).write_text(json.dumps(out, indent=2), encoding="utf-8")
 
-    # Re-export the ladder points WITH the configuration tags.
-    csv_out = LADDER / "ladder_points.csv"
-    with open(csv_out, encoding="utf-8", newline="") as fh:
-        reader = csv.DictReader(fh)
-        fieldnames = list(reader.fieldnames or [])
-        for extra in ("family", "config_hash", "model_class", "positional_encoding"):
-            if extra not in fieldnames:
-                fieldnames.append(extra)
-        rows = list(reader)
-    for row in rows:
-        cfg = configs.get((row["rung"], row["seed"]), {})
-        row["family"] = cfg.get("family", "")
-        row["config_hash"] = cfg.get("config_hash", "")
-        row["model_class"] = cfg.get("model_class", "")
-        row["positional_encoding"] = cfg.get("positional_encoding", "")
-    with open(csv_out, "w", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+    # The point file is NOT written here. It is written by
+    # src/scaling/ladder_manifest.py, which is the authority for the point
+    # set: it names every run, its role and the reason for that role, and it
+    # writes the role column this fitter selects on. Re-exporting the CSV
+    # from here would silently drop the role column and turn the selection
+    # back into a flag.
+    print(f"\ndelta (canonical - as_tracked): {out['delta_clean_minus_as_tracked']}")
+    print(f"wrote {args.out}")
 
-    print(f"runs: {out['provenance']['runs_canonical']} canonical + "
-          f"{out['provenance']['runs_other']} other; "
-          f"{out['provenance']['share_of_interior_points_from_the_other_family']:.1%} "
+    print(f"runs: {out['provenance']['runs_canonical_ladder']} canonical + "
+          f"{out['provenance']['runs_other_family']} other; "
+          f"{out['provenance']['share_of_D5M_points_from_the_other_family']:.1%} "
           "of interior points come from the other family")
     print(f"\nTRACKED parameters evaluated on each candidate set:")
     for k, v in tracked_params_on.items():
@@ -750,7 +799,7 @@ def main() -> None:
               f"alpha={fit['alpha']:+.4f} beta={fit['beta']:+.4f} E={fit['E']:.4f} "
               f"R2={fit['r2_vs_constant_baseline']:.4f}")
     print(f"\ndelta (canonical - as_tracked): {out['delta_clean_minus_as_tracked']}")
-    print(f"wrote {args.out} and re-exported {csv_out.name} with config tags")
+    print(f"wrote {args.out}")
 
 
 if __name__ == "__main__":

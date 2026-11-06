@@ -256,7 +256,8 @@ def train(rung: str, *, device: str, seed: int, out_dir: Path,
     (out_dir / f"{tag}_history.json").write_text(json.dumps(history, indent=2))
     print(f"[rescue] {tag} DONE final val_loss={history[-1]['val_loss']:.4f} "
           f"in {(time.perf_counter() - t0) / 60:.1f} min")
-    return {"rung": rung, "seed": seed, "n_non_embedding": N,
+    return {"rung": rung, "seed": seed, "tag": tag,
+            "n_non_embedding": N,
             "tokens": tokens, "steps": steps,
             "final_val_loss": history[-1]["val_loss"], "config": cfg,
             "history": history}
@@ -284,7 +285,12 @@ def main() -> None:
     res = train(args.rung, device=args.device, seed=args.seed, out_dir=out,
                 validate=args.validate, target_non_embedding=args.target_n,
                 d_over_n=args.d_over_n)
-    tag = f"{args.rung}_seed{args.seed}"
+    # The tag comes from train(), which is the single source of truth for it.
+    # Reconstructing it here as f"{rung}_seed{seed}" is what let the 9.0M
+    # arm at D=10N overwrite the 9.0M arm at D=20N's summary: the two arms
+    # share a rung and a seed and differ only in the D/N ratio, which is
+    # exactly what the tag is for.
+    tag = res["tag"]
     summary = {k: v for k, v in res.items() if k != "history"}
     if args.validate:
         canonical = {"1.5M": 3.057063579559326, "2.6M": 2.8111,

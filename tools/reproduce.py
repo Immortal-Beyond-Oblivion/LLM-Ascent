@@ -38,6 +38,13 @@ ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
 CANON = ROOT / "checkpoints" / "canonical"
 
+# The checks import from ``src`` lazily, so the repository root has to be on
+# the path. Running the file directly puts ``tools/`` there instead, and every
+# check fails with "No module named 'src'" for a reason that has nothing to do
+# with the numbers. Make both invocations work.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 
 class Check:
     def __init__(self, key: str, label: str, source: str):
@@ -96,7 +103,7 @@ def check_act4_fit() -> Check:
     tracked = json.loads((RESULTS / "v2" / "act4-scaling" / "clean_refit.json").read_text())
     configs = run_configs()
     points = load_points(RESULTS / "v2" / "act4-scaling" / "ladder_points.csv", configs)
-    canonical = [q for q in points if q["D"] >= 5_000_000 and q["family"] == "canonical"]
+    canonical = [q for q in points if q["D"] >= 5_000_000 and q["role"] == "canonical_ladder"]
     canonical_total = [dict(q, N=q["N_total"]) for q in canonical]
     fit = summarise_fit("canonical_only_D5M_total_N", canonical_total)
     claim = tracked["fits_under_the_total_parameter_convention"]["canonical_only_D5M_total_N"]
@@ -129,14 +136,16 @@ def check_act4_beta_profile() -> Check:
     tracked = json.loads((RESULTS / "v2" / "act4-scaling" / "clean_refit.json").read_text())
     configs = run_configs()
     points = load_points(RESULTS / "v2" / "act4-scaling" / "ladder_points.csv", configs)
-    canonical = [q for q in points if q["D"] >= 5_000_000 and q["family"] == "canonical"]
+    canonical = [q for q in points if q["D"] >= 5_000_000 and q["role"] == "canonical_ladder"]
     canonical_total = [dict(q, N=q["N_total"]) for q in canonical]
     prof = profile_beta(canonical_total)
     cprof = tracked["profile_likelihood_over_beta"]["canonical_only_D5M_total_N"]
     c.compare(prof["compatible_beta_max"], cprof["compatible_beta_max"], tol=1e-9,
-              note="the upper end of the profile's compatible beta range on the "
-                   "TOTAL-N axis (the paper's [0.36, 0.56], which EXCLUDES "
-                   "Chinchilla's 0.28)")
+              note=(f"the upper end of the profile's compatible beta range on the "
+                    f"TOTAL-N axis, [{prof['compatible_beta_min']:.2f}, "
+                    f"{prof['compatible_beta_max']:.2f}]; Chinchilla's 0.28 is "
+                    + ("INSIDE it" if prof["compatible_beta_min"] <= 0.28
+                       <= prof["compatible_beta_max"] else "OUTSIDE it")))
     return c
 
 

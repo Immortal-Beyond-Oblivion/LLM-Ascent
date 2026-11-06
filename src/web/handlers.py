@@ -23,6 +23,7 @@ from src.eval.attention import attention_weights
 from src.eval.metrics import repetition_rate
 from src.generation import beam_search, generate
 from src.rag import TextRetriever
+from src.rag.prompt import rag_prompt
 
 from .registry import ModelRegistry
 
@@ -99,7 +100,16 @@ class Api:
         self.root = Path(root).resolve()
         self.artifacts_dir = self.root / "artifacts"
         self.data_dir = self.root / "data"
-        self.registry = ModelRegistry(self.artifacts_dir, cache_size=cache_size, device=device)
+        # The canonical checkpoints are the models the report is about, and
+        # they are the only ones that carry a model configuration, so they are
+        # searched alongside the training checkpoints. The training layout is
+        # kept because it is where the v1 interface's models live.
+        extra: list[tuple[str, Path]] = []
+        canonical = self.root / "checkpoints" / "canonical"
+        if canonical.is_dir():
+            extra.append(("canonical/", canonical))
+        self.registry = ModelRegistry(self.artifacts_dir, cache_size=cache_size,
+                                      device=device, extra_roots=extra)
         self._sessions: OrderedDict[str, Agent] = OrderedDict()
         self._retrievers: dict[tuple[str, ...], TextRetriever] = {}
         self._session_lock = threading.Lock()
@@ -258,10 +268,22 @@ class Api:
             loaded = self._model(payload)
             model, tokenizer = loaded.model, loaded.tokenizer
             context = model.config.context_length
-            default_chars = max(16, context // 2)  # the v1 behaviour of src.rag.query
-            context_chars = _integer(payload, "context_chars", low=16, high=4000, default=default_chars)
             retriever = self._retriever(sorted(set(names)))
-            prompt, sources = retriever.prompt(question, top_k=top_k, max_context_chars=context_chars)
+            # The context budget is in TOKENS, and it is the same builder the
+            # Act 8 evaluation uses. The character budget this replaced
+            # (context_length // 2 characters) admitted only 9.2% of the
+            # retrieved passage on this corpus; see Section 11.1.
+            retrieved = retriever.retrieve(question, top_k=top_k)
+            context_text = retriever.join(retrieved)
+            try:
+                prompt = rag_prompt(question, context=context_text, tokenizer=tokenizer,
+                                    context_length=context,
+                                    answer_reserve=min(max_new, max(8, context // 4)))
+            except ValueError as error:
+                # The shared builder refuses to build a prompt the model
+                # cannot answer in, rather than silently truncating. Say so.
+                raise ApiError(400, str(error)) from None
+            sources = retrieved
             device = next(model.parameters()).device
 
             def answer(text: str) -> tuple[str, int]:
@@ -285,7 +307,9 @@ class Api:
             "with_context": {"prompt": prompt, "prompt_tokens": with_tokens, "answer": with_context, "prompt_cropped": with_tokens > context},
             "closed_book": {"prompt": closed_prompt, "prompt_tokens": closed_tokens, "answer": closed_book},
             "context_length": context,
-            "context_chars": context_chars,
+            "context_budget": "tokens",
+            "context_tokens_available": max(0, context - min(max_new, max(8, context // 4))),
+            "context_tokens_admitted": len(tokenizer.encode(context_text)),
             "unknown_characters": self._unknown_characters(tokenizer, prompt),
         }
 
@@ -312,7 +336,15 @@ class Api:
         }
 
     def results(self) -> dict:
-        comparison = _read_json(self.artifacts_dir / "tick-204" / "comparison.json")
+        """The tracked results, which is where they actually live.
+
+        This tab used to read ``artifacts/tick-204/comparison.json`` and
+        ``artifacts/v2/summary.json``. Neither path exists any more: the
+        measurements are tracked under ``results/`` and the figures under
+        ``report/figures/``, so the tab reported "no results yet" for a
+        project with 22 tracked result files and 24 figures.
+        """
+        comparison = _read_json(self.root / "results" / "v1" / "comparison.json")
         v1 = []
         if isinstance(comparison, list):
             for run in comparison:
@@ -339,11 +371,61 @@ class Api:
         return {
             "v1_comparison": v1,
             "figures": sorted(figures),
-            "v2_summary": _read_json(self.artifacts_dir / "v2" / "summary.json"),
+            "v2_summary": self._v2_summary(),
         }
 
+    def _v2_summary(self) -> dict | None:
+        """A summary of the tracked v2 results: what exists, and the ledger.
+
+        The ledger is the project's own audit table: one row per claim, with
+        its n, its interval, its status and the caveat that travels with it.
+        """
+        results_root = self.root / "results" / "v2"
+        if not results_root.is_dir():
+            return None
+        # A hand-written summary file wins: it is the richer, curated view.
+        written = _read_json(results_root / "summary.json")
+        if written is not None:
+            return written
+        acts: dict[str, dict] = {}
+        for act_dir in sorted(p for p in results_root.iterdir() if p.is_dir()):
+            files = sorted(p.name for p in act_dir.rglob("*") if p.is_file())
+            acts[act_dir.name] = {"n_files": len(files), "files": files}
+        claims = self._read_claims_csv()
+        statuses: dict[str, int] = {}
+        n_claims = 0
+        if claims is not None:
+            n_claims = len(claims)
+            for row in claims:
+                status = str(row.get("status", "unknown"))
+                statuses[status] = statuses.get(status, 0) + 1
+        return {
+            "acts": acts,
+            "n_claim_rows": n_claims,
+            "claim_status_counts": statuses,
+            "claims_ledger": "report/claims.csv",
+            "note": (
+                "Every number in the paper is in report/claims.csv with its n, "
+                "its interval and its status. The figures are in report/figures/ "
+                "and the LaTeX source is report/final_report.tex."
+            ),
+        }
+
+    def _read_claims_csv(self) -> list[dict] | None:
+        """The claims ledger, which is CSV rather than JSON."""
+        import csv
+
+        path = self.root / "report" / "claims.csv"
+        if not path.exists():
+            return None
+        with path.open(encoding="utf-8", newline="") as fh:
+            return list(csv.DictReader(fh))
+
     def _figure_roots(self) -> list[Path]:
-        return [self.artifacts_dir / "tick-403", self.artifacts_dir / "v2" / "figures"]
+        return [self.root / "report" / "figures",
+                self.root / "results" / "v2" / "figures",
+                self.artifacts_dir / "tick-403",
+                self.artifacts_dir / "v2" / "figures"]
 
     def figure_path(self, name: str) -> Path | None:
         """Resolve a figure (``file.png`` or ``subdir/file.png``) inside the allow-listed roots only."""

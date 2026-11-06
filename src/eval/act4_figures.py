@@ -107,7 +107,7 @@ def _read_ladder(results_dir: Path) -> list[dict]:
             "N": int(r["non_embedding_params"]),
             "D": int(r["training_tokens"]),
             "loss": float(r["validation_loss"]),
-            "in_fit": r["in_fitted_set"] == "1",
+            "in_fit": r.get("role") == "canonical_ladder",
             "family": r.get("family") or "",
             "model_class": r.get("model_class") or "",
             "positional_encoding": r.get("positional_encoding") or "",
@@ -245,10 +245,10 @@ def ladder_figure(results_dir: Path, out_dir: Path) -> None:
         "measured unigram entropy is %.4f nats.  The WITHDRAWN fit "
         "(alpha = %.3f) describes the OTHER family: R2 = %+.3f on its %d "
         "points, %+.3f on the canonical points."
-        % (prov["runs_total"], prov["points_interior_D5M"],
-           prov["runs_canonical"],
-           100.0 * prov["points_interior_canonical"] / prov["points_interior_D5M"],
-           prov["points_interior_other"],
+        % (prov["runs_total"], prov["points_D5M_total"],
+           prov["points_D5M_canonical"],
+           100.0 * prov["points_D5M_canonical"] / prov["points_D5M_total"],
+           prov["points_D5M_other"],
            canonical["n_points"], canonical["n_rungs"],
            canonical["alpha"], canonical["beta"], canonical["E"],
            canonical["r2_vs_constant_baseline"],

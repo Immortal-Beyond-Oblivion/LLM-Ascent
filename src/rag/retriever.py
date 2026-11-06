@@ -60,8 +60,15 @@ class TextRetriever:
         Truncation belongs to the caller and must be denominated in tokens:
         this method returning an untruncated string is what makes D1
         impossible to reintroduce here. See ``src/rag/prompt.py``.
+
+        The source marker carries the document's NAME, not the path it was
+        read from. An absolute path is noise in a prompt, it leaks the
+        layout of the machine into a model's context, and - because the
+        context is budgeted in tokens - it can spend the whole window on a
+        path and push the retrieved text out of the prompt entirely.
         """
-        return "\n\n".join(f"[Source: {item.source}]\n{item.text}" for item in chunks)
+        return "\n\n".join(f"[Source: {Path(item.source).name}]\n{item.text}"
+                           for item in chunks)
 
     def prompt(self, question: str, *, top_k: int = 3, max_context_chars: int = 2_000) -> tuple[str, list[RetrievedChunk]]:
         """DEPRECATED character-budgeted path, retained for existing callers.

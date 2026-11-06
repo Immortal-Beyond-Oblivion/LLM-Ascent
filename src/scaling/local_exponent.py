@@ -41,19 +41,42 @@ ROOT = Path(__file__).resolve().parents[2]
 RESULTS = ROOT / "results" / "v2" / "act4-scaling"
 
 
-def load_canonical(csv_path: Path, *, d_min: int = 5_000_000):
-    """Interior points of the canonical family, grouped by run."""
+#: How far above its own run's final validation loss a point may sit and
+#: still count as "past the transient". Scale-free, so it means the same
+#: thing at every rung. The old filter was an absolute D >= 5,000,000, which
+#: kept 7 of the 0.3M rung's 32 points and produced a local exponent of
+#: -1.16 for that interval.
+TRANSIENT_MARGIN = 0.5
+
+
+def load_canonical(csv_path: Path, *, d_min: int | None = None):
+    """Interior points of the canonical ladder, grouped by run.
+
+    Selection is by ROLE, from the manifest that writes this file. The role
+    says what a run is FOR; a family label says what it looks like, and the
+    ladder contains a run that looks canonical and matches no known shape.
+
+    "Interior" means past the run's own transient, which is a property of the
+    loss. An absolute token floor is not: it is past the transient for a rung
+    whose run reaches 180M tokens and absurdly early for one that reaches 6M.
+    """
     import csv
 
     runs = defaultdict(list)
     with open(csv_path, encoding="utf-8") as fh:
         for row in csv.DictReader(fh):
-            if row["family"] != "canonical":
+            if (row.get("role") or "").strip() != "canonical_ladder":
                 continue
-            if int(row["training_tokens"]) < d_min:
+            loss = float(row["validation_loss"])
+            final = float(row.get("final_val_loss") or 0.0)
+            if d_min is not None:
+                if float(row["training_tokens"]) < d_min:
+                    continue
+            elif not (final and loss <= final + TRANSIENT_MARGIN):
                 continue
-            runs[(row["rung"], row["seed"])].append(
-                (float(row["training_tokens"]), float(row["validation_loss"]),
+            key = (row["rung"], row["seed"], (row.get("arm") or "ladder").strip())
+            runs[key].append(
+                (float(row["training_tokens"]), loss,
                  float(row["non_embedding_params"])))
     return {k: sorted(v) for k, v in runs.items()}
 
@@ -323,26 +346,36 @@ def main() -> None:
     args = ap.parse_args()
 
     runs = load_canonical(RESULTS / "ladder_points.csv")
-    # aggregate to rungs: mean over the runs of that rung
+    # Aggregate to rungs. A rung is a parameter count, so the off-line arm
+    # (the same N at a different D/N ratio) POOLS into its rung: both arms
+    # describe the same model, and pooling them widens the D range over which
+    # the rung's asymptote is fitted, which is exactly what that estimator
+    # needs. The raw ladder, by contrast, is the D = 20N LINE, so it takes
+    # only the line's arms.
     by_rung = defaultdict(list)
-    for (rung, seed), pts in runs.items():
+    by_rung_line = defaultdict(list)
+    for (rung, seed, arm), pts in runs.items():
         by_rung[rung].append(pts)
+        if arm in ("D20N", "ladder"):
+            by_rung_line[rung].append(pts)
     order = sorted(by_rung, key=lambda r: float(r.rstrip("M")))
 
     raw, asym, meta = [], [], {}
     for rung in order:
         finals, csum, bsum, betas = [], [], [], []
         for pts in by_rung[rung]:
-            finals.append(pts[-1][1])
             c, b, bt, r2 = fit_rung_asymptote(pts)
             csum.append(c)
             bsum.append(b)
             betas.append(bt)
+        for pts in by_rung_line.get(rung, []):
+            finals.append(pts[-1][1])
         N = by_rung[rung][0][0][2]
-        raw.append((rung, N, float(np.mean(finals))))
+        raw.append((rung, N, float(np.mean(finals)) if finals else float("nan")))
         asym.append((rung, N, float(np.mean(csum))))
         meta[rung] = {"N": int(N), "n_runs": len(by_rung[rung]),
-                      "final_loss_mean": round(float(np.mean(finals)), 4),
+                      "n_runs_on_the_D20N_line": len(by_rung_line.get(rung, [])),
+                      "final_loss_mean": round(float(np.mean(finals)), 4) if finals else None,
                       "asymptote_c_mean": round(float(np.mean(csum)), 4),
                       "b_mean": round(float(np.mean(bsum)), 4),
                       "beta_per_run": [round(x, 4) for x in betas],
@@ -362,26 +395,22 @@ def main() -> None:
                 "values": [round(v, 4) for v in vals]}
 
     # The joint (alpha, E) profile needs the point set on the TOTAL-N axis, so
-    # the per-run total parameter counts are needed.
+    # the per-run total parameter counts are needed. Both the role and the
+    # total parameter count are columns of the point file, so neither has to
+    # be recovered by globbing the artefact tree.
     import csv as _csv
-    import glob as _glob
-    import os as _os
-    totals = {}
-    for m in _glob.glob("artifacts/scaling/checkpoints/*/seed*/metrics.json"):
-        rung = _os.path.basename(_os.path.dirname(_os.path.dirname(m)))
-        seed = _os.path.basename(_os.path.dirname(m)).replace("seed", "")
-        j = json.loads(Path(m).read_text())
-        totals[(rung, seed)] = j["total_params"]
     pts_total = []
     with open(RESULTS / "ladder_points.csv", encoding="utf-8") as fh:
         for row in _csv.DictReader(fh):
-            if row["family"] != "canonical":
+            if (row.get("role") or "").strip() != "canonical_ladder":
                 continue
-            if int(row["training_tokens"]) < 5_000_000:
+            loss = float(row["validation_loss"])
+            final = float(row.get("final_val_loss") or 0.0)
+            if not (final and loss <= final + TRANSIENT_MARGIN):
                 continue
-            t = totals.get((row["rung"], row["seed"]))
+            t = float(row.get("total_params") or 0.0)
             if t:
-                pts_total.append((float(t), float(row["training_tokens"]),
+                pts_total.append((t, float(row["training_tokens"]),
                                   float(row["validation_loss"])))
     joint = joint_profile(pts_total)
     flat = select_E_by_flatness((raw, asym))
