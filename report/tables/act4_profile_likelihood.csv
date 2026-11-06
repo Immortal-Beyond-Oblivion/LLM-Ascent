@@ -1,5 +1,5 @@
 parameter,convention,n_points,delta_r2_tolerance,best_r2,best_value,compatible_min,compatible_max,compatible_width,published_value,contains_published_value,source
-alpha,"canonical family, TOTAL-parameter N (the paper's axis)",2292,0.001,0.995479,0.20,0.08,0.54,0.46,0.34,yes,results/v2/act4-scaling/clean_refit.json
-alpha,"canonical family, non-embedding N",2292,0.001,0.995389,0.08,0.08,0.26,0.18,0.34,no,results/v2/act4-scaling/clean_refit.json
-beta,"canonical family, TOTAL-parameter N (the paper's axis)",2292,0.001,0.995347,0.46,0.36,0.56,0.20,0.28,no,results/v2/act4-scaling/clean_refit.json
-beta,"canonical family, non-embedding N",2292,0.001,0.994516,0.44,0.34,0.48,0.14,0.28,no,results/v2/act4-scaling/clean_refit.json
+alpha,"canonical family, TOTAL-parameter N (the paper's axis)",3463,0.001,0.995976,0.58,0.34,0.82,0.48,0.34,yes,results/v2/act4-scaling/clean_refit.json
+alpha,"canonical family, non-embedding N",3463,0.001,0.995810,0.40,0.20,0.60,0.40,0.34,yes,results/v2/act4-scaling/clean_refit.json
+beta,"canonical family, TOTAL-parameter N (the paper's axis)",3463,0.001,0.995978,0.46,0.38,0.54,0.16,0.28,no,results/v2/act4-scaling/clean_refit.json
+beta,"canonical family, non-embedding N",3463,0.001,0.995811,0.46,0.38,0.54,0.16,0.28,no,results/v2/act4-scaling/clean_refit.json

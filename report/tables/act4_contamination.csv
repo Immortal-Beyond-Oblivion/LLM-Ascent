@@ -1,4 +1,4 @@
 candidate point set,n_points,r2_of_the_withdrawn_fit,withdrawn_alpha,withdrawn_beta,withdrawn_E,r2_the_withdrawn_fit_claimed,source
 "as tracked (D >= 5M, 12 runs)",2776,+0.287387,0.4451,0.2902,1.6052,0.995035,results/v2/act4-scaling/clean_refit.json; results/v2/act4-scaling/fit_results.json
 other family only (D >= 5M),1428,+0.995707,0.4451,0.2902,1.6052,0.995035,results/v2/act4-scaling/clean_refit.json; results/v2/act4-scaling/fit_results.json
-canonical family only (D >= 5M),2292,-1.312294,0.4451,0.2902,1.6052,0.995035,results/v2/act4-scaling/clean_refit.json; results/v2/act4-scaling/fit_results.json
+canonical family only (D >= 5M),3463,-0.666106,0.4451,0.2902,1.6052,0.995035,results/v2/act4-scaling/clean_refit.json; results/v2/act4-scaling/fit_results.json
