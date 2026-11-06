@@ -21,18 +21,9 @@ data/v2/
 # Browser-automation scratch from local verification runs.
 .playwright-mcp/
 
-# Film: source is tracked, generated media is not (see video/ascent/scripts/).
-video/ascent/node_modules/
-video/ascent/.hyperframes/
-video/ascent/out/
-video/ascent/renders/
-video/ascent/assets/report/
-video/ascent/assets/audio/
-video/ascent/assets/fig/
+video/
 
 # Local secrets and scratch files.
-video/.env.local
-video/.env*
 web-ui-fixed.png
 
 # Model weights stay local: 100 MB of tensors that re-derive from a run.
