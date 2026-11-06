@@ -20,3 +20,12 @@ data/v2/
 
 # Browser-automation scratch from local verification runs.
 .playwright-mcp/
+
+# Film: source is tracked, generated media is not (see video/ascent/scripts/).
+video/ascent/node_modules/
+video/ascent/.hyperframes/
+video/ascent/out/
+video/ascent/renders/
+video/ascent/assets/report/
+video/ascent/assets/audio/
+video/ascent/assets/fig/
