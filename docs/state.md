@@ -6,17 +6,18 @@
 
 ## Active Ticket
 
-**`[DONE]` Acts 0-10 COMPLETE. An Act 4 ladder rescue is RUNNING in the
-background (4.1M and 9.0M re-trained with the canonical architecture on the
-D = 20N line); the paper's Act 4 numbers are from the current four-rung clean
-fit and the section will be regenerated when the rescue lands.** The report covers Acts 0-9 with Act 10's
-artefacts in place. Act 8 is COMPLETE, Act 9 is COMPLETE (causal head ablation,
-behavioural rollout, logit lens), and Act 10 is COMPLETE (claims audit table,
-failure taxonomy, ethics at the floor, reproducibility script).** (hallucination, RAG controls, tool use). Acts 0–7 are
-complete; Acts 0–6 are written up by the owner, Act 7 and Act 8 material are
-ready for them to add.
+**`[DONE]` Acts 0-10 COMPLETE, Act 4 rescue COMPLETE, report at 102/102 claims.**
 
-Status of the suite: **357 tests, 0 failures, 1 skipped.**
+The Act 4 ladder rescue finished: five canonical arms re-ran the 4.1M and 9.0M
+rungs and added 0.3M, 0.4M and a replacement 0.8M. The paper's Act 4 numbers now
+come from the eight-rung clean fit (3,463 interior points, alpha +0.589, beta
++0.461, E +1.964, R^2 0.9960) and the pre-registered gate is answered: the
+compatible alpha range did not narrow (0.46 at four rungs, 0.48 at eight), so
+the null is credible. The Act-crossing rule below still holds for Acts 0-3,
+whose ladder really was the other family; Acts 4-9 now share one canonical
+family.
+
+Status of the suite: **387 tests, 0 failures, 1 skipped.**
 
 Decisions locked with the owner on 2026-10-14:
 
@@ -378,17 +379,20 @@ tracked JSON so they cannot drift.
 
 Test suite at Act 5 close: **230 tests, 0 failures, 2 skipped.**
 
-**Act-crossing rule:** Act 4 (ALiBiTransformer, 4 heads, 6,487-token BPE) and Act 5
-(MiniGPT, 8 heads) measure different models; losses are not comparable across acts.
-Every metrics.json now records an `architecture` block.
+**Act-crossing rule:** Acts 0-3 were swept on `ALiBiTransformer` (4 heads),
+Acts 4-9 on `MiniGPT` (8 heads); losses are not comparable across that boundary.
+Every `metrics.json` records an `architecture` block. The Act 4 ladder itself
+mixed both families until the rescue replaced the other family's rungs.
 
-**Act-crossing rule:** Act 4 (ALiBiTransformer, 4 heads, 6,487-token BPE) and Act 5
-(MiniGPT, 8 heads) measure different models; losses are not comparable across acts.
-Every metrics.json now records an `architecture` block.
+**Act-crossing rule:** Acts 0-3 were swept on `ALiBiTransformer` (4 heads),
+Acts 4-9 on `MiniGPT` (8 heads); losses are not comparable across that boundary.
+Every `metrics.json` records an `architecture` block. The Act 4 ladder itself
+mixed both families until the rescue replaced the other family's rungs.
 
-**Act-crossing rule:** Act 4 (ALiBiTransformer, 4 heads, 6,487-token BPE) and Act 5
-(MiniGPT, 8 heads) measure different models; losses are not comparable across acts.
-Every metrics.json now records an `architecture` block.
+**Act-crossing rule:** Acts 0-3 were swept on `ALiBiTransformer` (4 heads),
+Acts 4-9 on `MiniGPT` (8 heads); losses are not comparable across that boundary.
+Every `metrics.json` records an `architecture` block. The Act 4 ladder itself
+mixed both families until the rescue replaced the other family's rungs.
 
 Act 5 (KV cache, MQA/GQA/SWA, speculative decoding) done on M4. KV cache
 byte-identical (max logit diff 1.64e-07), 18.36x speedup at context 1024, O(N*d)
@@ -396,9 +400,9 @@ memory confirmed. MQA/GQA: 8x cache reduction, −12.1% FLOPs, quality cost at
 2.6M now significant (+0.0285 nats, p=0.0008, n=6). Speculative decoding:
 distribution verified exact, but a 2–4x wall-clock LOSS at every configuration.
 
-**Known hygiene issue:** running the test suite REWRITES tracked files under
-`results/` (it regenerates an Act 0 metrics.json timing field). `results/` is
-therefore not a pure append-only record. Noted, not yet fixed.
+**Hygiene issue, fixed:** the test suite used to rewrite tracked files under
+`results/`. `tests/test_results_append_only.py` now fingerprints `results/` and
+fails if a test run changes it.
 
 Next: Act 6 (decoding sweep + best-of-n). Act 5 is closed.
 
