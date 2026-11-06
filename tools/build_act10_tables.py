@@ -504,7 +504,7 @@ def headline_table() -> None:
 % Source: report/claims.csv ({n_ledger} rows) and the ids listed in that
 % script.  Regenerate with: python tools/build_act10_tables.py
 {{\\small
-\\begin{{longtable}}{{L{{6.5cm}}L{{1.6cm}}L{{4.3cm}}L{{1.9cm}}}}
+\\begin{{longtable}}{{L{{6.5cm}}L{{2.3cm}}L{{3.4cm}}L{{1.9cm}}}}
 \\caption{{The headline claims of this paper: {len(selected)} of the
 {n_ledger} rows of the tracked claims ledger
 (\\texttt{{report/claims.csv}}), with the sample size, the interval and the

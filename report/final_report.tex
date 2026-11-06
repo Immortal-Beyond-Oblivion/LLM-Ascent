@@ -1,8 +1,8 @@
-\documentclass[journal,onecolumn,11pt,a4paper]{IEEEtran}
+\documentclass[11pt,a4paper]{article}
 
 \usepackage[margin=2.5cm]{geometry}
-\usepackage{newtxtext,newtxmath}
-\usepackage[htt]{hyphenat}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
@@ -14,13 +14,6 @@
 % Long result paths in running text have no breakpoint; let TeX stretch the
 % line a little rather than overrun the margin.
 \setlength{\emergencystretch}{3em}
-
-% Arabic table numbers: the report has more than 30 tables and roman numerals
-% stop being readable.
-\renewcommand{\thetable}{\arabic{table}}
-\renewcommand{\thesection}{\arabic{section}}
-\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
-\renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
 
 % Figures are tracked in report/figures/ (never under artifacts/, which is
 % git-ignored), so `report/` is self-contained: unzip it onto Overleaf and it
@@ -35,8 +28,10 @@
 \title{Project Ascent: Measuring What a Small Language Model Actually Learns\\
 \large Three Findings: a Calibrated Model, a Retargeted Model,\\
 and a Contaminated Ladder}
-\author{Project Ascent}
-\date{October 2026}
+\author{Amritanshu Aditya (23BCS013)\\
+Tejaswi A C (23BDS064)\\
+Vinay N R (23BDS068)}
+\date{November 2026}
 
 \begin{document}
 \maketitle
@@ -111,52 +106,6 @@ of a good fit. All fifteen measurement failures this project recorded were
 caught by such an invariant or by a positive control, and not one of them by
 comparing two implementations.
 \end{abstract}
-
-\newpage
-\tableofcontents
-\newpage
-
-\section{Results at a glance}
-\label{sec:glance}
-
-Three results carry this report. Each is a measurement on a model small enough
-that the measurement, not the model, is the contribution; each has a control
-that makes it mean something; and each is traceable to a tracked file that
-\texttt{tools/reproduce.py} re-derives without retraining.
-
-\begin{table}[H]
-\centering
-\begin{tabular}{L{2.4cm}L{7.4cm}L{4.2cm}}
-\toprule
-Finding & Headline result & Evidence \\
-\midrule
-1. Calibration & Over 4,064 held-out next-token predictions the model is
-accurate $52.95\%$ of the time at a mean confidence of $52.55\%$, expected
-calibration error $0.0233$. It is a competent next-token predictor.
-& \texttt{results/v2/act10/} \\
-2. Instruction tuning & Tuning on 512 examples lifts held-out instruction
-following from $0.0000$ to $0.6016$ while next-token accuracy on the tuned
-distribution does not move ($-0.0009$, 95\% $[-0.0160, +0.0142]$) and the
-calibration error on that distribution rises from $0.1118$ to $0.2772$.
-Tuning retargets competence; it does not add it.
-& \texttt{results/v2/act10/} \\
-3. Scaling & On the pre-registered point set --- 3,463 points over 8 rungs ---
-the fit gives $\alpha = 0.589$ (compatible range $[0.34,\ 0.82]$),
-$\beta = 0.461$ ($[0.38,\ 0.54]$), $E = 1.964$ and $R^2 = 0.9960$. The
-$\beta$ range excludes Kaplan's $0.30$ and contains Chinchilla's $0.50$; the
-$\alpha$ range contains both and discriminates between none.
-& \texttt{results/v2/act4-scaling/} \\
-\bottomrule
-\end{tabular}
-\caption{The three findings, the number each one turns on, and the directory
-the number is read from. Every other result in this report is either a
-supporting measurement for one of these three or an explicit negative; the
-full population of 89 hypotheses, failures and declined claims is in
-Appendix~\ref{app:taxonomy}. \textbf{Interval type:} Wilson intervals for
-proportions and paired differences elsewhere; the ranges above are profile
-compatibility ranges, not standard errors.}
-\label{tab:glance}
-\end{table}
 
 \section{Introduction and research questions}
 \label{sec:intro}
@@ -872,7 +821,7 @@ the difference between them is exactly one position table.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{1.2cm}L{1.6cm}R{2.5cm}R{2.5cm}R{1.1cm}R{2.3cm}}
+\begin{tabular}{L{1.2cm}L{2.3cm}R{2.5cm}R{2.5cm}R{1.1cm}R{2.9cm}}
 \toprule
 Rung & Family & Non-emb. params & Total params & Runs & Final validation loss \\
 \midrule
@@ -1303,6 +1252,7 @@ measured entropy: the corpus's measured unigram entropy is $4.9946$ nats.
 
 \begin{table}[H]
 \centering
+\small
 \begin{tabular}{L{4.8cm}R{4.4cm}L{4.6cm}}
 \toprule
 Quantity & Value (total-parameter $N$) & Uncertainty or diagnostic \\
@@ -1680,7 +1630,7 @@ absorbing. % claims: A4-15
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{1.3cm}R{1.95cm}R{1.95cm}R{1.95cm}R{1.95cm}R{1.95cm}R{1.95cm}}
+\begin{tabular}{L{2.0cm}R{1.8cm}R{1.8cm}R{1.8cm}R{1.8cm}R{1.8cm}R{1.8cm}}
 \toprule
 $D$ (tokens) & 0.8M & 1.5M & 2.6M & 4.1M & 6.3M & 9.0M \\
 \midrule
@@ -2794,7 +2744,7 @@ is higher, so a directional claim would be reading noise. % claims: A8B-06
 
 \begin{table}[H]
 \centering
-\begin{tabular}{L{5.8cm}R{1.4cm}R{2.5cm}R{1.5cm}R{2.5cm}}
+\begin{tabular}{L{5.25cm}R{1.4cm}R{2.5cm}R{1.5cm}R{2.75cm}}
 \toprule
 Statistic & $n$ & Mean (nats) & $p$ & Bootstrap 95\% \\
 \midrule
@@ -3428,7 +3378,7 @@ The table below, Table~\ref{tab:act10-headline}, is the summary the body
 carries: the headline claims of Acts~0--10, with their $n$, their interval and
 their status. It is generated from the ledger by
 \texttt{tools/build\_act10\_tables.py} and read into this document from
-\texttt{report/tables/act10\_headline\_claims.tex}, so the body and the ledger
+\texttt{report/tables/\allowbreak act10\_headline\_claims.tex}, so the body and the ledger
 cannot disagree. The complete 98-row ledger is the tracked artefact and is
 not duplicated here.
 
@@ -4025,7 +3975,7 @@ writes the 10a headline-claims table and the 10b failure taxonomy from
 \texttt{docs/implementation.md}, both as a CSV and as a LaTeX fragment, and
 this document reads those two fragments in with
 \texttt{\textbackslash input}. The two generated fragments,
-\texttt{report/tables/act10\_headline\_claims.tex} and
+\texttt{report/tables/\allowbreak act10\_headline\_claims.tex} and
 \texttt{report/tables/act10\_failure\_taxonomy.tex}, are part of the report
 bundle and must travel with it.
 
@@ -4142,20 +4092,13 @@ Journal of the American Statistical Association 22(158):209--212.
 \end{thebibliography}
 
 \clearpage
-\appendix
+\section*{The findings taxonomy}
 
-\section{The full findings taxonomy}
-\label{app:taxonomy}
-
-Every hypothesis this project put at risk, every measurement failure it caught,
-and every claim it declines to make, one row each: 89 rows in four populations,
-10 \emph{supported}, 26 \emph{unsupported}, 15 \emph{measurement failures} and
-38 \emph{declined claims}. The table is generated from
-\texttt{report/tables/findings\_taxonomy.csv} by
-\texttt{src/eval/findings\_table.py}, and each row names the tracked file its
-outcome is read from. It is placed here rather than at the front because it is
-a reference table, not an argument: the argument is
-Section~\ref{sec:glance} and the acts that follow it.
+Every hypothesis this project put at risk, every measurement failure it caught
+and every claim it declines to make, one row each. It is placed after the
+references because it is a lookup table rather than an argument: the argument
+is the ten acts that precede it. Each row names the tracked file its outcome is
+read from.
 
 % GENERATED FILE: report/tables/findings_table.tex must be present next to
 % this document. Regenerate with: python -m src.eval.findings_table

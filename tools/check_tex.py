@@ -51,6 +51,7 @@ BASE_MACROS = {
     "documentclass", "usepackage", "geometry", "fontenc", "lmodern",
     "graphicx", "booktabs", "array", "float", "amsmath", "longtable",
     "hypersetup", "href", "url", "newcolumntype", "graphicspath", "title",
+    "thetable",
     "author", "date", "maketitle", "begin", "end", "section", "subsection",
     "subsubsection", "paragraph", "chapter", "part", "appendix", "label",
     "ref", "eqref", "pageref", "cite", "bibitem", "thebibliography",
