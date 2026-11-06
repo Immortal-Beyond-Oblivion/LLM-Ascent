@@ -225,15 +225,22 @@ def check_graphics(tex: str, tex_path: Path, errors: list[str],
                           f"inside report/figures/")
             continue
         referenced_stems.add(Path(name).stem)
-        png = figures_dir / name
-        if not png.exists():
+        path = figures_dir / name
+        if not path.exists():
+            # an extensionless \includegraphics lets graphicx pick the vector
+            # PDF; resolve it the same way graphicx would
+            for suffix in (".pdf", ".png", ".jpg"):
+                if path.with_suffix(suffix).exists():
+                    path = path.with_suffix(suffix)
+                    break
+        if not path.exists():
             errors.append(f"\\includegraphics{{{name}}} has no file at "
-                          f"{png}")
+                          f"{path}")
             continue
-        pdf = png.with_suffix(".pdf")
-        if not pdf.exists():
+        vector = path if path.suffix == ".pdf" else path.with_suffix(".pdf")
+        if not vector.exists():
             errors.append(f"figure {name} has no vector PDF sibling "
-                          f"({pdf.name} missing)")
+                          f"({vector.name} missing)")
 
     # every figure environment must contain an includegraphics
     for block in re.findall(r"\\begin\{figure\}.*?\\end\{figure\}", tex,
